@@ -22,7 +22,7 @@
 // set this to false when deploying, true when developing js
 var devMode = true;
 
-var CACHE_NAME = "civil-20201119";
+var CACHE_NAME = "note-20201119";
 
 var precacheConfig = [
   "/apple-touch-icon.png",
@@ -33,37 +33,17 @@ var precacheConfig = [
 
   "/js/App.js",
   "/js/AppState.js",
-  "/js/CivilUtils.js",
+  "/js/NoteUtils.js",
   "/js/JsUtils.js",
   "/js/Net.js",
-  "/js/eras.js",
-  "/js/graphPhysics.js",
   "/js/index.js",
   "/js/StateProvider.js",
   "/js/svgIcons.js",
-  "/js/WasmInterfaceProvider.js",
-  "/js/components/CivilSelect.js",
-  "/js/components/DeckManager.js",
-  "/js/components/Graph.js",
-  "/js/components/GraphSection.js",
-  "/js/components/Ideas.js",
-  "/js/components/ImageWidget.js",
-  "/js/components/ListSections.js",
-  "/js/components/ListingLink.js",
   "/js/components/Login.js",
-  "/js/components/Note.js",
-  "/js/components/People.js",
-  "/js/components/PointForm.js",
-  "/js/components/Publications.js",
+  "/js/components/Notes.js",
   "/js/components/QuickFindOrCreate.js",
-  "/js/components/RollableSection.js",
-  "/js/components/Search.js",
-  "/js/components/SectionLinkBack.js",
-  "/js/components/Timelines.js",
 
   "/tufte.css",
-  "/wasm.js",
-  "/wasm_bg.wasm",
   "/lib/preact/hooks.js",
   "/lib/preact/htm.js",
   "/lib/preact/mod.js",

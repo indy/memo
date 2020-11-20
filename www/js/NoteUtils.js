@@ -25,3 +25,12 @@ export function setDeckListing(dispatch, resource, listing) {
     listing
   });
 }
+
+export function addAutocompleteDeck(dispatch, id, name, resource) {
+  dispatch({
+    type: 'addAutocompleteDeck',
+    id,
+    name,
+    resource
+  });
+}

@@ -6,6 +6,10 @@ export const initialState = {
   //   email: ...
   // },
 
+  cache: {
+    note: {}
+  },
+
   deckkindsLoaded: {
     notes: false
   },
@@ -35,6 +39,15 @@ export const reducer = (state, action) => {
         deckkindsLoaded: loaded,
         deckkindsListing: listing
       };
+
+      return newState;
+    }
+  case 'cacheNote':
+    {
+      let note = action.newItem;
+
+      let newState = { ...state };
+      newState.cache.note[action.id] = note;
 
       return newState;
     }
