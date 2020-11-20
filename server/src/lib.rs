@@ -22,13 +22,13 @@ mod handler;
 mod interop;
 mod session;
 
-pub use crate::error::Result;
+pub use crate::error::{Error, Result};
 
 use actix_files as fs;
 use actix_session::CookieSession;
 use actix_web::cookie::SameSite;
 use actix_web::middleware::errhandlers::ErrorHandlers;
-use actix_web::{http, App, HttpServer};
+use actix_web::{http, web, App, HttpServer};
 use dotenv;
 use std::env;
 use tokio_postgres::NoTls;
@@ -37,6 +37,24 @@ use tracing::{error, info};
 use tracing_subscriber::FmtSubscriber;
 
 const SIGNING_KEY_SIZE: usize = 32;
+
+pub struct ServerConfig {
+    pub registration_magic_word: String,
+}
+
+fn env_var_string(key: &str) -> Result<String> {
+    match env::var(key) {
+        Ok(r) => Ok(r),
+        Err(e) => {
+            error!("Error unable to get environment variable: {}", key);
+            Err(Error::Var(e))
+        }
+    }
+}
+
+fn env_var_bool(key: &str) -> Result<bool> {
+    Ok(env_var_string(key)? == "true")
+}
 
 pub async fn start_server() -> Result<()> {
     dotenv::dotenv().ok();
@@ -48,13 +66,15 @@ pub async fn start_server() -> Result<()> {
 
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
 
-    let port = env::var("PORT")?;
-    let www_path = env::var("WWW_PATH")?;
-    let postgres_db = env::var("POSTGRES_DB")?;
-    let postgres_host = env::var("POSTGRES_HOST")?;
-    let postgres_user = env::var("POSTGRES_USER")?;
-    let postgres_password = env::var("POSTGRES_PASSWORD")?;
-    let cookie_secure: bool = env::var("COOKIE_OVER_HTTPS_ONLY")? == "true";
+    let port = env_var_string("PORT")?;
+    let www_path = env_var_string("WWW_PATH")?;
+    let registration_magic_word = env_var_string("REGISTRATION_MAGIC_WORD")?;
+    let postgres_db = env_var_string("POSTGRES_DB")?;
+    let postgres_host = env_var_string("POSTGRES_HOST")?;
+    let postgres_user = env_var_string("POSTGRES_USER")?;
+    let postgres_password = env_var_string("POSTGRES_PASSWORD")?;
+    let cookie_secure = env_var_bool("COOKIE_OVER_HTTPS_ONLY")?;
+
 
     let cfg = deadpool_postgres::Config {
         user: Some(String::from(&postgres_user)),
@@ -90,6 +110,10 @@ pub async fn start_server() -> Result<()> {
 
         App::new()
             .data(pool.clone())
+            .data(ServerConfig {
+                registration_magic_word: registration_magic_word.clone(),
+            })
+            .data(web::JsonConfig::default().limit(1024 * 1024))
             .wrap(session_store)
             .wrap(error_handlers)
             .service(api::public_api("/api"))
