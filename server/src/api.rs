@@ -17,6 +17,7 @@
 
 use crate::handler::users;
 use crate::handler::notes;
+use crate::handler::archived_notes;
 
 use actix_files::NamedFile;
 use actix_web::dev;
@@ -38,14 +39,22 @@ pub fn public_api(mount_point: &str) -> actix_web::Scope {
                 .route("", post().to(users::create_user))
                 .route("", get().to(users::get_user)),
         )
-        // ideas
+        // notes
         .service(
             scope("/notes")
                 .route("", post().to(notes::create))
                 .route("", get().to(notes::get_all))
                 .route("/{id}", get().to(notes::get))
                 .route("/{id}", put().to(notes::edit))
-                .route("/{id}", delete().to(notes::delete)),
+                .route("/{id}", delete().to(notes::delete))
+                .route("/{id}/archive", post().to(notes::archive))
+        )
+        // archived notes
+        .service(
+            scope("/archived-notes")
+                .route("", get().to(archived_notes::get_all))
+                .route("/{id}", get().to(archived_notes::get))
+                .route("/{id}", delete().to(archived_notes::delete))
         )
 }
 

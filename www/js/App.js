@@ -4,6 +4,7 @@ import { html, Router, Route, Link, route } from '/lib/preact/mod.js';
 import Net from '/js/Net.js';
 import { useStateValue, StateProvider } from '/js/StateProvider.js';
 
+import { ArchivedNote, ArchivedNotes } from '/js/components/ArchivedNotes.js';
 import { Note, Notes } from '/js/components/Notes.js';
 import { Login, Logout } from '/js/components/Login.js';
 
@@ -65,8 +66,8 @@ function TopBarMenu(props) {
 
   return html`
     <div id='top-bar-menu'>
-      <${Link} class='top-bar-menuitem pigment-inherit' href=${'/'}>Frontpage</${Link}>
-      <${Link} class='top-bar-menuitem pigment-ideas' href=${'/notes'}>Notes</${Link}>
+      <${Link} class='top-bar-menuitem pigment-notes' href=${'/'}>Notes</${Link}>
+      <${Link} class='top-bar-menuitem pigment-archived-notes' href=${'/archived-notes'}>Archive</${Link}>
       <${Link} href=${ loggedLink() } id="login-menuitem" class="pigment-inherit">${ loggedStatus() }</${Link}>
     </div>
 `;
@@ -110,8 +111,10 @@ function AppUI(props) {
       <${Router} onChange=${ handleRoute }>
         <${Login} path="/login" loginCallback=${ loginHandler }/>
         <${Logout} path="/logout" logoutCallback=${ logoutHandler }/>
-        <${Notes} path="/notes"/>
+        <${Notes} path="/"/>
         <${Note} path="/notes/:id"/>
+        <${ArchivedNotes} path="/archived-notes"/>
+        <${ArchivedNote} path="/archived-notes/:id"/>
       </${Router}>
     </div>`;
 }

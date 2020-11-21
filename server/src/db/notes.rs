@@ -32,7 +32,10 @@ struct Note {
     id: Key,
     title: String,
     content: String,
+    archived_at: Option<chrono::DateTime<chrono::Utc>>
 }
+
+//  pub created_at: chrono::DateTime<chrono::Utc>,
 
 #[derive(Debug, Deserialize, PostgresMapper, Serialize)]
 #[pg_mapper(table = "notes")]
@@ -50,6 +53,17 @@ impl From<Note> for interop::Note {
     }
 }
 
+impl From<Note> for interop::ArchivedNote {
+    fn from(n: Note) -> interop::ArchivedNote {
+        interop::ArchivedNote {
+            id: n.id,
+            title: n.title,
+            content: n.content,
+            archived_at: n.archived_at.expect("archived_at is required"),
+        }
+    }
+}
+
 pub(crate) async fn create(
     db_pool: &Pool,
     user_id: Key,
@@ -63,10 +77,19 @@ pub(crate) async fn create(
     .await
 }
 
-pub(crate) async fn all(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::Note>> {
+pub(crate) async fn all_active(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::Note>> {
     pg::many_from::<Note, interop::Note>(
         db_pool,
         include_str!("sql/notes_all.sql"),
+        &[&user_id],
+    )
+    .await
+}
+
+pub(crate) async fn all_archived(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::ArchivedNote>> {
+    pg::many_from::<Note, interop::ArchivedNote>(
+        db_pool,
+        include_str!("sql/archived_notes_all.sql"),
         &[&user_id],
     )
     .await
@@ -76,6 +99,24 @@ pub(crate) async fn get(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<in
     pg::one_from::<Note, interop::Note>(
         db_pool,
         include_str!("sql/notes_get.sql"),
+        &[&user_id, &note_id],
+    )
+    .await
+}
+
+pub(crate) async fn get_archived(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<interop::ArchivedNote> {
+    pg::one_from::<Note, interop::ArchivedNote>(
+        db_pool,
+        include_str!("sql/notes_get.sql"),
+        &[&user_id, &note_id],
+    )
+    .await
+}
+
+pub(crate) async fn archive(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<interop::ArchivedNote> {
+    pg::one_from::<Note, interop::ArchivedNote>(
+        db_pool,
+        include_str!("sql/notes_archive.sql"),
         &[&user_id, &note_id],
     )
     .await

@@ -7,7 +7,8 @@ export const initialState = {
   // },
 
   listing: {
-    notes: undefined
+    notes: undefined,
+    'archived-notes': undefined
   }
 
 };
@@ -40,6 +41,24 @@ export const reducer = (state, action) => {
       }
 
       listing.notes.unshift(action.note);
+
+      let newState = {
+        ...state,
+        listing
+      };
+
+      return newState;
+    }
+  case 'archivedNote':
+    {
+      let listing = { ...state.listing };
+
+      // remove note from listing.notes
+      listing.notes = listing.notes.filter(n => n.id !== action.note.id);
+
+      if (listing['archived-notes']) {
+        listing['archived-notes'].unshift(action.note);
+      }
 
       let newState = {
         ...state,

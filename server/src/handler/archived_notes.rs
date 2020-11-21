@@ -15,58 +15,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use crate::interop::notes as interop;
 use crate::db::notes as db;
 use crate::error::Result;
 use crate::interop::IdParam;
 use crate::session;
-use actix_web::web::{Data, Json, Path};
+use actix_web::web::{Data, Path};
 use actix_web::HttpResponse;
 use deadpool_postgres::Pool;
 
 #[allow(unused_imports)]
 use tracing::info;
 
-pub async fn create(
-    note: Json<interop::ProtoNote>,
-    db_pool: Data<Pool>,
-    session: actix_session::Session,
-) -> Result<HttpResponse> {
-    info!("create");
-
-    let user_id = session::user_id(&session)?;
-    let note = note.into_inner();
-
-    info!("{:?}", &note);
-
-    let note = db::create(&db_pool, user_id, &note).await?;
-
-    Ok(HttpResponse::Ok().json(note))
-}
-
 pub async fn get_all(db_pool: Data<Pool>, session: actix_session::Session) -> Result<HttpResponse> {
     info!("get_all");
 
     let user_id = session::user_id(&session)?;
 
-    let notes = db::all_active(&db_pool, user_id).await?;
+    let archived_notes = db::all_archived(&db_pool, user_id).await?;
 
-    Ok(HttpResponse::Ok().json(notes))
-}
-
-pub async fn archive(
-    db_pool: Data<Pool>,
-    params: Path<IdParam>,
-    session: actix_session::Session,
-) -> Result<HttpResponse> {
-    info!("get note {:?}", params.id);
-
-    let user_id = session::user_id(&session)?;
-    let note_id = params.id;
-
-    let archived_note = db::archive(&db_pool, user_id, note_id).await?;
-
-    Ok(HttpResponse::Ok().json(archived_note))
+    Ok(HttpResponse::Ok().json(archived_notes))
 }
 
 pub async fn get(
@@ -79,26 +46,9 @@ pub async fn get(
     let user_id = session::user_id(&session)?;
     let note_id = params.id;
 
-    let note = db::get(&db_pool, user_id, note_id).await?;
+    let archived_note = db::get_archived(&db_pool, user_id, note_id).await?;
 
-    Ok(HttpResponse::Ok().json(note))
-}
-
-pub async fn edit(
-    note: Json<interop::ProtoNote>,
-    db_pool: Data<Pool>,
-    params: Path<IdParam>,
-    session: actix_session::Session,
-) -> Result<HttpResponse> {
-    info!("edit");
-
-    let user_id = session::user_id(&session)?;
-    let note_id = params.id;
-    let note = note.into_inner();
-
-    let note = db::edit(&db_pool, user_id, &note, note_id).await?;
-
-    Ok(HttpResponse::Ok().json(note))
+    Ok(HttpResponse::Ok().json(archived_note))
 }
 
 pub async fn delete(

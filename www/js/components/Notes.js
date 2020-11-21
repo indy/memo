@@ -8,18 +8,14 @@ import { capitalise } from '/js/JsUtils.js';
 
 function Notes() {
   const [state, dispatch] = useStateValue();
-  const resource = 'notes';
 
-  ensureListingLoaded(resource);
+  ensureListingLoaded('notes');
 
   const notes = state.listing.notes;
-  console.log(notes);
-
-  const listing = buildListing(notes, resource);
+  const listing = notes ? notes.map(n => NoteListItem(n)) : [];
 
   return html`
     <div>
-      <h1>${capitalise(resource)}</h1>
       <${NoteCreateForm} dispatch=${ dispatch }/>
       <ul>
         ${ listing }
@@ -27,6 +23,27 @@ function Notes() {
     </div>`;
 }
 
+function NoteListItem(note) {
+  const [state, dispatch] = useStateValue();
+
+  function onArchiveClicked(e) {
+    e.preventDefault();
+    Net.post(`/api/notes/${ note.id }/archive`, {}).then(archivedNote => {
+      dispatch({
+        type: 'archivedNote',
+        note: archivedNote
+      });
+    });
+  }
+
+  const resource = 'notes';
+  const href = `/${resource}/${note.id}`;
+  return html`<li>
+                <${Link} class="pigment-fg-${resource}" href=${ href }>${ note.title }</${Link}>
+                <p>${ note.content }</p>
+                <button onClick=${ onArchiveClicked }>Archive</button>
+              </li>`;
+}
 
 function noteFromText(text) {
   const lines = text.split("\n");
@@ -58,6 +75,8 @@ function NoteCreateForm({ dispatch }) {
           note
         });
       });
+
+      setUserText('');
     }
   }
 
@@ -69,31 +88,16 @@ function NoteCreateForm({ dispatch }) {
   const submitMessage = "save it";
 
   return html`
-    <form class="quickfind-form" onSubmit=${ onSubmit }>
+    <form class="add-note-form" onSubmit=${ onSubmit }>
       <textarea id="content"
                 type="text"
                 name="content"
                 value=${ userText }
                 onInput=${ handleChangeEvent }/>
+<br/>
       <input type="submit" value=${ submitMessage }/>
     </form>
 `;
-}
-
-function buildListing(list, resource) {
-  if (!list) {
-    return [];
-  }
-
-  return list.map(
-    (note, i) => {
-      const href = `/${resource}/${note.id}`;
-      return html`<li>
-                    <${Link} class="pigment-fg-${resource}" href=${ href }>${ note.title }</${Link}>
-                    <p>${ note.content }</p>
-                  </li>`;
-    }
-  );
 }
 
 function Note({ id }) {

@@ -20,10 +20,16 @@ a:visited.pigment-inherit {
   color: inherit;
 }
 
+.pigment-notes { color: var(--fg-notes); background: var(--bg-notes); }
+.pigment-archived-notes { color: var(--fg-archived-notes); background: var(--bg-archived-notes); }
+
 .pigment-ideas { color: var(--fg-ideas); background: var(--bg-ideas); }
 .pigment-publications { color: var(--fg-publications); background: var(--bg-publications); }
 .pigment-people { color: var(--fg-people); background: var(--bg-people); }
 .pigment-timelines { color: var(--fg-timelines); background: var(--bg-timelines); }
+
+.pigment-fg-notes { color: var(--fg-notes); }
+.pigment-fg-archived-notes { color: var(--fg-archived-notes); }
 
 .pigment-fg-ideas { color: var(--fg-ideas); }
 .pigment-fg-publications { color: var(--fg-publications); }
@@ -111,7 +117,8 @@ section.rolled-up {
 
 /* -------------------------------------------------------------------------------- */
 
-.quickfind-form {
+.add-note-form {
+  padding-top: 1em;
   width: 100%;
 }
 

@@ -22,7 +22,7 @@
 // set this to false when deploying, true when developing js
 var devMode = true;
 
-var CACHE_NAME = "note-20201119";
+var CACHE_NAME = "note-20201121a";
 
 var precacheConfig = [
   "/apple-touch-icon.png",
@@ -41,7 +41,7 @@ var precacheConfig = [
   "/js/svgIcons.js",
   "/js/components/Login.js",
   "/js/components/Notes.js",
-  "/js/components/QuickFindOrCreate.js",
+  "/js/components/ArchivedNotes.js",
 
   "/tufte.css",
   "/lib/preact/hooks.js",

@@ -18,5 +18,7 @@ CREATE TABLE IF NOT EXISTS notes (
     user_id BIGINT NOT NULL REFERENCES users,
 
     title TEXT NOT NULL,
-    content TEXT NOT NULL
+    content TEXT NOT NULL,
+
+    archived_at TIMESTAMPTZ
 );
