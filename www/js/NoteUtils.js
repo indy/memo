@@ -7,30 +7,21 @@ export function ensureListingLoaded(resource, url) {
   const [state, dispatch] = useStateValue();
 
   useEffect(() => {
-    if(!state.deckkindsLoaded[resource]) {
-      fetchDeckListing(dispatch, resource, url);
+    if(!state.listing[resource]) {
+      fetchListing(dispatch, resource, url);
     }
   }, []);
 }
 
-export async function fetchDeckListing(dispatch, resource, url) {
+export async function fetchListing(dispatch, resource, url) {
   const listing = await Net.get(url || `/api/${resource}`);
-  setDeckListing(dispatch, resource, listing);
+  setListing(dispatch, resource, listing);
 }
 
-export function setDeckListing(dispatch, resource, listing) {
+export function setListing(dispatch, resource, listing) {
   dispatch({
-    type: 'setDeckListing',
+    type: 'setListing',
     resource,
     listing
-  });
-}
-
-export function addAutocompleteDeck(dispatch, id, name, resource) {
-  dispatch({
-    type: 'addAutocompleteDeck',
-    id,
-    name,
-    resource
   });
 }

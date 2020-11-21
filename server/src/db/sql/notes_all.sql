@@ -3,4 +3,4 @@ SELECT n.id,
        n.content
 FROM   notes n
 WHERE  n.user_id = $1
-ORDER BY n.id;
+ORDER BY n.id desc;

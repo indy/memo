@@ -6,15 +6,8 @@ export const initialState = {
   //   email: ...
   // },
 
-  cache: {
-    note: {}
-  },
-
-  deckkindsLoaded: {
-    notes: false
-  },
-  deckkindsListing: {
-    notes: []
+  listing: {
+    notes: undefined
   }
 
 };
@@ -26,28 +19,32 @@ export const reducer = (state, action) => {
       ...state,
       user: action.user
     };
-  case 'setDeckListing':
+  case 'setListing':
     {
-      let loaded = { ...state.deckkindsLoaded };
-      loaded[action.resource] = true;
-
-      let listing = {...state.deckkindsListing };
+      let listing = {...state.listing };
       listing[action.resource] = action.listing;
 
       let newState = {
         ...state,
-        deckkindsLoaded: loaded,
-        deckkindsListing: listing
+        listing: listing
       };
 
       return newState;
     }
-  case 'cacheNote':
+  case 'appendNoteToListing':
     {
-      let note = action.newItem;
+      let listing = { ...state.listing };
 
-      let newState = { ...state };
-      newState.cache.note[action.id] = note;
+      if (!listing.notes) {
+        listing.notes = [];
+      }
+
+      listing.notes.unshift(action.note);
+
+      let newState = {
+        ...state,
+        listing
+      };
 
       return newState;
     }
