@@ -122,7 +122,7 @@ p.fakelink {
 
 section > form { width: var(--block-width); }
 
-/* civil: so that the p in civil behaves like the section > p in tufte */
+/* memo: so that the p in memo behaves like the section > p in tufte */
 .note p {
   width: var(--block-width);
 }

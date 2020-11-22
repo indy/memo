@@ -1,6 +1,6 @@
 {
-    "name": "Civil",
-    "short_name": "Civil",
+    "name": "Memo",
+    "short_name": "Memo",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
@@ -13,8 +13,8 @@
             "type": "image/png"
         }
     ],
-    "start_url": "./index.html",
-    "theme_color": "#fffff8",
-    "background_color": "#fffff8",
+    "theme_color": "#ece7db",
+    "background_color": "#ece7db",
+    "start_url": "https://memo.indy.io",
     "display": "standalone"
 }

@@ -106,7 +106,7 @@ function AppUI(props) {
   }
 
   return html`
-    <div id='civil-app'>
+    <div id='memo-app'>
       <${TopBarMenu}/>
       <${Router} onChange=${ handleRoute }>
         <${Login} path="/login" loginCallback=${ loginHandler }/>
