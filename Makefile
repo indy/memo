@@ -13,6 +13,9 @@ MINIFY := $(shell command -v minify 2> /dev/null)
 #
 #   BUILDING
 #
+# 	Build debug server and run
+# 	$ make run
+#
 # 	Build release builds of everything
 # 	$ make release
 #
@@ -22,6 +25,11 @@ MINIFY := $(shell command -v minify 2> /dev/null)
 # 	$ make upload
 #
 ########################################
+
+.PHONY: run
+
+run:
+	cargo run --manifest-path server/Cargo.toml
 
 release: client-dist server-dist systemd-dist
 
