@@ -1,0 +1,7 @@
+[Unit]
+Description=Backup the memo database used by memo.indy.io
+
+[Service]
+User=indy
+Type=simple
+ExecStart=/bin/bash /home/indy/work/memo/systemd/isg-memo-backup.sh

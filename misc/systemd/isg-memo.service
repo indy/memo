@@ -1,0 +1,11 @@
+[Unit]
+Description=Start memo.indy.io
+
+[Service]
+Type=simple
+User=indy
+Group=indy
+ExecStart=/bin/bash /home/indy/work/memo/systemd/isg-memo.sh
+
+[Install]
+WantedBy=multi-user.target
