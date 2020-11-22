@@ -56,7 +56,7 @@ dist/memo_server: $(SERVER_FILES)
 	mkdir -p $(@D)
 	cd server && cargo build --release
 	cp server/target/release/memo_server dist/.
-	cp server/.env.example dist/.
+	cp .env.example dist/.
 	cp -r server/errors dist/.
 
 dist/systemd/isg-memo.sh: $(SYSTEMD_FILES)
