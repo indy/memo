@@ -5,6 +5,10 @@ rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(su
 # check if minify is installed
 MINIFY := $(shell command -v minify 2> /dev/null)
 
+# note: usage of mkdir -p $(@D)
+# $(@D), means "the directory the current target resides in"
+# using it to make sure that a dist directory is created
+
 ########################################
 #
 #   BUILDING
@@ -33,6 +37,7 @@ server-dist: dist/memo_server
 systemd-dist: dist/systemd/isg-memo.sh
 
 dist/www/index.html: $(CLIENT_FILES)
+	mkdir -p $(@D)
 	cp -r www dist/.
 ifdef MINIFY
 	minify -o dist/www/ --match=\.css www
@@ -40,10 +45,12 @@ ifdef MINIFY
 endif
 
 dist/memo_server: $(SERVER_FILES)
+	mkdir -p $(@D)
 	cd server && cargo build --release
 	cp server/target/release/memo_server dist/.
 	cp server/.env.example dist/.
 	cp -r server/errors dist/.
 
 dist/systemd/isg-memo.sh: $(SYSTEMD_FILES)
+	mkdir -p $(@D)
 	cp -r misc/systemd dist/.
