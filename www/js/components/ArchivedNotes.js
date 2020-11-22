@@ -12,17 +12,19 @@ function ArchivedNotes() {
   ensureListingLoaded('archived-notes');
 
   const notes = state.listing['archived-notes'];
-  const listing = notes ? notes.map(n => NoteListItem(n, dispatch)) : [];
+  const listing = notes ? notes.map((n, i) => NoteListItem(n, i)) : [];
 
   return html`
     <div>
-      <ul>
+      <div class="card-holder">
         ${ listing }
-      </ul>
+      </div>
     </div>`;
 }
 
-function NoteListItem(note, dispatch) {
+function NoteListItem(note, i) {
+  // const [state, dispatch] = useStateValue();
+
   function onDeleteClicked(e) {
     e.preventDefault();
     // Net.post(`/api/notes/${ note.id }/archive`, {}).then(archivedNote => {
@@ -30,13 +32,24 @@ function NoteListItem(note, dispatch) {
     // });
   }
 
+  const pigmentNum = (i % 12) + 1;
+  const pigmentClass = pigmentNum < 10 ? `pigment-clock-0${pigmentNum}` : `pigment-clock-${pigmentNum}`;
+
   const resource = 'archived-notes';
   const href = `/${resource}/${note.id}`;
-  return html`<li>
-                <${Link} class="pigment-fg-${resource}" href=${ href }>${ note.title }</${Link}>
-                <p>${ note.content }</p>
-                <button onClick=${ onDeleteClicked }>Delete</button>
-              </li>`;
+
+  return html`<div class="card ${pigmentClass}">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    <${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}>
+                  </h5>
+                  <p class="card-text">${ note.content }</p>
+                  <div class="card-action">
+                    <button onClick=${ onDeleteClicked }>Delete</button>
+                  </div>
+                </div>
+              </div>`;
+
 }
 
 function noteFromText(text) {

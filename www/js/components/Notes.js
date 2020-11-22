@@ -12,18 +12,18 @@ function Notes() {
   ensureListingLoaded('notes');
 
   const notes = state.listing.notes;
-  const listing = notes ? notes.map(n => NoteListItem(n)) : [];
+  const listing = notes ? notes.map((n, i) => NoteListItem(n, i)) : [];
 
   return html`
     <div>
       <${NoteCreateForm} dispatch=${ dispatch }/>
-      <ul>
+      <div class="card-holder">
         ${ listing }
-      </ul>
+      </div>
     </div>`;
 }
 
-function NoteListItem(note) {
+function NoteListItem(note, i) {
   const [state, dispatch] = useStateValue();
 
   function onArchiveClicked(e) {
@@ -36,13 +36,23 @@ function NoteListItem(note) {
     });
   }
 
+  const pigmentNum = (i % 12) + 1;
+  const pigmentClass = pigmentNum < 10 ? `pigment-clock-0${pigmentNum}` : `pigment-clock-${pigmentNum}`;
+
   const resource = 'notes';
   const href = `/${resource}/${note.id}`;
-  return html`<li>
-                <${Link} class="pigment-fg-${resource}" href=${ href }>${ note.title }</${Link}>
-                <p>${ note.content }</p>
-                <button onClick=${ onArchiveClicked }>Archive</button>
-              </li>`;
+
+  return html`<div class="card ${pigmentClass}">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    <${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}>
+                  </h5>
+                  <p class="card-text">${ note.content }</p>
+                  <div class="card-action">
+                    <button onClick=${ onArchiveClicked }>Archive</button>
+                  </div>
+                </div>
+              </div>`;
 }
 
 function noteFromText(text) {
@@ -88,6 +98,7 @@ function NoteCreateForm({ dispatch }) {
   const submitMessage = "save it";
 
   return html`
+  <div class="form-container">
     <form class="add-note-form" onSubmit=${ onSubmit }>
       <textarea id="content"
                 type="text"
@@ -97,6 +108,7 @@ function NoteCreateForm({ dispatch }) {
 <br/>
       <input type="submit" value=${ submitMessage }/>
     </form>
+  </div>
 `;
 }
 

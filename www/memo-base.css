@@ -26,6 +26,34 @@
   --block-width: 55%;
   --block-width-indented: 50%;
 
+  /* clock12: hue 67.1 saturation: 60.2 lightness: 30 */
+  --fg-clock-12: #504529;
+  --fg-clock-01: #424929;
+  --fg-clock-02: #294e28;
+  --fg-clock-03: #2a4d40;
+  --fg-clock-04: #2b4c4a;
+  --fg-clock-05: #2d4b54;
+  --fg-clock-06: #2f4866;
+  --fg-clock-07: #543586;
+  --fg-clock-08: #69306a;
+  --fg-clock-09: #722d55;
+  --fg-clock-10: #7b2a35;
+  --fg-clock-11: #5f3f29;
+
+  /* clock12: hue 67.1 saturation: 60.2 lightness: 90 */
+  --bg-clock-12: #f4e0b2;
+  --bg-clock-01: #d7eb8e;
+  --bg-clock-02: #a7f5a5;
+  --bg-clock-03: #98f4d1;
+  --bg-clock-04: #96f2ed;
+  --bg-clock-05: #c6e7f3;
+  --bg-clock-06: #d9e3f3;
+  --bg-clock-07: #e5dff3;
+  --bg-clock-08: #f3daf3;
+  --bg-clock-09: #f4dce7;
+  --bg-clock-10: #f4ddde;
+  --bg-clock-11: #f4ded3;
+
   --coloured-deck-border-radius: 0.3em;
 }
 
@@ -67,5 +95,34 @@
     /* saturation: 60.2 lightness: 90 */
     --fg-notes: #d9e3f3;             /* clock06 */
     --fg-archived-notes: #f4e0b2;      /* clock12 */
+
+    /* clock12: hue 67.1 saturation: 60.2 lightness: 90 */
+    --fg-clock-12: #f4e0b2;
+    --fg-clock-01: #d7eb8e;
+    --fg-clock-02: #a7f5a5;
+    --fg-clock-03: #98f4d1;
+    --fg-clock-04: #96f2ed;
+    --fg-clock-05: #c6e7f3;
+    --fg-clock-06: #d9e3f3;
+    --fg-clock-07: #e5dff3;
+    --fg-clock-08: #f3daf3;
+    --fg-clock-09: #f4dce7;
+    --fg-clock-10: #f4ddde;
+    --fg-clock-11: #f4ded3;
+
+    /* clock12: hue 67.1 saturation: 60.2 lightness: 30 */
+    --bg-clock-12: #504529;
+    --bg-clock-01: #424929;
+    --bg-clock-02: #294e28;
+    --bg-clock-03: #2a4d40;
+    --bg-clock-04: #2b4c4a;
+    --bg-clock-05: #2d4b54;
+    --bg-clock-06: #2f4866;
+    --bg-clock-07: #543586;
+    --bg-clock-08: #69306a;
+    --bg-clock-09: #722d55;
+    --bg-clock-10: #7b2a35;
+    --bg-clock-11: #5f3f29;
+
   }
 }
