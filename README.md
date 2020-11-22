@@ -2,15 +2,76 @@
 
 A note keeping app
 
-## Server
+## Deploying: 1. upload
+
+$ make upload
+
+## Deploying: 2. setup nginx
+
+    # https://memo.indy.io
+    server {
+        include /home/indy/nginx-conf/indy-io-common.include;
+
+        server_name memo.indy.io;
+        access_log /var/log/memo.indy.io.access.log;
+
+        # proxy all requests to  localhost:3216
+        # https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/
+        location / {
+            proxy_pass http://127.0.0.1:3216/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+        }
+    }
+
+## Deploying: 2. setup database
+
+copy schema.psql onto the server
+
+then on the server:
+
+$ createdb memo
+$ psql < schema.psql
+
+## Deploying: 3. configure .env
+
+$ cd ~/work/memo
+$ cp .env.example .env
+
+update the .env values, making sure of the following:
+1. WWW_PATH should normally be www as opposed to the dev version of ../www
+2. PORT set to same as the nginx server configuration (deploying step 2)
+3. POSTGRES_DB set to the same name as in deploying step 3
+4. POSTGRES_USER and POSTGRES_PASSWORD obviously make sure these are correct
+5. SESSION_SIGNING_KEY make this unique
+
+it's then a good idea to make a backup of this production .env file
+
+## Deploying: 4. systemd setup
+
+$ cd ~/work/memo/systemd
+$ sudo cp isg-memo-backup.service /lib/systemd/system/.
+$ sudo cp isg-memo-backup.timer /lib/systemd/system/.
+$ sudo cp isg-memo.service /lib/systemd/system/.
+
+$ sudo systemctl enable isg-memo
+$ sudo systemctl enable isg-memo-backup.timer
+
+$ sudo systemctl start isg-memo
+$ sudo systemctl start isg-memo-backup.timer
+
+$ sudo systemctl list-units
+$ sudo systemctl list-timers
+
+## (Dev) Server
 
 rename server/.env.example to server/.env and update it for your environment
 
 $ cd server && cargo run
 
-## Deploying
-
-$ make upload
 
 ## (Dev) loading a test database
 

@@ -23,18 +23,8 @@ a:visited.pigment-inherit {
 .pigment-notes { color: var(--fg-notes); background: var(--bg-notes); }
 .pigment-archived-notes { color: var(--fg-archived-notes); background: var(--bg-archived-notes); }
 
-.pigment-ideas { color: var(--fg-ideas); background: var(--bg-ideas); }
-.pigment-publications { color: var(--fg-publications); background: var(--bg-publications); }
-.pigment-people { color: var(--fg-people); background: var(--bg-people); }
-.pigment-timelines { color: var(--fg-timelines); background: var(--bg-timelines); }
-
 .pigment-fg-notes { color: var(--fg-notes); }
 .pigment-fg-archived-notes { color: var(--fg-archived-notes); }
-
-.pigment-fg-ideas { color: var(--fg-ideas); }
-.pigment-fg-publications { color: var(--fg-publications); }
-.pigment-fg-people { color: var(--fg-people); }
-.pigment-fg-timelines { color: var(--fg-timelines); }
 
 .delete-confirmation {
   padding-left: 3em;
@@ -44,111 +34,18 @@ a:visited.pigment-inherit {
 
 /* -------------------------------------------------------------------------------- */
 
-.image-widget-hover-message {
-  font-size: 4em;
-  z-index: -1;                  /* beneath the transparent widget container which used for drag and drop */
-  margin: auto;
-}
-
-.image-widget-hovering {
-  background: rgba(255, 128, 64, 0.2) !important; /* transparent hover region */
-  height:150px;
-  padding: 1em 0 2.5em 0;
-}
-
-.image-widget-container {
-  background: var(--bg2);
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  padding-bottom: 1em;
-}
-
-.image-widget-item {
-  /* flex: 0 0 auto; */
-  padding: 1em 0 1em 1em;
-}
-
-.image-widget-img {
-  height:100%;
-  max-height:150px;
-}
-
-/* -------------------------------------------------------------------------------- */
-
-.civsel-form {
-  width: 100%;
-}
-.civsel-main-box {
-  /* background: #ffffff; */
-}
-.civsel-candidate {
-  background: #ecd2a2;
-  padding: 0.4em;
-  margin: 0.2em;
-  width: max-content;
-  cursor: cell;
-}
-
-.civsel-reference {
-  background: #ecd2a2;
-  padding: 0.4em;
-  margin: 0.2em;
-  width: max-content;
-}
-
-.civsel-delete-selected {
-  cursor: pointer;
-}
-
-.civsel-annotation {
-  width: 30em;
-  margin-left: 1em;
-}
-
-/* -------------------------------------------------------------------------------- */
-
-section.rolled-down {
-}
-
-section.rolled-up {
-  color: var(--fg-inactive);
-}
-
-/* -------------------------------------------------------------------------------- */
-
 .add-note-form {
   padding-top: 1em;
   width: 100%;
 }
 
-.quickfind-candidate {
-  background: #ecd2a2;
-  padding: 0.4em;
-  margin: 0.2em;
-  width: max-content;
-  cursor: pointer;
-}
-
 /* -------------------------------------------------------------------------------- */
-
-.pointform-block label { }
-.pointform-block input { width: 2em; margin-top: 0.3em; }
-.pointform-space-top { margin-top: 1em; }
 
 em:before {
   content: "\00201C";           /* opening double quote: &#8220; converted to hex*/
 }
 em:after {
   content: "\00201D";           /* closing double quote: &#8221; converted to hex*/
-}
-
-.svg-container {
-  width: 80%;
-}
-
-.svg-pseudo-link:hover {
-  cursor: pointer;
 }
 
 .unselectable-text {
@@ -332,28 +229,6 @@ a.top-bar-menuitem {
   border-radius: var(--coloured-deck-border-radius);
 }
 
-.noteref-kind {
-  font-size: 75%;
-  color: var(--fg1);
-  padding-right: 1em;
-}
-
-.noteref {
-  padding: 0.1em 0.5em 0.1em 0.5em;
-  border-radius: var(--coloured-deck-border-radius);
-}
-
-.noteref-annotation {
-  font-family: 'Nothing You Could Do', cursive;
-  padding-bottom: 0.3em;
-  width: 20em;
-  float: right;
-}
-
-.noteref-clearer {
-  clear: both;
-}
-
 blockquote.quote > textarea {
   width: var(--block-width);
   height: 10em;
@@ -374,55 +249,8 @@ hr {
   padding: 0;
 }
 
-.civil-form {
-  font-family: monospace;
-  padding-top: 2em;
-  padding-bottom: 1em;
-}
-
-.civil-add-note-form {
-  font-family: monospace;
-  width: var(--block-width);
-}
-
-.civil-date-hint {
-  color: var(--fg1);
-  float:right;
-  padding-right: 1em;
-}
-
-.civil-date-hint-after {
-  clear: both;
-}
-
-.pointform-checkbox {
-  width: 10%;
-}
-
 #separator {
   width: 10%;
-}
-
-/* --------------------------------------------------------------------------------
-a bunch of hacks so that notes within points look correct
-*/
-/* set .point-notes to match tufte.css:44 */
-.point-notes {
-  font-size: 15px;
-}
-
-div.point-notes > div.note > div > div > p {
-  margin-left: 3em;
-  width: var(--block-width-indented);
-}
-/* -------------------------------------------------------------------------------- */
-
-.point-title {
-  padding-bottom: 1em;
-}
-
-.civil-location input[type=number]{
-  width: 5em;
 }
 
 input:required {
@@ -433,61 +261,4 @@ input:required {
   list-style: none;
   padding-left: 0;
   margin-left: 0;
-}
-
-.deckpoint-block label {}
-.deckpoint-block input { width: 2em; margin-top: 0.3em; margin-left: 2em;}
-
-/* .deckpoint-block label { display: inline-block; width: 12em; text-align: right; } */
-/* .deckpoint-block input { width: 2em; } */
-
-.deckpoint {
-  color: var(--fg1);
-}
-
-.deckpoint a {
-  /* same as the background colour, this is how to hide the underline effect used in tufte.css */
-  background: var(--bg);
-}
-
-.deckpoint-age {
-  display: inline-block;
-  width: 1.5em;
-}
-
-/* compacted list: squish the elements together as comma separated items */
-
-.compacted-list {
-  padding-left: 1.5em;
-}
-
-.compacted-list > li {
-  padding-right: 0.5em;
-  display: inline-block;
-
-}
-
-.compacted-list li:after {
-  content: ", ";
-}
-
-.compacted-list li:last-child:after {
-    content: "";
-}
-
-/* standard list: every element is on a separate line */
-
-.standard-list {
-  padding-left: 1em;
-}
-
-.standard-list > li {
-  list-style-type: none;
-}
-
-.short-description {
-  font-family: 'Nothing You Could Do', cursive;
-  color: var(--scribble);
-  margin-left: 1em;
-  font-size: 1em;
 }
