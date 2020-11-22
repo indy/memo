@@ -15,6 +15,16 @@
     ],
     "theme_color": "#ece7db",
     "background_color": "#ece7db",
-    "start_url": "https://memo.indy.io",
-    "display": "standalone"
+    "start_url": "./index.html",
+    "display": "standalone",
+    "share_target": {
+        "action": "/api/notes/bookmark",
+        "method": "POST",
+        "enctype": "multipart/form-data",
+        "params": {
+            "title": "title",
+            "text": "content",
+            "url": "url"
+        }
+    }
 }

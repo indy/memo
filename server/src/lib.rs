@@ -75,7 +75,6 @@ pub async fn start_server() -> Result<()> {
     let postgres_password = env_var_string("POSTGRES_PASSWORD")?;
     let cookie_secure = env_var_bool("COOKIE_OVER_HTTPS_ONLY")?;
 
-
     let cfg = deadpool_postgres::Config {
         user: Some(String::from(&postgres_user)),
         password: Some(String::from(&postgres_password)),

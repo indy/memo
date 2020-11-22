@@ -32,7 +32,7 @@ struct Note {
     id: Key,
     title: String,
     content: String,
-    archived_at: Option<chrono::DateTime<chrono::Utc>>
+    archived_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 //  pub created_at: chrono::DateTime<chrono::Utc>,
@@ -78,15 +78,14 @@ pub(crate) async fn create(
 }
 
 pub(crate) async fn all_active(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::Note>> {
-    pg::many_from::<Note, interop::Note>(
-        db_pool,
-        include_str!("sql/notes_all.sql"),
-        &[&user_id],
-    )
-    .await
+    pg::many_from::<Note, interop::Note>(db_pool, include_str!("sql/notes_all.sql"), &[&user_id])
+        .await
 }
 
-pub(crate) async fn all_archived(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::ArchivedNote>> {
+pub(crate) async fn all_archived(
+    db_pool: &Pool,
+    user_id: Key,
+) -> Result<Vec<interop::ArchivedNote>> {
     pg::many_from::<Note, interop::ArchivedNote>(
         db_pool,
         include_str!("sql/archived_notes_all.sql"),
@@ -104,7 +103,11 @@ pub(crate) async fn get(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<in
     .await
 }
 
-pub(crate) async fn get_archived(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<interop::ArchivedNote> {
+pub(crate) async fn get_archived(
+    db_pool: &Pool,
+    user_id: Key,
+    note_id: Key,
+) -> Result<interop::ArchivedNote> {
     pg::one_from::<Note, interop::ArchivedNote>(
         db_pool,
         include_str!("sql/notes_get.sql"),
@@ -113,7 +116,11 @@ pub(crate) async fn get_archived(db_pool: &Pool, user_id: Key, note_id: Key) -> 
     .await
 }
 
-pub(crate) async fn archive(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<interop::ArchivedNote> {
+pub(crate) async fn archive(
+    db_pool: &Pool,
+    user_id: Key,
+    note_id: Key,
+) -> Result<interop::ArchivedNote> {
     pg::one_from::<Note, interop::ArchivedNote>(
         db_pool,
         include_str!("sql/notes_archive.sql"),
@@ -122,7 +129,12 @@ pub(crate) async fn archive(db_pool: &Pool, user_id: Key, note_id: Key) -> Resul
     .await
 }
 
-pub(crate) async fn edit(db_pool: &Pool, user_id: Key, note: &interop::ProtoNote, note_id: Key) -> Result<interop::Note> {
+pub(crate) async fn edit(
+    db_pool: &Pool,
+    user_id: Key,
+    note: &interop::ProtoNote,
+    note_id: Key,
+) -> Result<interop::Note> {
     pg::one_from::<Note, interop::Note>(
         db_pool,
         include_str!("sql/notes_edit.sql"),
@@ -131,17 +143,11 @@ pub(crate) async fn edit(db_pool: &Pool, user_id: Key, note: &interop::ProtoNote
     .await
 }
 
-
 pub(crate) async fn delete(db_pool: &Pool, user_id: Key, id: Key) -> Result<()> {
     let mut client: Client = db_pool.get().await.map_err(Error::DeadPool)?;
     let tx = client.transaction().await?;
 
-    pg::zero(
-        &tx,
-        &include_str!("sql/notes_delete.sql"),
-        &[&user_id, &id],
-    )
-    .await?;
+    pg::zero(&tx, &include_str!("sql/notes_delete.sql"), &[&user_id, &id]).await?;
 
     tx.commit().await?;
 

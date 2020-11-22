@@ -15,17 +15,64 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use crate::interop::notes as interop;
 use crate::db::notes as db;
 use crate::error::Result;
+use crate::interop::notes as interop;
 use crate::interop::IdParam;
 use crate::session;
+use actix_multipart::Multipart;
 use actix_web::web::{Data, Json, Path};
-use actix_web::HttpResponse;
+use actix_web::{http, HttpResponse};
+use chrono::{DateTime, Utc};
 use deadpool_postgres::Pool;
+use futures::{StreamExt, TryStreamExt};
 
 #[allow(unused_imports)]
 use tracing::info;
+
+pub async fn bookmark(
+    mut payload: Multipart,
+    db_pool: Data<Pool>,
+    session: actix_session::Session,
+) -> Result<HttpResponse> {
+    info!("bookmark");
+
+    let now: DateTime<Utc> = Utc::now();
+
+    let user_id = session::user_id(&session)?;
+    let mut proto_note = interop::ProtoNote {
+        title: now.format("%F %T").to_string(),
+        content: "".to_string(),
+    };
+
+    // iterate over multipart stream
+    while let Ok(Some(mut field)) = payload.try_next().await {
+        let content_type = field.content_disposition().unwrap();
+        if let Some(name) = content_type.get_name() {
+            while let Some(chunk) = field.next().await {
+                let data = chunk.unwrap();
+                let value = std::str::from_utf8(&data).unwrap();
+
+                if name == "title" {
+                    proto_note.title = value.to_string();
+                }
+                if name == "content" {
+                    proto_note.content = value.to_string();
+                }
+            }
+        }
+    }
+
+    let _note = db::create(&db_pool, user_id, &proto_note).await?;
+
+    Ok(redirect_to("/"))
+}
+
+fn redirect_to(location: &str) -> HttpResponse {
+    HttpResponse::Found()
+        .header(http::header::LOCATION, location)
+        .finish()
+}
 
 pub async fn create(
     note: Json<interop::ProtoNote>,
