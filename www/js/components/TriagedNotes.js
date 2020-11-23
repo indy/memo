@@ -6,12 +6,12 @@ import Net from '/js/Net.js';
 import { ensureListingLoaded } from '/js/NoteUtils.js';
 import { capitalise } from '/js/JsUtils.js';
 
-function ArchivedNotes() {
+function TriagedNotes() {
   const [state, dispatch] = useStateValue();
 
-  ensureListingLoaded('archived-notes');
+  ensureListingLoaded('triaged-notes');
 
-  const notes = state.listing['archived-notes'];
+  const notes = state.listing['triaged-notes'];
   const listing = notes ? notes.map((n, i) => NoteListItem(n, i)) : [];
 
   return html`
@@ -27,15 +27,15 @@ function NoteListItem(note, i) {
 
   function onDeleteClicked(e) {
     e.preventDefault();
-    // Net.post(`/api/notes/${ note.id }/archive`, {}).then(archivedNote => {
-    //   console.log(archivedNote);
+    // Net.post(`/api/notes/${ note.id }/archive`, {}).then(triagedNote => {
+    //   console.log(triagedNote);
     // });
   }
 
   const pigmentNum = (i % 12) + 1;
   const pigmentClass = pigmentNum < 10 ? `pigment-clock-0${pigmentNum}` : `pigment-clock-${pigmentNum}`;
 
-  const resource = 'archived-notes';
+  const resource = 'triaged-notes';
   const href = `/${resource}/${note.id}`;
 
   return html`<div class="card ${pigmentClass}">
@@ -68,7 +68,7 @@ function noteFromText(text) {
   }
 }
 
-function ArchivedNote({ id }) {
+function TriagedNote({ id }) {
   const [state, dispatch] = useStateValue();
 
   function getNoteById(id) {
@@ -85,4 +85,4 @@ function ArchivedNote({ id }) {
     </article>`;
 }
 
-export { ArchivedNotes, ArchivedNote };
+export { TriagedNotes, TriagedNote };

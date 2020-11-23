@@ -31,9 +31,9 @@ pub async fn get_all(db_pool: Data<Pool>, session: actix_session::Session) -> Re
 
     let user_id = session::user_id(&session)?;
 
-    let archived_notes = db::all_archived(&db_pool, user_id).await?;
+    let triaged_notes = db::all_triaged(&db_pool, user_id).await?;
 
-    Ok(HttpResponse::Ok().json(archived_notes))
+    Ok(HttpResponse::Ok().json(triaged_notes))
 }
 
 pub async fn get(
@@ -46,9 +46,9 @@ pub async fn get(
     let user_id = session::user_id(&session)?;
     let note_id = params.id;
 
-    let archived_note = db::get_archived(&db_pool, user_id, note_id).await?;
+    let triaged_note = db::get_triaged(&db_pool, user_id, note_id).await?;
 
-    Ok(HttpResponse::Ok().json(archived_note))
+    Ok(HttpResponse::Ok().json(triaged_note))
 }
 
 pub async fn delete(

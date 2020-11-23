@@ -20,5 +20,5 @@ CREATE TABLE IF NOT EXISTS notes (
     title TEXT NOT NULL,
     content TEXT NOT NULL,
 
-    archived_at TIMESTAMPTZ
+    triaged_at TIMESTAMPTZ
 );

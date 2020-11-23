@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use crate::handler::archived_notes;
+use crate::handler::triaged_notes;
 use crate::handler::notes;
 use crate::handler::users;
 
@@ -48,14 +48,14 @@ pub fn public_api(mount_point: &str) -> actix_web::Scope {
                 .route("/{id}", get().to(notes::get))
                 .route("/{id}", put().to(notes::edit))
                 .route("/{id}", delete().to(notes::delete))
-                .route("/{id}/archive", post().to(notes::archive)),
+                .route("/{id}/triage", post().to(notes::triage)),
         )
-        // archived notes
+        // triaged notes
         .service(
-            scope("/archived-notes")
-                .route("", get().to(archived_notes::get_all))
-                .route("/{id}", get().to(archived_notes::get))
-                .route("/{id}", delete().to(archived_notes::delete)),
+            scope("/triaged-notes")
+                .route("", get().to(triaged_notes::get_all))
+                .route("/{id}", get().to(triaged_notes::get))
+                .route("/{id}", delete().to(triaged_notes::delete)),
         )
 }
 

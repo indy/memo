@@ -18,11 +18,11 @@
 use crate::interop::Key;
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
-pub struct ArchivedNote {
+pub struct TriagedNote {
     pub id: Key,
     pub title: String,
     pub content: String,
-    pub archived_at: chrono::DateTime<chrono::Utc>,
+    pub triaged_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]

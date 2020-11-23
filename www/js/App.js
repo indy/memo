@@ -4,7 +4,7 @@ import { html, Router, Route, Link, route } from '/lib/preact/mod.js';
 import Net from '/js/Net.js';
 import { useStateValue, StateProvider } from '/js/StateProvider.js';
 
-import { ArchivedNote, ArchivedNotes } from '/js/components/ArchivedNotes.js';
+import { TriagedNote, TriagedNotes } from '/js/components/TriagedNotes.js';
 import { Note, Notes } from '/js/components/Notes.js';
 import { Login, Logout } from '/js/components/Login.js';
 
@@ -67,7 +67,7 @@ function TopBarMenu(props) {
   return html`
     <div id='top-bar-menu'>
       <${Link} class='top-bar-menuitem pigment-notes' href=${'/'}>Notes</${Link}>
-      <${Link} class='top-bar-menuitem pigment-archived-notes' href=${'/archived-notes'}>Archive</${Link}>
+      <${Link} class='top-bar-menuitem pigment-triaged-notes' href=${'/triaged-notes'}>Triaged</${Link}>
       <${Link} href=${ loggedLink() } id="login-menuitem" class="pigment-inherit">${ loggedStatus() }</${Link}>
     </div>
 `;
@@ -113,8 +113,8 @@ function AppUI(props) {
         <${Logout} path="/logout" logoutCallback=${ logoutHandler }/>
         <${Notes} path="/"/>
         <${Note} path="/notes/:id"/>
-        <${ArchivedNotes} path="/archived-notes"/>
-        <${ArchivedNote} path="/archived-notes/:id"/>
+        <${TriagedNotes} path="/triaged-notes"/>
+        <${TriagedNote} path="/triaged-notes/:id"/>
       </${Router}>
     </div>`;
 }

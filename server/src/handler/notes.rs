@@ -101,7 +101,7 @@ pub async fn get_all(db_pool: Data<Pool>, session: actix_session::Session) -> Re
     Ok(HttpResponse::Ok().json(notes))
 }
 
-pub async fn archive(
+pub async fn triage(
     db_pool: Data<Pool>,
     params: Path<IdParam>,
     session: actix_session::Session,
@@ -111,9 +111,9 @@ pub async fn archive(
     let user_id = session::user_id(&session)?;
     let note_id = params.id;
 
-    let archived_note = db::archive(&db_pool, user_id, note_id).await?;
+    let triaged_note = db::triage(&db_pool, user_id, note_id).await?;
 
-    Ok(HttpResponse::Ok().json(archived_note))
+    Ok(HttpResponse::Ok().json(triaged_note))
 }
 
 pub async fn get(

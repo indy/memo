@@ -32,7 +32,7 @@ struct Note {
     id: Key,
     title: String,
     content: String,
-    archived_at: Option<chrono::DateTime<chrono::Utc>>,
+    triaged_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 //  pub created_at: chrono::DateTime<chrono::Utc>,
@@ -53,13 +53,13 @@ impl From<Note> for interop::Note {
     }
 }
 
-impl From<Note> for interop::ArchivedNote {
-    fn from(n: Note) -> interop::ArchivedNote {
-        interop::ArchivedNote {
+impl From<Note> for interop::TriagedNote {
+    fn from(n: Note) -> interop::TriagedNote {
+        interop::TriagedNote {
             id: n.id,
             title: n.title,
             content: n.content,
-            archived_at: n.archived_at.expect("archived_at is required"),
+            triaged_at: n.triaged_at.expect("triaged_at is required"),
         }
     }
 }
@@ -82,13 +82,13 @@ pub(crate) async fn all_active(db_pool: &Pool, user_id: Key) -> Result<Vec<inter
         .await
 }
 
-pub(crate) async fn all_archived(
+pub(crate) async fn all_triaged(
     db_pool: &Pool,
     user_id: Key,
-) -> Result<Vec<interop::ArchivedNote>> {
-    pg::many_from::<Note, interop::ArchivedNote>(
+) -> Result<Vec<interop::TriagedNote>> {
+    pg::many_from::<Note, interop::TriagedNote>(
         db_pool,
-        include_str!("sql/archived_notes_all.sql"),
+        include_str!("sql/triaged_notes_all.sql"),
         &[&user_id],
     )
     .await
@@ -103,12 +103,12 @@ pub(crate) async fn get(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<in
     .await
 }
 
-pub(crate) async fn get_archived(
+pub(crate) async fn get_triaged(
     db_pool: &Pool,
     user_id: Key,
     note_id: Key,
-) -> Result<interop::ArchivedNote> {
-    pg::one_from::<Note, interop::ArchivedNote>(
+) -> Result<interop::TriagedNote> {
+    pg::one_from::<Note, interop::TriagedNote>(
         db_pool,
         include_str!("sql/notes_get.sql"),
         &[&user_id, &note_id],
@@ -116,14 +116,14 @@ pub(crate) async fn get_archived(
     .await
 }
 
-pub(crate) async fn archive(
+pub(crate) async fn triage(
     db_pool: &Pool,
     user_id: Key,
     note_id: Key,
-) -> Result<interop::ArchivedNote> {
-    pg::one_from::<Note, interop::ArchivedNote>(
+) -> Result<interop::TriagedNote> {
+    pg::one_from::<Note, interop::TriagedNote>(
         db_pool,
-        include_str!("sql/notes_archive.sql"),
+        include_str!("sql/notes_triage.sql"),
         &[&user_id, &note_id],
     )
     .await

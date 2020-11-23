@@ -26,12 +26,12 @@ function Notes() {
 function NoteListItem(note, i) {
   const [state, dispatch] = useStateValue();
 
-  function onArchiveClicked(e) {
+  function onTriagedClicked(e) {
     e.preventDefault();
-    Net.post(`/api/notes/${ note.id }/archive`, {}).then(archivedNote => {
+    Net.post(`/api/notes/${ note.id }/triage`, {}).then(triagedNote => {
       dispatch({
-        type: 'archivedNote',
-        note: archivedNote
+        type: 'triagedNote',
+        note: triagedNote
       });
     });
   }
@@ -49,7 +49,7 @@ function NoteListItem(note, i) {
                   </h5>
                   <p class="card-text">${ note.content }</p>
                   <div class="card-action">
-                    <button onClick=${ onArchiveClicked }>Archive</button>
+                    <button onClick=${ onTriagedClicked }>Triage</button>
                   </div>
                 </div>
               </div>`;

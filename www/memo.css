@@ -20,10 +20,10 @@ a:visited.pigment-inherit {
 }
 
 .pigment-notes { color: var(--fg-notes); background: var(--bg-notes); }
-.pigment-archived-notes { color: var(--fg-archived-notes); background: var(--bg-archived-notes); }
+.pigment-triaged-notes { color: var(--fg-triaged-notes); background: var(--bg-triaged-notes); }
 
 .pigment-fg-notes { color: var(--fg-notes); }
-.pigment-fg-archived-notes { color: var(--fg-archived-notes); }
+.pigment-fg-triaged-notes { color: var(--fg-triaged-notes); }
 
 .pigment-clock-12 { background: var(--bg-clock-12); color: var(--fg-clock-12);}
 .pigment-clock-01 { background: var(--bg-clock-01); color: var(--fg-clock-01);}
@@ -292,6 +292,14 @@ input:required {
 
 #content {
   width: 100%;
+  background: var(--textarea-bg);
+  color: var(--textarea-fg);
+  border-color: var(--textarea-border);
+}
+
+#content:focus {
+    outline: none !important;
+    box-shadow: 0 0 6px var(--textarea-bg);
 }
 
 .card-holder {
@@ -300,7 +308,7 @@ input:required {
 .card {
   width: 25em;
   margin: 1em;
-  box-shadow: 0px 2px 2px 1px #ddd;
+  box-shadow: 0px 2px 2px 1px var(--card-shadow);
   border-radius: 8px;
   display: inline-block;
   vertical-align: top;
@@ -319,6 +327,6 @@ input:required {
 }
 
 .card-action {
-  border-top: 1px solid rgba(160,160,160,0.2);
+  border-top: 1px solid var(--card-action-divider);
   padding-top: 1em;
 }
