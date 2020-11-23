@@ -97,23 +97,8 @@ p {
   text-align: left;
 }
 
-.scribblenote {
-  font-family: 'Nothing You Could Do', cursive;
-  color: var(--scribble);
-  font-size: 1.5em;
-  text-align: left;
-}
-
 label.margin-toggle {
   color: var(--hyperlink);
-}
-
-.shell-block {
-  padding: 2em 0 2em 2em;
-}
-
-.shell-line {
-  padding: 0.2em 0 0.2em 0;
 }
 
 .invisible { display: none; }
@@ -223,17 +208,6 @@ section > form { width: var(--block-width); }
   font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
 
-mark.highlight {
-  background: var(--highlight);
-}
-
-mark.scribbled-out {
-  background: url(/img/scribble-short.png);
-  background-repeat: repeat-x;
-  background-size: 100% 95%;
-  padding: 8px 0;
-}
-
 a.top-bar-menuitem {
   margin-left: 1em;
   margin-right: 1em;
@@ -309,7 +283,7 @@ input:required {
   width: 25em;
   margin: 1em;
   box-shadow: 0px 2px 2px 1px var(--card-shadow);
-  border-radius: 8px;
+  border-radius: 0.5em;
   display: inline-block;
   vertical-align: top;
 }
@@ -329,4 +303,44 @@ input:required {
 .card-action {
   border-top: 1px solid var(--card-action-divider);
   padding-top: 1em;
+}
+
+.button-delete {
+  float: right;
+}
+
+
+.button{
+  display:inline-block;
+  padding:0.3em 1.2em;
+  margin:0 0.3em 0.3em 0;
+  border-radius:0.5em;
+  box-sizing: border-box;
+  text-decoration:none;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  color: var(--fg);
+  background-color:rgba(0, 0, 0, 0.15);
+  text-align:center;
+  transition: all 0.2s;
+
+  border-width: 0px;
+  box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.05);
+}
+.button:hover{
+  background-color:rgba(0, 0, 0, 0.25);
+}
+@media all and (max-width:30em){
+  .button{
+    display:block;
+    margin:0.2em auto;
+  }
+}
+
+.save-button:enabled {
+  color: var(--save-on-fg);
+  background: var(--save-on-bg);
+}
+.save-button:disabled {
+  color: var(--fg-inactive);
+  background: var(--bg1);
 }

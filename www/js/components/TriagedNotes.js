@@ -23,13 +23,16 @@ function TriagedNotes() {
 }
 
 function NoteListItem(note, i) {
-  // const [state, dispatch] = useStateValue();
+  const [state, dispatch] = useStateValue();
 
   function onDeleteClicked(e) {
     e.preventDefault();
-    // Net.post(`/api/notes/${ note.id }/archive`, {}).then(triagedNote => {
-    //   console.log(triagedNote);
-    // });
+    Net.delete(`/api/notes/${ note.id }`, {}).then(n => {
+      dispatch({
+        type: 'delete-note',
+        note
+      });
+    });
   }
 
   const pigmentNum = (i % 12) + 1;
@@ -45,7 +48,7 @@ function NoteListItem(note, i) {
                   </h5>
                   <p class="card-text">${ note.content }</p>
                   <div class="card-action">
-                    <button onClick=${ onDeleteClicked }>Delete</button>
+                    <button class="button button-delete" onClick=${ onDeleteClicked }>Delete</button>
                   </div>
                 </div>
               </div>`;

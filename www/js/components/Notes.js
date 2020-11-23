@@ -12,7 +12,7 @@ function Notes() {
   ensureListingLoaded('notes');
 
   const notes = state.listing.notes;
-  const listing = notes ? notes.map((n, i) => NoteListItem(n, i)) : [];
+  const listing = notes ? notes.map(n => NoteListItem(n)) : [];
 
   return html`
     <div>
@@ -23,20 +23,30 @@ function Notes() {
     </div>`;
 }
 
-function NoteListItem(note, i) {
+function NoteListItem(note) {
   const [state, dispatch] = useStateValue();
 
   function onTriagedClicked(e) {
     e.preventDefault();
     Net.post(`/api/notes/${ note.id }/triage`, {}).then(triagedNote => {
       dispatch({
-        type: 'triagedNote',
+        type: 'triage-note',
         note: triagedNote
       });
     });
   }
 
-  const pigmentNum = (i % 12) + 1;
+  function onDeleteClicked(e) {
+    e.preventDefault();
+    Net.delete(`/api/notes/${ note.id }`, {}).then(n => {
+      dispatch({
+        type: 'delete-note',
+        note
+      });
+    });
+  }
+
+  const pigmentNum = (note.id % 12) + 1;
   const pigmentClass = pigmentNum < 10 ? `pigment-clock-0${pigmentNum}` : `pigment-clock-${pigmentNum}`;
 
   const resource = 'notes';
@@ -49,7 +59,8 @@ function NoteListItem(note, i) {
                   </h5>
                   <p class="card-text">${ note.content }</p>
                   <div class="card-action">
-                    <button onClick=${ onTriagedClicked }>Triage</button>
+                    <button class="button" onClick=${ onTriagedClicked }>Triage</button>
+                    <button class="button button-delete" onClick=${ onDeleteClicked }>Delete</button>
                   </div>
                 </div>
               </div>`;
@@ -81,7 +92,7 @@ function NoteCreateForm({ dispatch }) {
     if (protoNote) {
       Net.post(`/api/notes`, protoNote).then(note => {
         dispatch({
-          type: 'appendNoteToListing',
+          type: 'append-note-to-listing',
           note
         });
       });
@@ -95,21 +106,23 @@ function NoteCreateForm({ dispatch }) {
     setUserText(newUserText);
   };
 
-  const submitMessage = "save it";
+  const submitMessage = "Save";
+  const disabled = userText.trim().length === 0;
 
-  return html`
-  <div class="form-container">
-    <form class="add-note-form" onSubmit=${ onSubmit }>
-      <textarea id="content"
-                type="text"
-                name="content"
-                value=${ userText }
-                onInput=${ handleChangeEvent }/>
-<br/>
-      <input type="submit" value=${ submitMessage }/>
-    </form>
-  </div>
-`;
+  return html`<div class="form-container">
+                <form class="add-note-form" onSubmit=${ onSubmit }>
+                  <textarea id="content"
+                            type="text"
+                            name="content"
+                            value=${ userText }
+                            onInput=${ handleChangeEvent }/>
+                  <br/>
+                  <input class="button save-button"
+                         type="submit"
+                         value=${ submitMessage }
+                         disabled=${ disabled }/>
+                </form>
+              </div>`;
 }
 
 function Note({ id }) {

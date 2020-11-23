@@ -17,7 +17,7 @@ export async function buildInitialState() {
       // update initial state with user
       //
       let state = reducer(initialState, {
-        type: 'setUser',
+        type: 'set-user',
         user
       });
 
@@ -76,30 +76,11 @@ function TopBarMenu(props) {
 function AppUI(props) {
   const [state, dispatch] = useStateValue();
 
-  async function loginHandler(user) {
-    console.log(user);
-
-    dispatch({
-      type: 'setUser',
-      user
-    });
-
-    route('/', true);
-
-  }
-
-  function logoutHandler() {
-    dispatch({
-      type: 'setUser',
-      user: undefined
-    });
-    route('/login', true);
-  }
-
   function handleRoute(e) {
     if (e.url !== '/login') {
       // all other pages require the user to be logged in
       if (!state.user) {
+        console.log("redirecting to /login because user is not logged in");
         route('/login', true);
       }
     }
@@ -109,12 +90,12 @@ function AppUI(props) {
     <div id='memo-app'>
       <${TopBarMenu}/>
       <${Router} onChange=${ handleRoute }>
-        <${Login} path="/login" loginCallback=${ loginHandler }/>
-        <${Logout} path="/logout" logoutCallback=${ logoutHandler }/>
         <${Notes} path="/"/>
         <${Note} path="/notes/:id"/>
         <${TriagedNotes} path="/triaged-notes"/>
         <${TriagedNote} path="/triaged-notes/:id"/>
+        <${Login} path="/login"/>
+        <${Logout} path="/logout"/>
       </${Router}>
     </div>`;
 }

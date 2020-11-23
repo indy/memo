@@ -15,12 +15,12 @@ export const initialState = {
 
 export const reducer = (state, action) => {
   switch (action.type) {
-  case 'setUser':
+  case 'set-user':
     return {
       ...state,
       user: action.user
     };
-  case 'setListing':
+  case 'set-listing':
     {
       let listing = {...state.listing };
       listing[action.resource] = action.listing;
@@ -32,7 +32,7 @@ export const reducer = (state, action) => {
 
       return newState;
     }
-  case 'appendNoteToListing':
+  case 'append-note-to-listing':
     {
       let listing = { ...state.listing };
 
@@ -49,12 +49,12 @@ export const reducer = (state, action) => {
 
       return newState;
     }
-  case 'triagedNote':
+  case 'triage-note':
     {
       let listing = { ...state.listing };
 
       // remove note from listing.notes
-      listing.notes = listing.notes.filter(n => n.id !== action.note.id);
+      listing.notes = removeNoteFromArray(listing.notes, action.note.id);
 
       if (listing['triaged-notes']) {
         listing['triaged-notes'].unshift(action.note);
@@ -67,7 +67,26 @@ export const reducer = (state, action) => {
 
       return newState;
     }
+  case 'delete-note':
+    {
+      let listing = { ...state.listing };
+
+      // remove note from listing.notes
+      listing.notes = removeNoteFromArray(listing.notes, action.note.id);
+      listing['triaged-notes'] = removeNoteFromArray(listing['triaged-notes'], action.note.id);
+
+      let newState = {
+        ...state,
+        listing
+      };
+
+      return newState;
+    }
   default:
     return state;
   }
 };
+
+function removeNoteFromArray(array, noteId) {
+  return array ? array.filter(n => n.id !== noteId) : array;
+}

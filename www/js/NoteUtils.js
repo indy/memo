@@ -20,7 +20,7 @@ export async function fetchListing(dispatch, resource, url) {
 
 export function setListing(dispatch, resource, listing) {
   dispatch({
-    type: 'setListing',
+    type: 'set-listing',
     resource,
     listing
   });

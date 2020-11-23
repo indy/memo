@@ -1,8 +1,15 @@
-import { html, useState } from '/lib/preact/mod.js';
+import { html, route, useState } from '/lib/preact/mod.js';
+import { useStateValue } from '/js/StateProvider.js';
 
 import Net from '/js/Net.js';
 
-function Login({ loginCallback }) {
+function Login() {
+  const [appState, dispatch] = useStateValue();
+
+  if (appState.user) {
+    route('/', true);
+  };
+
   const [state, setState] = useState({
     'login-email': '',
     'login-password': '',
@@ -23,15 +30,23 @@ function Login({ loginCallback }) {
     setState(newState);
   };
 
+  function loginCallback(user) {
+    dispatch({
+      type: 'set-user',
+      user
+    });
+    // once the state has a user, the Login page will redirect to '/'
+  }
+
   function handleLoginSubmit(event) {
+    event.preventDefault();
+
     Net.post('api/auth', {
       email: state['login-email'],
       password: state['login-password']
     }).then(user => {
       loginCallback(user);
     });
-
-    event.preventDefault();
   };
 
   function okToSendRegistration() {
@@ -112,10 +127,31 @@ function Login({ loginCallback }) {
     </section>`;
 }
 
-function Logout({ logoutCallback }) {
+function Logout() {
+  const [state, dispatch] = useStateValue();
+
+  // actix session.purge should be fixed in master:
+  // - https://github.com/actix/actix-extras/issues/87
+  // - https://github.com/actix/actix-extras/pull/129/commits/fff0b682f11f62d5ebb99f048e547c7e0b3ffa93
+
+  // https://stackoverflow.com/questions/5285940/correct-way-to-delete-cookies-server-side
+  // https://stackoverflow.com/questions/10593013/delete-cookie-by-name
+
+  function delete_cookie(name) {
+    document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  }
   const handleLogout = (event) => {
     Net.delete('api/auth', {}).then(() => {
-      logoutCallback();
+      //// this isn't logging out the user, refreshing the app logs the user back in
+
+      // failed attempt at clearing cookies client side
+      delete_cookie("auth");
+
+      dispatch({
+        type: 'set-user',
+        user: undefined
+      });
+      route('/login', true);
     });
     event.preventDefault();
   };

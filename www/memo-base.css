@@ -12,12 +12,14 @@
   --textarea-fg: rgb(15, 12, 10);
   --textarea-border: #fffff8;
 
+  /* clock12: hue 67, saturation: 70 lightness: 80 */
+  --save-on-bg: #6fdd6b;        /* clock02 */
+  --save-on-fg: var(--fg);
+
   --card-action-divider: rgba(160,160,160,0.2);
   --card-shadow: #ddd;
   --divider: #ccc;
-  --highlight: #ebe900;         /* hue: 85 sat:100 light:90*/
   --hyperlink: #5279a8;         /* clock06 saturation: 60.2 lightness: 50 */
-  --scribble: #007bc7;          /* clock06 saturation: 100.0 lightness: 50 */
 
   /* clock12: hue 52, saturation: 60.2 lightness: 90 */
   --bg-notes: #b0ecf3;             /* clock05 */
@@ -91,12 +93,14 @@
     --textarea-fg: #a6a8aa;
     --textarea-border: #12181C;
 
+    /* clock12: hue 67, saturation: 70 lightness: 60 */
+    --save-on-bg: #4fa24c;        /* clock02 */
+    --save-on-fg: var(--bg1);
+
     --card-action-divider: rgba(10,10,10,0.2);
     --card-shadow: #222;
     --divider: #444;
-    --highlight: #ebe900;         /* hue: 85 sat:100 light:90*/
     --hyperlink: #5279a8;         /* clock06 saturation: 60.2 lightness: 50 */
-    --scribble: #007bc7;          /* clock06 saturation: 100.0 lightness: 50 */
 
     /* saturation: 60.2 lightness: 50 */
     --bg-notes: #5279a8;             /* clock06 */
