@@ -132,21 +132,9 @@ function Logout() {
 
   // actix session.purge should be fixed in master:
   // - https://github.com/actix/actix-extras/issues/87
-  // - https://github.com/actix/actix-extras/pull/129/commits/fff0b682f11f62d5ebb99f048e547c7e0b3ffa93
 
-  // https://stackoverflow.com/questions/5285940/correct-way-to-delete-cookies-server-side
-  // https://stackoverflow.com/questions/10593013/delete-cookie-by-name
-
-  function delete_cookie(name) {
-    document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-  }
   const handleLogout = (event) => {
     Net.delete('api/auth', {}).then(() => {
-      //// this isn't logging out the user, refreshing the app logs the user back in
-
-      // failed attempt at clearing cookies client side
-      delete_cookie("auth");
-
       dispatch({
         type: 'set-user',
         user: undefined
