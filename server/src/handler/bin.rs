@@ -20,8 +20,9 @@ use crate::error::Result;
 use crate::interop::IdParam;
 use crate::session;
 use actix_web::web::{Data, Path};
-use actix_web::HttpResponse;
+use actix_web::{HttpResponse};
 use deadpool_postgres::Pool;
+
 
 #[allow(unused_imports)]
 use tracing::info;
@@ -31,9 +32,19 @@ pub async fn get_all(db_pool: Data<Pool>, session: actix_session::Session) -> Re
 
     let user_id = session::user_id(&session)?;
 
-    let triaged_notes = db::all_triaged(&db_pool, user_id).await?;
+    let notes = db::all_binned(&db_pool, user_id).await?;
 
-    Ok(HttpResponse::Ok().json(triaged_notes))
+    Ok(HttpResponse::Ok().json(notes))
+}
+
+pub async fn delete_all(db_pool: Data<Pool>, session: actix_session::Session) -> Result<HttpResponse> {
+    info!("delete_all");
+
+    let user_id = session::user_id(&session)?;
+
+    db::delete_all(&db_pool, user_id).await?;
+
+    Ok(HttpResponse::Ok().json(true))
 }
 
 pub async fn get(
@@ -46,22 +57,21 @@ pub async fn get(
     let user_id = session::user_id(&session)?;
     let note_id = params.id;
 
-    let triaged_note = db::get_triaged(&db_pool, user_id, note_id).await?;
+    let note = db::get(&db_pool, user_id, note_id).await?;
 
-    Ok(HttpResponse::Ok().json(triaged_note))
+    Ok(HttpResponse::Ok().json(note))
 }
 
-pub async fn bin(
+pub async fn delete(
     db_pool: Data<Pool>,
     params: Path<IdParam>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
-    info!("bin triaged note {:?}", params.id);
+    info!("delete");
 
     let user_id = session::user_id(&session)?;
-    let note_id = params.id;
 
-    let binned_note = db::bin(&db_pool, user_id, note_id).await?;
+    db::delete(&db_pool, user_id, params.id).await?;
 
-    Ok(HttpResponse::Ok().json(binned_note))
+    Ok(HttpResponse::Ok().json(true))
 }

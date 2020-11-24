@@ -106,7 +106,7 @@ pub async fn triage(
     params: Path<IdParam>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
-    info!("get note {:?}", params.id);
+    info!("triage note {:?}", params.id);
 
     let user_id = session::user_id(&session)?;
     let note_id = params.id;
@@ -114,6 +114,21 @@ pub async fn triage(
     let triaged_note = db::triage(&db_pool, user_id, note_id).await?;
 
     Ok(HttpResponse::Ok().json(triaged_note))
+}
+
+pub async fn bin(
+    db_pool: Data<Pool>,
+    params: Path<IdParam>,
+    session: actix_session::Session,
+) -> Result<HttpResponse> {
+    info!("bin note {:?}", params.id);
+
+    let user_id = session::user_id(&session)?;
+    let note_id = params.id;
+
+    let binned_note = db::bin(&db_pool, user_id, note_id).await?;
+
+    Ok(HttpResponse::Ok().json(binned_note))
 }
 
 pub async fn get(
@@ -146,18 +161,4 @@ pub async fn edit(
     let note = db::edit(&db_pool, user_id, &note, note_id).await?;
 
     Ok(HttpResponse::Ok().json(note))
-}
-
-pub async fn delete(
-    db_pool: Data<Pool>,
-    params: Path<IdParam>,
-    session: actix_session::Session,
-) -> Result<HttpResponse> {
-    info!("delete");
-
-    let user_id = session::user_id(&session)?;
-
-    db::delete(&db_pool, user_id, params.id).await?;
-
-    Ok(HttpResponse::Ok().json(true))
 }

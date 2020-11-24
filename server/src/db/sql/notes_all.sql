@@ -3,5 +3,5 @@ SELECT n.id,
        n.content,
        n.triaged_at
 FROM   notes n
-WHERE  n.user_id = $1 and n.triaged_at is null
+WHERE  n.user_id = $1 and n.triaged_at is null and n.deleted_at is null
 ORDER BY n.id desc;

@@ -8,10 +8,24 @@ export const initialState = {
 
   listing: {
     notes: undefined,
-    'triaged-notes': undefined
+    'triaged-notes': undefined,
+    bin: undefined
   }
 
 };
+
+function getListingFromState(state) {
+  let listing = { ...state.listing };
+  return listing;
+}
+function updateStateWithListing(state, listing) {
+  let newState = {
+    ...state,
+    listing
+  };
+
+  return newState;
+}
 
 export const reducer = (state, action) => {
   switch (action.type) {
@@ -22,19 +36,15 @@ export const reducer = (state, action) => {
     };
   case 'set-listing':
     {
-      let listing = {...state.listing };
+      let listing = getListingFromState(state);
+
       listing[action.resource] = action.listing;
 
-      let newState = {
-        ...state,
-        listing: listing
-      };
-
-      return newState;
+      return updateStateWithListing(state, listing);
     }
   case 'append-note-to-listing':
     {
-      let listing = { ...state.listing };
+      let listing = getListingFromState(state);
 
       if (!listing.notes) {
         listing.notes = [];
@@ -42,16 +52,11 @@ export const reducer = (state, action) => {
 
       listing.notes.unshift(action.note);
 
-      let newState = {
-        ...state,
-        listing
-      };
-
-      return newState;
+      return updateStateWithListing(state, listing);
     }
   case 'triage-note':
     {
-      let listing = { ...state.listing };
+      let listing = getListingFromState(state);
 
       // remove note from listing.notes
       listing.notes = removeNoteFromArray(listing.notes, action.note.id);
@@ -60,27 +65,36 @@ export const reducer = (state, action) => {
         listing['triaged-notes'].unshift(action.note);
       }
 
-      let newState = {
-        ...state,
-        listing
-      };
-
-      return newState;
+      return updateStateWithListing(state, listing);
     }
-  case 'delete-note':
+  case 'bin-note':
     {
-      let listing = { ...state.listing };
+      let listing = getListingFromState(state);
 
-      // remove note from listing.notes
       listing.notes = removeNoteFromArray(listing.notes, action.note.id);
       listing['triaged-notes'] = removeNoteFromArray(listing['triaged-notes'], action.note.id);
 
-      let newState = {
-        ...state,
-        listing
-      };
+      if (listing.bin) {
+        listing.bin.unshift(action.note);
+      }
 
-      return newState;
+      return updateStateWithListing(state, listing);
+    }
+  case 'delete-note':
+    {
+      let listing = getListingFromState(state);
+
+      listing.bin = removeNoteFromArray(listing.bin, action.note.id);
+
+      return updateStateWithListing(state, listing);
+    }
+  case 'empty-bin':
+    {
+      let listing = getListingFromState(state);
+
+      listing.bin = [];
+
+      return updateStateWithListing(state, listing);
     }
   default:
     return state;

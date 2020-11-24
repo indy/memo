@@ -9,15 +9,27 @@ import { capitalise } from '/js/JsUtils.js';
 function Bin() {
   const [state, dispatch] = useStateValue();
 
-  //  ensureListingLoaded('notes');
+  ensureListingLoaded('bin');
 
-
-  //  const notes = state.listing.notes;
-  const notes = [];
+  const notes = state.listing.bin;
   const listing = notes ? notes.map(n => NoteListItem(n)) : [];
+
+
+  function onDeleteClicked(e) {
+    e.preventDefault();
+
+    Net.delete(`/api/bin`, {}).then(() => {
+      dispatch({
+        type: 'empty-bin'
+      });
+    });
+  }
 
   return html`
     <div>
+      <div>
+        <h2 class="button" onClick=${ onDeleteClicked }>Really Delete All</h2>
+      </div>
       <div class="card-holder">
         ${ listing }
       </div>
@@ -27,19 +39,20 @@ function Bin() {
 function NoteListItem(note) {
   const [state, dispatch] = useStateValue();
 
-  function onTriagedClicked(e) {
-    e.preventDefault();
-    Net.post(`/api/notes/${ note.id }/triage`, {}).then(triagedNote => {
-      dispatch({
-        type: 'triage-note',
-        note: triagedNote
-      });
-    });
-  }
+  // function onTriagedClicked(e) {
+  //   e.preventDefault();
+  //   Net.post(`/api/notes/${ note.id }/triage`, {}).then(triagedNote => {
+  //     dispatch({
+  //       type: 'triage-note',
+  //       note: triagedNote
+  //     });
+  //   });
+  // }
+//                    <button class="button" onClick=${ onTriagedClicked }>Triage</button>
 
   function onDeleteClicked(e) {
     e.preventDefault();
-    Net.delete(`/api/notes/${ note.id }`, {}).then(n => {
+    Net.delete(`/api/bin/${ note.id }`, {}).then(n => {
       dispatch({
         type: 'delete-note',
         note
@@ -58,8 +71,7 @@ function NoteListItem(note) {
                   <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
                   <p>${ note.content }</p>
                   <div class="card-action">
-                    <button class="button" onClick=${ onTriagedClicked }>Triage</button>
-                    <button class="button button-delete" onClick=${ onDeleteClicked }>Delete</button>
+                    <button class="button button-delete" onClick=${ onDeleteClicked }>Really Delete</button>
                   </div>
                 </div>
               </div>`;

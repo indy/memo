@@ -22,7 +22,7 @@
 // set this to false when deploying, true when developing js
 var devMode = true;
 
-var CACHE_NAME = "memo-20201123c";
+var CACHE_NAME = "memo-20201124";
 
 var precacheConfig = [
   "/memo.css",
@@ -37,6 +37,7 @@ var precacheConfig = [
   "/js/StateProvider.js",
   "/js/svgIcons.js",
   "/js/components/Login.js",
+  "/js/components/Bin.js",
   "/js/components/Notes.js",
   "/js/components/TriagedNotes.js",
 

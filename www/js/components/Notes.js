@@ -38,9 +38,9 @@ function NoteListItem(note) {
 
   function onDeleteClicked(e) {
     e.preventDefault();
-    Net.delete(`/api/notes/${ note.id }`, {}).then(n => {
+    Net.post(`/api/notes/${ note.id }/bin`, {}).then(n => {
       dispatch({
-        type: 'delete-note',
+        type: 'bin-note',
         note
       });
     });

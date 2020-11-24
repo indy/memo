@@ -82,6 +82,11 @@ pub(crate) async fn all_active(db_pool: &Pool, user_id: Key) -> Result<Vec<inter
         .await
 }
 
+pub(crate) async fn all_binned(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::Note>> {
+    pg::many_from::<Note, interop::Note>(db_pool, include_str!("sql/binned_notes_all.sql"), &[&user_id])
+        .await
+}
+
 pub(crate) async fn all_triaged(
     db_pool: &Pool,
     user_id: Key,
@@ -129,6 +134,19 @@ pub(crate) async fn triage(
     .await
 }
 
+pub(crate) async fn bin(
+    db_pool: &Pool,
+    user_id: Key,
+    note_id: Key,
+) -> Result<interop::Note> {
+    pg::one_from::<Note, interop::Note>(
+        db_pool,
+        include_str!("sql/notes_bin.sql"),
+        &[&user_id, &note_id],
+    )
+    .await
+}
+
 pub(crate) async fn edit(
     db_pool: &Pool,
     user_id: Key,
@@ -148,6 +166,17 @@ pub(crate) async fn delete(db_pool: &Pool, user_id: Key, id: Key) -> Result<()> 
     let tx = client.transaction().await?;
 
     pg::zero(&tx, &include_str!("sql/notes_delete.sql"), &[&user_id, &id]).await?;
+
+    tx.commit().await?;
+
+    Ok(())
+}
+
+pub(crate) async fn delete_all(db_pool: &Pool, user_id: Key) -> Result<()> {
+    let mut client: Client = db_pool.get().await.map_err(Error::DeadPool)?;
+    let tx = client.transaction().await?;
+
+    pg::zero(&tx, &include_str!("sql/notes_delete_all.sql"), &[&user_id]).await?;
 
     tx.commit().await?;
 

@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+use crate::handler::bin;
 use crate::handler::triaged_notes;
 use crate::handler::notes;
 use crate::handler::users;
@@ -47,16 +48,25 @@ pub fn public_api(mount_point: &str) -> actix_web::Scope {
                 .route("", get().to(notes::get_all))
                 .route("/{id}", get().to(notes::get))
                 .route("/{id}", put().to(notes::edit))
-                .route("/{id}", delete().to(notes::delete))
-                .route("/{id}/triage", post().to(notes::triage)),
+                .route("/{id}/triage", post().to(notes::triage))
+                .route("/{id}/bin", post().to(notes::bin)),
         )
         // triaged notes
         .service(
             scope("/triaged-notes")
                 .route("", get().to(triaged_notes::get_all))
                 .route("/{id}", get().to(triaged_notes::get))
-                .route("/{id}", delete().to(triaged_notes::delete)),
+                .route("/{id}/bin", post().to(triaged_notes::bin)),
         )
+        // binned notes
+        .service(
+            scope("/bin")
+                .route("", get().to(bin::get_all))
+                .route("", delete().to(bin::delete_all))
+                .route("/{id}", get().to(bin::get))
+                .route("/{id}", delete().to(bin::delete)),
+        )
+
 }
 
 pub fn bad_request<B>(res: dev::ServiceResponse<B>) -> actix_web::Result<ErrorHandlerResponse<B>> {
