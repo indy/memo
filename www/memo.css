@@ -32,12 +32,12 @@
 
   /* clock12: hue 52, saturation: 60.2 lightness: 90 */
   --bg-notes: #b0ecf3;             /* clock05 */
-  --bg-triaged-notes: #bef18e;    /* clock02 */
+  --bg-triaged: #bef18e;    /* clock02 */
   --bg-bin: #ebddf3;    /* clock08 */
 
   /* clock12: hue 52, saturation: 60.2 lightness: 50 */
   --fg-notes: #4d7e84;             /* clock05 */
-  --fg-triaged-notes: #627f48;      /* clock02 */
+  --fg-triaged: #627f48;      /* clock02 */
   --fg-bin: #a257c1;      /* clock08 */
 
   --body-width: 80%;
@@ -115,12 +115,12 @@
 
     /* hue: 67.1 saturation: 60.2 lightness: 50 */
     --bg-notes: #5279a8;             /* clock06 */
-    --bg-triaged-notes: #867548;      /* clock12 */
+    --bg-triaged: #867548;      /* clock12 */
     --bg-bin: #498348;    /* clock02 */
 
     /* hue: 67.1 saturation: 60.2 lightness: 90 */
     --fg-notes: #d9e3f3;             /* clock06 */
-    --fg-triaged-notes: #f4e0b2;      /* clock12 */
+    --fg-triaged: #f4e0b2;      /* clock12 */
     --fg-bin: #a7f5a5;      /* clock02 */
 
     /* clock12: hue 67.1 saturation: 60.2 lightness: 90 */
@@ -426,11 +426,11 @@ a:visited.pigment-inherit {
 }
 
 .pigment-notes { color: var(--fg-notes); background: var(--bg-notes); }
-.pigment-triaged-notes { color: var(--fg-triaged-notes); background: var(--bg-triaged-notes); }
+.pigment-triaged { color: var(--fg-triaged); background: var(--bg-triaged); }
 .pigment-bin { color: var(--fg-bin); background: var(--bg-bin); }
 
 .pigment-fg-notes { color: var(--fg-notes); }
-.pigment-fg-triaged-notes { color: var(--fg-triaged-notes); }
+.pigment-fg-triaged { color: var(--fg-triaged); }
 .pigment-fg-bin { color: var(--fg-bin); }
 
 .pigment-clock-12 { background: var(--bg-clock-12); color: var(--fg-clock-12);}

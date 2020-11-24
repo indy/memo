@@ -9,9 +9,9 @@ import { capitalise } from '/js/JsUtils.js';
 function TriagedNotes() {
   const [state, dispatch] = useStateValue();
 
-  ensureListingLoaded('triaged-notes');
+  ensureListingLoaded('triaged');
 
-  const notes = state.listing['triaged-notes'];
+  const notes = state.listing.triaged;
   const listing = notes ? notes.map((n, i) => NoteListItem(n, i)) : [];
 
   return html`
@@ -27,7 +27,7 @@ function NoteListItem(note, i) {
 
   function onDeleteClicked(e) {
     e.preventDefault();
-    Net.post(`/api/triaged-notes/${ note.id }/bin`, {}).then(n => {
+    Net.post(`/api/triaged/${ note.id }/bin`, {}).then(n => {
       dispatch({
         type: 'bin-note',
         note
@@ -38,7 +38,7 @@ function NoteListItem(note, i) {
   const pigmentNum = (i % 12) + 1;
   const pigmentClass = pigmentNum < 10 ? `pigment-clock-0${pigmentNum}` : `pigment-clock-${pigmentNum}`;
 
-  const resource = 'triaged-notes';
+  const resource = 'triaged';
   const href = `/${resource}/${note.id}`;
 
   return html`<div class="card ${pigmentClass}">

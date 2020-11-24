@@ -16,7 +16,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use crate::handler::bin;
-use crate::handler::triaged_notes;
+use crate::handler::triaged;
 use crate::handler::notes;
 use crate::handler::users;
 
@@ -53,10 +53,10 @@ pub fn public_api(mount_point: &str) -> actix_web::Scope {
         )
         // triaged notes
         .service(
-            scope("/triaged-notes")
-                .route("", get().to(triaged_notes::get_all))
-                .route("/{id}", get().to(triaged_notes::get))
-                .route("/{id}/bin", post().to(triaged_notes::bin)),
+            scope("/triaged")
+                .route("", get().to(triaged::get_all))
+                .route("/{id}", get().to(triaged::get))
+                .route("/{id}/bin", post().to(triaged::bin)),
         )
         // binned notes
         .service(

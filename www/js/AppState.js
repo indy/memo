@@ -1,31 +1,12 @@
 export const initialState = {
   user: undefined,
-  // when a user is logged in:
-  // user: {
-  //   username: ...
-  //   email: ...
-  // },
-
   listing: {
     notes: undefined,
-    'triaged-notes': undefined,
+    triaged: undefined,
     bin: undefined
   }
 
 };
-
-function getListingFromState(state) {
-  let listing = { ...state.listing };
-  return listing;
-}
-function updateStateWithListing(state, listing) {
-  let newState = {
-    ...state,
-    listing
-  };
-
-  return newState;
-}
 
 export const reducer = (state, action) => {
   switch (action.type) {
@@ -61,8 +42,8 @@ export const reducer = (state, action) => {
       // remove note from listing.notes
       listing.notes = removeNoteFromArray(listing.notes, action.note.id);
 
-      if (listing['triaged-notes']) {
-        listing['triaged-notes'].unshift(action.note);
+      if (listing.triaged) {
+        listing.triaged.unshift(action.note);
       }
 
       return updateStateWithListing(state, listing);
@@ -72,7 +53,7 @@ export const reducer = (state, action) => {
       let listing = getListingFromState(state);
 
       listing.notes = removeNoteFromArray(listing.notes, action.note.id);
-      listing['triaged-notes'] = removeNoteFromArray(listing['triaged-notes'], action.note.id);
+      listing.triaged = removeNoteFromArray(listing.triaged, action.note.id);
 
       if (listing.bin) {
         listing.bin.unshift(action.note);
@@ -103,4 +84,18 @@ export const reducer = (state, action) => {
 
 function removeNoteFromArray(array, noteId) {
   return array ? array.filter(n => n.id !== noteId) : array;
+}
+
+function getListingFromState(state) {
+  let listing = { ...state.listing };
+  return listing;
+}
+
+function updateStateWithListing(state, listing) {
+  let newState = {
+    ...state,
+    listing
+  };
+
+  return newState;
 }
