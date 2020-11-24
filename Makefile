@@ -26,12 +26,14 @@ MINIFY := $(shell command -v minify 2> /dev/null)
 #
 ########################################
 
-.PHONY: run
+.PHONY: run clean-dist
 
+clean-dist:
+	rm -rf dist
 run:
 	cargo run --manifest-path server/Cargo.toml
 
-release: client-dist server-dist systemd-dist
+release: clean-dist client-dist server-dist systemd-dist
 
 upload: release
 	rsync -avzhe ssh dist/. indy@indy.io:/home/indy/work/memo
