@@ -22,12 +22,9 @@
 // set this to false when deploying, true when developing js
 var devMode = true;
 
-var CACHE_NAME = "note-20201121a";
+var CACHE_NAME = "memo-20201123c";
 
 var precacheConfig = [
-  "/apple-touch-icon.png",
-  "/memo-base.css",
-  "/memo-form.css",
   "/memo.css",
   "/index.html",
 
@@ -41,20 +38,16 @@ var precacheConfig = [
   "/js/svgIcons.js",
   "/js/components/Login.js",
   "/js/components/Notes.js",
-  "/js/components/ArchivedNotes.js",
+  "/js/components/TriagedNotes.js",
 
-  "/tufte.css",
+  "/apple-touch-icon.png",
   "/lib/preact/hooks.js",
   "/lib/preact/htm.js",
   "/lib/preact/mod.js",
   "/lib/preact/preact.js",
   "/lib/preact/preact-router.js",
   "/favicon-16x16.png",
-  "/favicon-32x32.png",
-  "/fonts/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.woff",
-  "/fonts/et-book-roman-line-figures/et-book-roman-line-figures.woff",
-  "/fonts/NothingYouCouldDo-Regular.ttf",
-  "/fonts/Bitter/Bitter-Regular.ttf"
+  "/favicon-32x32.png"
 ];
 
 var urlsToCache = new Set();

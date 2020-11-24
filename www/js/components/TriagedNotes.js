@@ -43,10 +43,8 @@ function NoteListItem(note, i) {
 
   return html`<div class="card ${pigmentClass}">
                 <div class="card-body">
-                  <h5 class="card-title">
-                    <${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}>
-                  </h5>
-                  <p class="card-text">${ note.content }</p>
+                  <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
+                  <p>${ note.content }</p>
                   <div class="card-action">
                     <button class="button button-delete" onClick=${ onDeleteClicked }>Delete</button>
                   </div>

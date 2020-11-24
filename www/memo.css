@@ -1,14 +1,416 @@
 @charset "UTF-8";
 
-@font-face { font-family: "Nothing You Could Do";
-             src: url("fonts/NothingYouCouldDo-Regular.ttf") format("truetype");
-             font-weight: normal;
-             font-style: normal; }
 
-@font-face { font-family: "Bitter";
-             src: url("fonts/Bitter/Bitter-Regular.ttf") format("truetype");
-             font-weight: normal;
-             font-style: normal; }
+/*
+   ==========================================================================
+   Variables
+   ==========================================================================
+*/
+
+:root {
+  --bg: #f5f2f0;
+  --fg: rgb(15, 12, 10);
+
+  --fg1: #666; /* linked decks (i.e. tags) */
+  --fg-inactive: #999;
+
+  --bg1: #eeeee8;
+  --bg2: #ede7e3;
+
+  --textarea-bg: #fffff8;
+  --textarea-fg: rgb(15, 12, 10);
+  --textarea-border: #fffff8;
+
+  /* clock12: hue 67, saturation: 70 lightness: 80 */
+  --save-on-bg: #6fdd6b;        /* clock02 */
+  --save-on-fg: var(--fg);
+
+  --card-action-divider: rgba(160,160,160,0.2);
+  --card-shadow: #ddd;
+  --divider: #ccc;
+  --hyperlink: #5279a8;         /* clock06 saturation: 60.2 lightness: 50 */
+
+  /* clock12: hue 52, saturation: 60.2 lightness: 90 */
+  --bg-notes: #b0ecf3;             /* clock05 */
+  --bg-triaged-notes: #ebddf3;    /* clock08 */
+
+  /* clock12: hue 52, saturation: 60.2 lightness: 50 */
+  --fg-notes: #4d7e84;             /* clock05 */
+  --fg-triaged-notes: #a257c1;      /* clock08 */
+
+  --body-width: 80%;
+  --block-width: 55%;
+  --block-width-indented: 50%;
+
+  /* clock12: hue 67.1 saturation: 60.2 lightness: 30 */
+  --fg-clock-12: #504529;
+  --fg-clock-01: #424929;
+  --fg-clock-02: #294e28;
+  --fg-clock-03: #2a4d40;
+  --fg-clock-04: #2b4c4a;
+  --fg-clock-05: #2d4b54;
+  --fg-clock-06: #2f4866;
+  --fg-clock-07: #543586;
+  --fg-clock-08: #69306a;
+  --fg-clock-09: #722d55;
+  --fg-clock-10: #7b2a35;
+  --fg-clock-11: #5f3f29;
+
+  /* clock12: hue 67.1 saturation: 60.2 lightness: 90 */
+  --bg-clock-12: #f4e0b2;
+  --bg-clock-01: #d7eb8e;
+  --bg-clock-02: #a7f5a5;
+  --bg-clock-03: #98f4d1;
+  --bg-clock-04: #96f2ed;
+  --bg-clock-05: #c6e7f3;
+  --bg-clock-06: #d9e3f3;
+  --bg-clock-07: #e5dff3;
+  --bg-clock-08: #f3daf3;
+  --bg-clock-09: #f4dce7;
+  --bg-clock-10: #f4ddde;
+  --bg-clock-11: #f4ded3;
+
+  --coloured-button-border-radius: 0.3em;
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --body-width: 93.5%;
+    --block-width: 70%;
+  }
+}
+
+@media (max-width: 800px) {
+  :root {
+    --body-width: 97.5%;
+    --block-width: 90%;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #2b2b2b;
+    --fg: #a6a8aa;
+
+    --fg1: #999; /* linked decks (i.e. tags) */
+    --fg-inactive: var(--fg1);
+
+    --bg1: #171717;
+    --bg2: #12181C;
+
+    --textarea-bg: #12181C;
+    --textarea-fg: #a6a8aa;
+    --textarea-border: #12181C;
+
+    /* clock12: hue 67, saturation: 70 lightness: 60 */
+    --save-on-bg: #4fa24c;        /* clock02 */
+    --save-on-fg: var(--bg1);
+
+    --card-action-divider: rgba(10,10,10,0.2);
+    --card-shadow: #222;
+    --divider: #444;
+    --hyperlink: #5279a8;         /* clock06 saturation: 60.2 lightness: 50 */
+
+    /* saturation: 60.2 lightness: 50 */
+    --bg-notes: #5279a8;             /* clock06 */
+    --bg-triaged-notes: #867548;      /* clock12 */
+
+    /* saturation: 60.2 lightness: 90 */
+    --fg-notes: #d9e3f3;             /* clock06 */
+    --fg-triaged-notes: #f4e0b2;      /* clock12 */
+
+    /* clock12: hue 67.1 saturation: 60.2 lightness: 90 */
+    --fg-clock-12: #f4e0b2;
+    --fg-clock-01: #d7eb8e;
+    --fg-clock-02: #a7f5a5;
+    --fg-clock-03: #98f4d1;
+    --fg-clock-04: #96f2ed;
+    --fg-clock-05: #c6e7f3;
+    --fg-clock-06: #d9e3f3;
+    --fg-clock-07: #e5dff3;
+    --fg-clock-08: #f3daf3;
+    --fg-clock-09: #f4dce7;
+    --fg-clock-10: #f4ddde;
+    --fg-clock-11: #f4ded3;
+
+    /* clock12: hue 67.1 saturation: 60.2 lightness: 30 */
+    --bg-clock-12: #504529;
+    --bg-clock-01: #424929;
+    --bg-clock-02: #294e28;
+    --bg-clock-03: #2a4d40;
+    --bg-clock-04: #2b4c4a;
+    --bg-clock-05: #2d4b54;
+    --bg-clock-06: #2f4866;
+    --bg-clock-07: #543586;
+    --bg-clock-08: #69306a;
+    --bg-clock-09: #722d55;
+    --bg-clock-10: #7b2a35;
+    --bg-clock-11: #5f3f29;
+
+  }
+}
+
+/*
+   ==========================================================================
+   Old Tufte
+   ==========================================================================
+*/
+
+html {
+  font-size: 15px;
+}
+
+body {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+h1 {
+  font-weight: 400;
+  margin-top: 4rem;
+  margin-bottom: 1.5rem;
+  font-size: 3.2rem;
+  line-height: 1;
+}
+
+hr {
+  display: block;
+  height: 1px;
+  width: var(--block-width);
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 1em 0;
+  padding: 0;
+}
+
+article {
+  padding: 5rem 0rem;
+}
+
+section {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+p {
+  margin-top: 1.4rem;
+  margin-bottom: 1.4rem;
+  padding-right: 0;
+  vertical-align: baseline;
+}
+
+section > p,
+section > footer,
+section > table {
+  width: var(--block-width);
+}
+
+/* to be the same width as paragraph */
+section > ol,
+section > ul {
+  width: calc(var(--block-width) - 5%);
+  -webkit-padding-start: 5%;
+}
+
+li:not(:first-child) {
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 760px) {
+  body {
+    /* width: 84%; */
+    /* padding-left: 8%; */
+    /* padding-right: 8%; */
+  }
+
+  hr,
+  section > p,
+  section > footer,
+  section > table {
+    width: 100%;
+  }
+
+  pre > code {
+    width: 97%;
+  }
+
+  section > ol {
+    width: 90%;
+  }
+
+  section > ul {
+    width: 90%;
+  }
+
+  label {
+    cursor: pointer;
+  }
+
+  div.table-wrapper,
+  table {
+    width: 85%;
+  }
+
+  img {
+    width: 100%;
+  }
+}
+
+/*
+   ==========================================================================
+   Forms
+   ==========================================================================
+*/
+
+/**
+ * 1. Change the font styles in all browsers.
+ * 2. Remove the margin in Firefox and Safari.
+ */
+
+form {
+  width: 20em;
+}
+form label {
+  margin-left: 0.5em;
+}
+input {
+  width: 90%;
+}
+
+textarea {
+  width: var(--block-width);
+  height: 15em;
+}
+
+textarea.new-note-textarea {
+  width: 100%;
+  height: 25em;
+  margin-top: 1em;
+}
+
+input[type="radio"] {
+  width: 10%;
+  margin-top: 1em;
+}
+
+[type="submit"] {
+  margin-top: 1em;
+  margin-bottom: 3em;
+  width: 10em;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  line-height: 1.15; /* 1 */
+  margin: 0; /* 2 */
+}
+
+/**
+ * Show the overflow in IE.
+ * 1. Show the overflow in Edge.
+ */
+
+button,
+input { /* 1 */
+  overflow: visible;
+}
+
+/**
+ * Remove the inheritance of text transform in Edge, Firefox, and IE.
+ * 1. Remove the inheritance of text transform in Firefox.
+ */
+
+button,
+select { /* 1 */
+  text-transform: none;
+}
+
+/**
+ * Correct the inability to style clickable types in iOS and Safari.
+ */
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+}
+
+/**
+ * Remove the inner border and padding in Firefox.
+ */
+
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+  border-style: none;
+  padding: 0;
+}
+
+/**
+ * Restore the focus styles unset by the previous rule.
+ */
+
+button:-moz-focusring,
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring {
+  outline: 1px dotted ButtonText;
+}
+
+textarea {
+  overflow: auto;
+}
+
+/**
+ * Correct the cursor style of increment and decrement buttons in Chrome.
+ */
+
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/**
+ * 1. Correct the odd appearance in Chrome and Safari.
+ * 2. Correct the outline style in Safari.
+ */
+
+[type="search"] {
+  -webkit-appearance: textfield; /* 1 */
+  outline-offset: -2px; /* 2 */
+}
+
+/**
+ * Remove the inner padding in Chrome and Safari on macOS.
+ */
+
+[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/**
+ * 1. Correct the inability to style clickable types in iOS and Safari.
+ * 2. Change font properties to `inherit` in Safari.
+ */
+
+::-webkit-file-upload-button {
+  -webkit-appearance: button; /* 1 */
+  font: inherit; /* 2 */
+}
+
+/*
+   ==========================================================================
+   App
+   ==========================================================================
+*/
 
 #root {
   padding: 1em;
@@ -38,73 +440,17 @@ a:visited.pigment-inherit {
 .pigment-clock-10 { background: var(--bg-clock-10); color: var(--fg-clock-10);}
 .pigment-clock-11 { background: var(--bg-clock-11); color: var(--fg-clock-11);}
 
-.delete-confirmation {
-  padding-left: 3em;
-  padding-right: 1em;
-  font-size: 1.3em;
-}
-
-/* -------------------------------------------------------------------------------- */
-
 .add-note-form {
   padding-top: 1em;
   width: 100%;
-}
-
-/* -------------------------------------------------------------------------------- */
-
-em:before {
-  content: "\00201C";           /* opening double quote: &#8220; converted to hex*/
-}
-em:after {
-  content: "\00201D";           /* closing double quote: &#8221; converted to hex*/
-}
-
-.unselectable-text {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
 }
 
 a:link {
   text-decoration: none;
 }
 
-a:link.note-inline-link {
-  color: var(--hyperlink);
-  text-decoration: underline;
-}
-
-.sticky-bl {
-  position: absolute;
-  left: 1rem;
-  bottom: 1rem;
-  right: 1rem
-}
-
-.sticky-tl {
-  position: absolute;
-  left: 1rem;
-  top: 1rem;
-  right: 1rem
-}
-
 p {
   text-align: justify;
-}
-.sidenote {
-  text-align: left;
-}
-
-label.margin-toggle {
-  color: var(--hyperlink);
-}
-
-.invisible { display: none; }
-
-.underlined {
-  text-decoration: underline;
 }
 
 #login-menuitem {
@@ -112,117 +458,20 @@ label.margin-toggle {
   clear:both;
 }
 
-p.fakelink {
-  cursor: pointer;
-  text-decoration: underline;
-}
-
 section > form { width: var(--block-width); }
-
-/* memo: so that the p in memo behaves like the section > p in tufte */
-.note p {
-  width: var(--block-width);
-}
-.note ol {
-  width: var(--block-width);
-}
-.note ul {
-  width: var(--block-width);
-}
-.note li {
-  width: 96%;
-}
-
-/* the left-hand spanne that contains noterefs, 'add note icons' etc*/
-.spanne {
-  padding-top: 0.5em;
-  float: left;
-  margin-left: -40%;
-  width: 40%;
-  color: var(--fg1);
-  text-align: right;
-
-  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
-}
-.spanne-in-listing {
-  /* don't want the padding as each li is only a single line */
-  padding-top: 0.0em;
-}
-
-/* like spanne but inline for adding notes to points */
-.inline-spanne {
-  color: var(--fg1);
-  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
-  margin-left: 4em;
-}
-
-@media (max-width: 1200px) {
-  .spanne {
-    float: right;
-    text-align: left;
-    width: 28%;
-  }
-}
-
-@media (max-width: 800px) {
-  .spanne {
-    display: none;
-  }
-  .inline-spanne {
-    display: none;
-  }
-}
-
-.cancel-offset {
-  margin-top: 2em;
-}
-
-.clickable {
-  cursor: pointer;
-}
-
-.spanne-entry {
-  padding-right: 3em;
-}
-
-.spanne-entry a {
-  text-decoration: none;
-}
-
-.spanne-icon-label {
-  vertical-align: super;
-  margin-right: 0.5em;
-}
-
-.append-note {
-  margin-top: 2em;
-  margin-bottom: 4em;
-}
 
 #top-bar-menu {
   padding-bottom: 0.5em;
   border-bottom-width: 0.1em;
   border-bottom-style: solid;
   border-color: var(--divider);
-
-  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
 
 a.top-bar-menuitem {
   margin-left: 1em;
   margin-right: 1em;
   padding: 0.4em 1em 0.2em 1em;
-  border-radius: var(--coloured-deck-border-radius);
-}
-
-blockquote.quote > textarea {
-  width: var(--block-width);
-  height: 10em;
-}
-
-div.note > textarea {
-  width: 100%;
-  height: 10em;
+  border-radius: var(--coloured-button-border-radius);
 }
 
 hr {
@@ -234,22 +483,6 @@ hr {
   margin: 1em 0;
   padding: 0;
 }
-
-#separator {
-  width: 10%;
-}
-
-input:required {
-  box-shadow: none;
-}
-
-.deckpoint-list {
-  list-style: none;
-  padding-left: 0;
-  margin-left: 0;
-}
-
-/* -------------------------------------------------------------------------------- */
 
 .form-container {
   margin-left: auto;
@@ -280,7 +513,8 @@ input:required {
 }
 
 .card {
-  width: 25em;
+  font-family: Tahoma, Geneva, sans-serif;
+  width: 20em;
   margin: 1em;
   box-shadow: 0px 2px 2px 1px var(--card-shadow);
   border-radius: 0.5em;
@@ -292,11 +526,12 @@ input:required {
   padding: 1em;
 }
 
-.card-title {
+/* card title */
+h3 {
   font-weight: 400;
   margin-top: 0rem;
   margin-bottom: 1.5rem;
-  font-size: 2.2rem;
+  font-size: 1.2rem;
   line-height: 1;
 }
 
@@ -314,10 +549,9 @@ input:required {
   display:inline-block;
   padding:0.3em 1.2em;
   margin:0 0.3em 0.3em 0;
-  border-radius:0.5em;
+  border-radius: var(--coloured-button-border-radius);
   box-sizing: border-box;
   text-decoration:none;
-  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
   color: var(--fg);
   background-color:rgba(0, 0, 0, 0.15);
   text-align:center;
