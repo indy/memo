@@ -16,10 +16,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use super::pg;
-use crate::error::{Error, Result};
+use crate::error::Result;
 use crate::interop::notes as interop;
 use crate::interop::Key;
-use deadpool_postgres::{Client, Pool};
+use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
 use tokio_pg_mapper_derive::PostgresMapper;
 
@@ -161,24 +161,23 @@ pub(crate) async fn edit(
     .await
 }
 
+pub(crate) async fn unbin(
+    db_pool: &Pool,
+    user_id: Key,
+    note_id: Key,
+) -> Result<interop::Note> {
+    pg::one_from::<Note, interop::Note>(
+        db_pool,
+        include_str!("sql/notes_unbin.sql"),
+        &[&user_id, &note_id],
+    )
+    .await
+}
+
 pub(crate) async fn delete(db_pool: &Pool, user_id: Key, id: Key) -> Result<()> {
-    let mut client: Client = db_pool.get().await.map_err(Error::DeadPool)?;
-    let tx = client.transaction().await?;
-
-    pg::zero(&tx, &include_str!("sql/notes_delete.sql"), &[&user_id, &id]).await?;
-
-    tx.commit().await?;
-
-    Ok(())
+    pg::zero_from(db_pool, include_str!("sql/notes_delete.sql"), &[&user_id, &id]).await
 }
 
 pub(crate) async fn delete_all(db_pool: &Pool, user_id: Key) -> Result<()> {
-    let mut client: Client = db_pool.get().await.map_err(Error::DeadPool)?;
-    let tx = client.transaction().await?;
-
-    pg::zero(&tx, &include_str!("sql/notes_delete_all.sql"), &[&user_id]).await?;
-
-    tx.commit().await?;
-
-    Ok(())
+    pg::zero_from(db_pool, include_str!("sql/notes_delete_all.sql"), &[&user_id]).await
 }

@@ -62,6 +62,21 @@ pub async fn get(
     Ok(HttpResponse::Ok().json(note))
 }
 
+pub async fn unbin(
+    db_pool: Data<Pool>,
+    params: Path<IdParam>,
+    session: actix_session::Session,
+) -> Result<HttpResponse> {
+    info!("delete");
+
+    let user_id = session::user_id(&session)?;
+    let note_id = params.id;
+
+    let note = db::unbin(&db_pool, user_id, note_id).await?;
+
+    Ok(HttpResponse::Ok().json(note))
+}
+
 pub async fn delete(
     db_pool: Data<Pool>,
     params: Path<IdParam>,

@@ -64,6 +64,7 @@ pub fn public_api(mount_point: &str) -> actix_web::Scope {
                 .route("", get().to(bin::get_all))
                 .route("", delete().to(bin::delete_all))
                 .route("/{id}", get().to(bin::get))
+                .route("/{id}/unbin", post().to(bin::unbin))
                 .route("/{id}", delete().to(bin::delete)),
         )
 

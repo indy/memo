@@ -84,6 +84,19 @@ where
     }
 }
 
+pub async fn zero_from(
+    db_pool: &Pool,
+    sql_query: &str,
+    sql_params: &[&(dyn tokio_postgres::types::ToSql + std::marker::Sync)],
+) -> Result<()> {
+    let mut client: Client = db_pool.get().await.map_err(Error::DeadPool)?;
+    let tx = client.transaction().await?;
+    zero(&tx, sql_query, sql_params).await?;
+    tx.commit().await?;
+    Ok(())
+}
+
+
 // queries the db, storing results in S then converts that into a T
 //
 pub async fn one_from<S, T>(

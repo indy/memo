@@ -69,6 +69,25 @@ export const reducer = (state, action) => {
 
       return updateStateWithListing(state, listing);
     }
+  case 'unbin-note':
+    {
+      let listing = getListingFromState(state);
+
+      listing.bin = removeNoteFromArray(listing.bin, action.note.id);
+
+      // todo: make this more robust
+      if (action.note.category_id) {
+        if (listing.triaged) {
+          listing.triaged.unshift(action.note);
+        }
+      } else {
+        if (listing.notes) {
+          listing.notes.unshift(action.note);
+        }
+      }
+
+      return updateStateWithListing(state, listing);
+    }
   case 'empty-bin':
     {
       let listing = getListingFromState(state);

@@ -60,6 +60,16 @@ function NoteListItem(note) {
     });
   }
 
+  function onUndeleteClicked(e) {
+    e.preventDefault();
+    Net.post(`/api/bin/${ note.id }/unbin`, note).then(n => {
+      dispatch({
+        type: 'unbin-note',
+        note
+      });
+    });
+  }
+
   const pigmentNum = (note.id % 12) + 1;
   const pigmentClass = pigmentNum < 10 ? `pigment-clock-0${pigmentNum}` : `pigment-clock-${pigmentNum}`;
 
@@ -71,6 +81,7 @@ function NoteListItem(note) {
                   <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
                   <p>${ note.content }</p>
                   <div class="card-action">
+                    <button class="button" onClick=${ onUndeleteClicked }>Undelete</button>
                     <button class="button button-delete" onClick=${ onDeleteClicked }>Really Delete</button>
                   </div>
                 </div>
