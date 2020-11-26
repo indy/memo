@@ -96,7 +96,6 @@ pub async fn zero_from(
     Ok(())
 }
 
-
 // queries the db, storing results in S then converts that into a T
 //
 pub async fn one_from<S, T>(

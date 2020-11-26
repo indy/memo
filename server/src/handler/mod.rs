@@ -16,6 +16,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 pub mod bin;
-pub mod triaged;
+pub mod categories;
 pub mod notes;
+pub mod triaged;
 pub mod users;

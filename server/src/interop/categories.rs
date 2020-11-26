@@ -15,13 +15,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-pub mod categories;
-pub mod notes;
-pub mod users;
+use crate::interop::Key;
 
-pub type Key = i64;
+#[derive(Debug, serde::Deserialize)]
+pub struct ProtoCategory {
+    pub title: String,
+}
 
-#[derive(serde::Deserialize)]
-pub struct IdParam {
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
+pub struct Category {
     pub id: Key,
+    pub title: String,
 }

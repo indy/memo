@@ -16,8 +16,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use crate::handler::bin;
-use crate::handler::triaged;
+use crate::handler::categories;
 use crate::handler::notes;
+use crate::handler::triaged;
 use crate::handler::users;
 
 use actix_files::NamedFile;
@@ -67,7 +68,15 @@ pub fn public_api(mount_point: &str) -> actix_web::Scope {
                 .route("/{id}/unbin", post().to(bin::unbin))
                 .route("/{id}", delete().to(bin::delete)),
         )
-
+        // categories
+        .service(
+            scope("/categories")
+                .route("", post().to(categories::create))
+                .route("", get().to(categories::get_all))
+                .route("/{id}", get().to(categories::get))
+                .route("/{id}", put().to(categories::edit))
+                .route("/{id}", delete().to(categories::delete)),
+        )
 }
 
 pub fn bad_request<B>(res: dev::ServiceResponse<B>) -> actix_web::Result<ErrorHandlerResponse<B>> {

@@ -15,38 +15,43 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use crate::db::notes as db;
+use crate::db::categories as db;
 use crate::error::Result;
+use crate::interop::categories as interop;
 use crate::interop::IdParam;
 use crate::session;
-use actix_web::web::{Data, Path};
+use actix_web::web::{Data, Json, Path};
 use actix_web::HttpResponse;
 use deadpool_postgres::Pool;
 
 #[allow(unused_imports)]
 use tracing::info;
 
+pub async fn create(
+    category: Json<interop::ProtoCategory>,
+    db_pool: Data<Pool>,
+    session: actix_session::Session,
+) -> Result<HttpResponse> {
+    info!("create");
+
+    let user_id = session::user_id(&session)?;
+    let category = category.into_inner();
+
+    info!("{:?}", &category);
+
+    let category = db::create(&db_pool, user_id, &category).await?;
+
+    Ok(HttpResponse::Ok().json(category))
+}
+
 pub async fn get_all(db_pool: Data<Pool>, session: actix_session::Session) -> Result<HttpResponse> {
     info!("get_all");
 
     let user_id = session::user_id(&session)?;
 
-    let notes = db::all_binned(&db_pool, user_id).await?;
+    let categories = db::all(&db_pool, user_id).await?;
 
-    Ok(HttpResponse::Ok().json(notes))
-}
-
-pub async fn delete_all(
-    db_pool: Data<Pool>,
-    session: actix_session::Session,
-) -> Result<HttpResponse> {
-    info!("delete_all");
-
-    let user_id = session::user_id(&session)?;
-
-    db::delete_all(&db_pool, user_id).await?;
-
-    Ok(HttpResponse::Ok().json(true))
+    Ok(HttpResponse::Ok().json(categories))
 }
 
 pub async fn get(
@@ -54,29 +59,31 @@ pub async fn get(
     params: Path<IdParam>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
-    info!("get note {:?}", params.id);
+    info!("get category {:?}", params.id);
 
     let user_id = session::user_id(&session)?;
-    let note_id = params.id;
+    let category_id = params.id;
 
-    let note = db::get(&db_pool, user_id, note_id).await?;
+    let category = db::get(&db_pool, user_id, category_id).await?;
 
-    Ok(HttpResponse::Ok().json(note))
+    Ok(HttpResponse::Ok().json(category))
 }
 
-pub async fn unbin(
+pub async fn edit(
+    category: Json<interop::ProtoCategory>,
     db_pool: Data<Pool>,
     params: Path<IdParam>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
-    info!("delete");
+    info!("edit");
 
     let user_id = session::user_id(&session)?;
-    let note_id = params.id;
+    let category_id = params.id;
+    let category = category.into_inner();
 
-    let note = db::unbin(&db_pool, user_id, note_id).await?;
+    let category = db::edit(&db_pool, user_id, &category, category_id).await?;
 
-    Ok(HttpResponse::Ok().json(note))
+    Ok(HttpResponse::Ok().json(category))
 }
 
 pub async fn delete(

@@ -32,7 +32,7 @@ pub struct Note {
     pub content: String,
 }
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, serde::Deserialize)]
 pub struct ProtoNote {
     pub title: String,
     pub content: String,
