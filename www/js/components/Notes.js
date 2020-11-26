@@ -6,6 +6,8 @@ import Net from '/js/Net.js';
 import { ensureListingLoaded } from '/js/NoteUtils.js';
 import { capitalise } from '/js/JsUtils.js';
 
+import { svgBin } from '/js/svgIcons.js';
+
 function Notes() {
   const [state, dispatch] = useStateValue();
 
@@ -58,7 +60,7 @@ function NoteListItem(note) {
                   <p>${ note.content }</p>
                   <div class="card-action">
                     <button class="button" onClick=${ onTriagedClicked }>Triage</button>
-                    <button class="button button-delete" onClick=${ onDeleteClicked }>Delete</button>
+                    <button class="button button-delete" onClick=${ onDeleteClicked }>${ svgBin() }</button>
                   </div>
                 </div>
               </div>`;
