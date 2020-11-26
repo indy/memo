@@ -5,6 +5,7 @@ import Net from '/js/Net.js';
 
 import { ensureListingLoaded } from '/js/NoteUtils.js';
 import { capitalise } from '/js/JsUtils.js';
+import CategorySelect from '/js/components/CategorySelect.js';
 
 import { svgBin } from '/js/svgIcons.js';
 
@@ -14,28 +15,62 @@ function Notes() {
   ensureListingLoaded('notes');
 
   const notes = state.listing.notes;
-  const listing = notes ? notes.map(n => NoteListItem(n)) : [];
+  const listing = notes ? notes.map(n => NoteListItem(n, state.triageCategory)) : [];
+
+
+  function addNewCategoryFn(title) {
+    // setCategories(categories.concat(title));
+
+    Net.post(`/api/categories`, { title }).then(newCategory => {
+      console.log(newCategory);
+      Net.get('/api/categories').then(latestCategories => {
+        console.log(latestCategories);
+        dispatch({
+          type: 'set-categories',
+          categories: latestCategories
+        });
+        setTriageCategory(newCategory);
+      });
+    });
+  }
+
+  function setTriageCategory(triageCategory) {
+    dispatch({
+      type: 'set-triage-category',
+      triageCategory
+    });
+  }
 
   return html`
     <div>
       <${NoteCreateForm} dispatch=${ dispatch }/>
+      <${CategorySelect} category=${state.triageCategory}
+                         setCategory=${setTriageCategory}
+                         available=${ state.categories }
+                         addNewCategoryFn=${addNewCategoryFn}/>
       <div class="card-holder">
         ${ listing }
       </div>
     </div>`;
 }
 
-function NoteListItem(note) {
+function NoteListItem(note, triageCategory) {
   const [state, dispatch] = useStateValue();
 
   function onTriagedClicked(e) {
     e.preventDefault();
-    Net.post(`/api/notes/${ note.id }/triage`, {}).then(triagedNote => {
-      dispatch({
-        type: 'triage-note',
-        note: triagedNote
+
+    if (triageCategory) {
+      console.log(triageCategory);
+      Net.post(`/api/notes/${ note.id }/triage`, triageCategory).then(triagedNote => {
+        dispatch({
+          type: 'triage-note',
+          note: triagedNote
+        });
       });
-    });
+    } else {
+      console.error("trying to triage a note without first selecting a category");
+    }
   }
 
   function onDeleteClicked(e) {
@@ -54,12 +89,14 @@ function NoteListItem(note) {
   const resource = 'notes';
   const href = `/${resource}/${note.id}`;
 
+  const canTriage = !!triageCategory;
+
   return html`<div class="card ${pigmentClass}">
                 <div class="card-body">
                   <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
                   <p>${ note.content }</p>
                   <div class="card-action">
-                    <button class="button" onClick=${ onTriagedClicked }>Triage</button>
+                    ${ canTriage && html`<button class="button" onClick=${ onTriagedClicked }>Triage to ${ triageCategory.title }</button>`}
                     <button class="button button-delete" onClick=${ onDeleteClicked }>${ svgBin() }</button>
                   </div>
                 </div>

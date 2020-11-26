@@ -22,6 +22,12 @@ export async function buildInitialState() {
         user
       });
 
+      let categories = await Net.get("/api/categories");
+      state = reducer(state, {
+        type: 'set-categories',
+        categories
+      });
+
       console.log('user is logged in');
       return state;
     } else {

@@ -18,6 +18,7 @@
 use super::pg;
 use crate::error::Result;
 use crate::interop::notes as interop;
+use crate::interop::categories as interop_categories;
 use crate::interop::Key;
 use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
@@ -126,11 +127,12 @@ pub(crate) async fn triage(
     db_pool: &Pool,
     user_id: Key,
     note_id: Key,
+    category: interop_categories::Category,
 ) -> Result<interop::TriagedNote> {
     pg::one_from::<Note, interop::TriagedNote>(
         db_pool,
         include_str!("sql/notes_triage.sql"),
-        &[&user_id, &note_id],
+        &[&user_id, &note_id, &category.id],
     )
     .await
 }

@@ -18,6 +18,7 @@
 use crate::db::notes as db;
 use crate::error::Result;
 use crate::interop::notes as interop;
+use crate::interop::categories as interop_categories;
 use crate::interop::IdParam;
 use crate::session;
 use actix_multipart::Multipart;
@@ -102,6 +103,7 @@ pub async fn get_all(db_pool: Data<Pool>, session: actix_session::Session) -> Re
 }
 
 pub async fn triage(
+    category: Json<interop_categories::Category>,
     db_pool: Data<Pool>,
     params: Path<IdParam>,
     session: actix_session::Session,
@@ -110,8 +112,9 @@ pub async fn triage(
 
     let user_id = session::user_id(&session)?;
     let note_id = params.id;
+    let category = category.into_inner();
 
-    let triaged_note = db::triage(&db_pool, user_id, note_id).await?;
+    let triaged_note = db::triage(&db_pool, user_id, note_id, category).await?;
 
     Ok(HttpResponse::Ok().json(triaged_note))
 }

@@ -1,11 +1,12 @@
 export const initialState = {
   user: undefined,
+  categories: [],
+  triageCategory: undefined,
   listing: {
     notes: undefined,
     triaged: undefined,
     bin: undefined
   }
-
 };
 
 export const reducer = (state, action) => {
@@ -14,6 +15,17 @@ export const reducer = (state, action) => {
     return {
       ...state,
       user: action.user
+    };
+  case 'set-categories':
+    console.log(action.categories);
+    return {
+      ...state,
+      categories: action.categories
+    };
+  case 'set-triage-category':
+    return {
+      ...state,
+      triageCategory: action.triageCategory
     };
   case 'set-listing':
     {

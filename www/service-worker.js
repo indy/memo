@@ -40,6 +40,7 @@ var precacheConfig = [
   "/js/components/Bin.js",
   "/js/components/Notes.js",
   "/js/components/TriagedNotes.js",
+  "/js/components/CategorySelect.js",
 
   "/apple-touch-icon.png",
   "/lib/preact/hooks.js",
