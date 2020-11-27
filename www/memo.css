@@ -278,12 +278,12 @@ form {
 form label {
   margin-left: 0.5em;
 }
-input {
-  width: 90%;
-}
 
 textarea {
   width: var(--block-width);
+}
+
+textarea:focus {
   height: 15em;
 }
 
@@ -490,14 +490,14 @@ hr {
   padding: 0;
 }
 
-.form-container {
+.centre-container {
   margin-left: auto;
   margin-right: auto;
   width: 40em;
 }
 
 @media (max-width: 760px) {
-  .form-container {
+  .centre-container {
     width: 100%
   }
 }

@@ -43,11 +43,13 @@ function Notes() {
 
   return html`
     <div>
-      <${NoteCreateForm} dispatch=${ dispatch }/>
-      <${CategorySelect} category=${state.triageCategory}
-                         setCategory=${setTriageCategory}
-                         available=${ state.categories }
-                         addNewCategoryFn=${addNewCategoryFn}/>
+      <div class="centre-container">
+        <${NoteCreateForm} dispatch=${ dispatch }/>
+        <${CategorySelect} category=${state.triageCategory}
+                           setCategory=${setTriageCategory}
+                           available=${ state.categories }
+                           addNewCategoryFn=${addNewCategoryFn}/>
+      </div>
       <div class="card-holder">
         ${ listing }
       </div>
@@ -146,20 +148,18 @@ function NoteCreateForm({ dispatch }) {
   const submitMessage = "Save";
   const disabled = userText.trim().length === 0;
 
-  return html`<div class="form-container">
-                <form class="add-note-form" onSubmit=${ onSubmit }>
-                  <textarea id="content"
-                            type="text"
-                            name="content"
-                            value=${ userText }
-                            onInput=${ handleChangeEvent }/>
-                  <br/>
-                  <input class="button save-button"
-                         type="submit"
-                         value=${ submitMessage }
-                         disabled=${ disabled }/>
-                </form>
-              </div>`;
+  return html`<form class="add-note-form" onSubmit=${ onSubmit }>
+                <textarea id="content"
+                          type="text"
+                          name="content"
+                          value=${ userText }
+                          onInput=${ handleChangeEvent }/>
+                <br/>
+                <input class="button save-button"
+                       type="submit"
+                       value=${ submitMessage }
+                       disabled=${ disabled }/>
+              </form>`;
 }
 
 function Note({ id }) {

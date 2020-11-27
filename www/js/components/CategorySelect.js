@@ -31,7 +31,7 @@ export default function CategorySelect({ category, setCategory, available, addNe
   const categories = available.map(c => html`<option value=${ c.title }/>`);
 
   return html`<div class='civsel-main-box'>
-                <label>Choose a Triage Category:
+                <label>Triage Category:
                   <input list="categories"
                          name="triage-category"
                          value=${ text }
