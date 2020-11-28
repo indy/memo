@@ -97,7 +97,7 @@ pub async fn get_all(db_pool: Data<Pool>, session: actix_session::Session) -> Re
 
     let user_id = session::user_id(&session)?;
 
-    let notes = db::all_active(&db_pool, user_id).await?;
+    let notes = db::all_non_triaged(&db_pool, user_id).await?;
 
     Ok(HttpResponse::Ok().json(notes))
 }

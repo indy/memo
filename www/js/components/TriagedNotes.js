@@ -14,17 +14,55 @@ function TriagedNotes() {
   ensureListingLoaded('triaged');
 
   const notes = state.listing.triaged;
-  const listing = notes ? notes.map((n, i) => NoteListItem(n, i)) : [];
 
-  return html`
-    <div>
-      <div class="card-holder">
-        ${ listing }
-      </div>
-    </div>`;
+  if (state.categories && state.listing && state.listing.triaged) {
+
+    // place triaged notes in their categories
+    const partitionByCategoryId = state.categories.reduce((acc, category) => {
+      acc[category.id] = state.listing.triaged.filter(n => n.category_id === category.id);
+      return acc;
+    }, {});
+
+    // keep the categories that contain notes
+    const triagedByCategory = {};
+    for (const categoryId in partitionByCategoryId) {
+      if (partitionByCategoryId[categoryId].length !== 0) {
+        triagedByCategory[categoryId] = partitionByCategoryId[categoryId];
+      }
+    }
+
+    const triagedSectionsHtml = [];
+    const deletableHtml = [];
+
+    state.categories.forEach(category => {
+      if (triagedByCategory[category.id]) {
+        const categoryNotes = triagedByCategory[category.id];
+        const notesHtml = categoryNotes.map(n => NoteListItem(n));
+        triagedSectionsHtml.push(html`<div>
+                                        <h1>${ category.title }</h1>
+                                        <div class="card-holder">
+                                          ${ notesHtml }
+                                        </div>
+                                      </div>`);
+      } else {
+        // this is a category without notes, so can be deleted
+        deletableHtml.push(html`<div>
+                                  <p>can delete ${category.title}</p>
+                                </div>`);
+      }
+    });
+
+    return html`<div>
+                  <div>${ triagedSectionsHtml }</div>
+                  <div>${ deletableHtml }</div>
+                </div>
+`;
+  }
+
+  return html`<div></div>`;
 }
 
-function NoteListItem(note, i) {
+function NoteListItem(note) {
   const [state, dispatch] = useStateValue();
 
   function onDeleteClicked(e) {
@@ -37,7 +75,7 @@ function NoteListItem(note, i) {
     });
   }
 
-  const pigmentNum = (i % 12) + 1;
+  const pigmentNum = (note.id % 12) + 1;
   const pigmentClass = pigmentNum < 10 ? `pigment-clock-0${pigmentNum}` : `pigment-clock-${pigmentNum}`;
 
   const resource = 'triaged';

@@ -23,6 +23,7 @@ pub struct TriagedNote {
     pub title: String,
     pub content: String,
     pub triaged_at: chrono::DateTime<chrono::Utc>,
+    pub category_id: Key,
 }
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]

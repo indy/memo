@@ -31,7 +31,7 @@ pub async fn get_all(db_pool: Data<Pool>, session: actix_session::Session) -> Re
 
     let user_id = session::user_id(&session)?;
 
-    let triaged_notes = db::all_triaged(&db_pool, user_id).await?;
+    let triaged_notes = db::triaged_all(&db_pool, user_id).await?;
 
     Ok(HttpResponse::Ok().json(triaged_notes))
 }
@@ -46,7 +46,7 @@ pub async fn get(
     let user_id = session::user_id(&session)?;
     let note_id = params.id;
 
-    let triaged_note = db::get_triaged(&db_pool, user_id, note_id).await?;
+    let triaged_note = db::triaged_get(&db_pool, user_id, note_id).await?;
 
     Ok(HttpResponse::Ok().json(triaged_note))
 }

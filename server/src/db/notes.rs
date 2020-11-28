@@ -34,6 +34,7 @@ struct Note {
     title: String,
     content: String,
     triaged_at: Option<chrono::DateTime<chrono::Utc>>,
+    category_id: Option<Key>,
 }
 
 //  pub created_at: chrono::DateTime<chrono::Utc>,
@@ -61,6 +62,7 @@ impl From<Note> for interop::TriagedNote {
             title: n.title,
             content: n.content,
             triaged_at: n.triaged_at.expect("triaged_at is required"),
+            category_id: n.category_id.expect("category_id is required"),
         }
     }
 }
@@ -78,7 +80,7 @@ pub(crate) async fn create(
     .await
 }
 
-pub(crate) async fn all_active(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::Note>> {
+pub(crate) async fn all_non_triaged(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::Note>> {
     pg::many_from::<Note, interop::Note>(db_pool, include_str!("sql/notes_all.sql"), &[&user_id])
         .await
 }
@@ -92,7 +94,7 @@ pub(crate) async fn all_binned(db_pool: &Pool, user_id: Key) -> Result<Vec<inter
     .await
 }
 
-pub(crate) async fn all_triaged(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::TriagedNote>> {
+pub(crate) async fn triaged_all(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::TriagedNote>> {
     pg::many_from::<Note, interop::TriagedNote>(
         db_pool,
         include_str!("sql/triaged_notes_all.sql"),
@@ -110,7 +112,7 @@ pub(crate) async fn get(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<in
     .await
 }
 
-pub(crate) async fn get_triaged(
+pub(crate) async fn triaged_get(
     db_pool: &Pool,
     user_id: Key,
     note_id: Key,
