@@ -25,6 +25,8 @@
   --save-on-bg: #6fdd6b;        /* clock02 */
   --save-on-fg: var(--fg);
 
+  --bg-section-controls: #e2e2e2;
+
   --card-action-divider: rgba(160,160,160,0.2);
   --card-shadow: #ddd;
   --divider: #ccc;
@@ -72,7 +74,7 @@
   --bg-clock-10: #f4ddde;
   --bg-clock-11: #f4ded3;
 
-  --coloured-button-border-radius: 0.3em;
+  --ui-element-border-radius: 0.3em;
 }
 
 @media (max-width: 1200px) {
@@ -447,7 +449,6 @@ a:visited.pigment-inherit {
 .pigment-clock-11 { background: var(--bg-clock-11); color: var(--fg-clock-11);}
 
 .add-note-form {
-  padding-top: 1em;
   width: 100%;
 }
 
@@ -466,7 +467,7 @@ p {
 
 section > form { width: var(--block-width); }
 
-#top-bar-menu {
+.hr {
   padding-bottom: 0.5em;
   border-bottom-width: 0.1em;
   border-bottom-style: solid;
@@ -477,7 +478,7 @@ a.top-bar-menuitem {
   margin-left: 1em;
   margin-right: 1em;
   padding: 0.4em 1em 0.2em 1em;
-  border-radius: var(--coloured-button-border-radius);
+  border-radius: var(--ui-element-border-radius);
 }
 
 hr {
@@ -490,15 +491,28 @@ hr {
   padding: 0;
 }
 
-.centre-container {
-  margin-left: auto;
-  margin-right: auto;
+.form-inline {
+  display: inline;
+}
+
+.form-inline-item {
+  margin-bottom: 0;
+  margin-right:1em;
+  vertical-align: middle;
+}
+
+.section-controls {
+  background: var(--bg-section-controls);
+  border-radius: var(--ui-element-border-radius);
   width: 40em;
+
+  margin: 1em;
+  padding: 1em 2em;
 }
 
 @media (max-width: 760px) {
-  .centre-container {
-    width: 100%
+  .section-controls {
+    width: 80%
   }
 }
 
@@ -515,6 +529,10 @@ hr {
     box-shadow: 0 0 6px var(--textarea-bg);
 }
 
+.pad-left-1em {
+  padding-left: 1em;
+}
+
 .card-holder {
 }
 
@@ -523,18 +541,19 @@ hr {
   width: 20em;
   margin: 1em;
   box-shadow: 0px 2px 2px 1px var(--card-shadow);
-  border-radius: 0.5em;
+  border-radius: var(--ui-element-border-radius);
   display: inline-block;
   vertical-align: top;
 }
 
 .card-body {
+  overflow: hidden;
   padding: 1em;
 }
 
 /* card title */
 h3 {
-  font-weight: 400;
+  font-weight: bold;
   margin-top: 0rem;
   margin-bottom: 1.5rem;
   font-size: 1.2rem;
@@ -550,12 +569,15 @@ h3 {
   float: right;
 }
 
+.button-height-bodge {
+  height: 2.44em;
+}
 
 .button{
   display:inline-block;
   padding:0.3em 1.2em;
   margin:0 0.3em 0.3em 0;
-  border-radius: var(--coloured-button-border-radius);
+  border-radius: var(--ui-element-border-radius);
   box-sizing: border-box;
   text-decoration:none;
   color: var(--fg);

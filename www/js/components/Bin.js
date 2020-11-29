@@ -27,9 +27,11 @@ function Bin() {
 
   return html`
     <div>
-      <div>
-        <h2 class="button" onClick=${ onDeleteClicked }>Really Delete All</h2>
+      <div class="section-controls">
+        ${ listing.length == 0 && html`<h2>Bin is Empty</h2>`}
+        ${ listing.length > 0 && html`<h2 class="button" onClick=${ onDeleteClicked }>Really Delete All Notes in Bin</h2>`}
       </div>
+      <div class="hr"/>
       <div class="card-holder">
         ${ listing }
       </div>
@@ -38,17 +40,6 @@ function Bin() {
 
 function NoteListItem(note) {
   const [state, dispatch] = useStateValue();
-
-  // function onTriagedClicked(e) {
-  //   e.preventDefault();
-  //   Net.post(`/api/notes/${ note.id }/triage`, {}).then(triagedNote => {
-  //     dispatch({
-  //       type: 'triage-note',
-  //       note: triagedNote
-  //     });
-  //   });
-  // }
-//                    <button class="button" onClick=${ onTriagedClicked }>Triage</button>
 
   function onDeleteClicked(e) {
     e.preventDefault();

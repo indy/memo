@@ -72,7 +72,7 @@ function TopBarMenu(props) {
   }
 
   return html`
-    <div id='top-bar-menu'>
+    <div id='top-bar-menu' class="hr">
       <${Link} class='top-bar-menuitem pigment-notes' href=${'/'}>Notes</${Link}>
       <${Link} class='top-bar-menuitem pigment-triaged' href=${'/triaged'}>Triaged</${Link}>
       <${Link} class='top-bar-menuitem pigment-bin' href=${'/bin'}>Bin</${Link}>

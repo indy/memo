@@ -39,7 +39,7 @@ function TriagedNotes() {
         const categoryNotes = triagedByCategory[category.id];
         const notesHtml = categoryNotes.map(n => NoteListItem(n));
         triagedSectionsHtml.push(html`<div>
-                                        <h1>${ category.title }</h1>
+                                        <h1 class="pad-left-1em">${ category.title }</h1>
                                         <div class="card-holder">
                                           ${ notesHtml }
                                         </div>
@@ -50,9 +50,12 @@ function TriagedNotes() {
     });
 
     return html`<div>
-                  <${NewCategoryForm }/>
+                  <div class="section-controls">
+                    <${NewCategoryForm }/>
+                  </div>
+                  <div class="hr"/>
                   <div>${ triagedSectionsHtml }</div>
-                  <div>${ deletableHtml }</div>
+                  <div class="pad-left-1em">${ deletableHtml }</div>
                 </div>
 `;
   }
@@ -76,7 +79,7 @@ function DeletableCategory({ category }) {
 
   return html`<div>
                 <button class="button" onClick=${ onDeleteClicked }>${ svgBin() }</button>
-                <span>can delete ${category.title}</span>
+                <span class="pad-left-1em">can delete ${category.title}</span>
               </div>`;
 }
 
@@ -85,8 +88,7 @@ function NewCategoryForm() {
 
   const [localState, setLocalState] = useState({
     text: '',
-    disabled: true,
-    message: ''
+    disabled: true
   });
 
   function onInput(e) {
@@ -96,8 +98,7 @@ function NewCategoryForm() {
     const newState = {
       ...localState,
       disabled: !!found || value.length === 0,
-      text: value,
-      message: !!found ? `${found.title} already exists` : ''
+      text: value
     };
 
     setLocalState(newState);
@@ -116,18 +117,18 @@ function NewCategoryForm() {
   }
 
   return html`
-<form onSubmit=${ newCategorySubmit }>
-  <label for="new-category">New category:</label>
-  <input type="text"
+<form class="form-inline" onSubmit=${ newCategorySubmit }>
+  <label class="form-inline-item" for="new-category">New category:</label>
+  <input class="form-inline-item"
+         type="text"
          id="new-category"
          name="new-category"
          value=${localState.text}
          onInput=${ onInput }/>
-  <input class="button save-button"
+  <input class="form-inline-item button save-button"
          type="submit"
          value="Create"
          disabled=${ localState.disabled }/>
-  <span>${ localState.message }</span>
 </form>`;
 }
 
