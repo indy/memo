@@ -556,6 +556,14 @@ hr {
 }
 
 @media (max-width: 700px) {
+  a.top-bar-menuitem {
+    margin-left: 0;
+  }
+
+  #login-menuitem {
+    margin-bottom: 1em;
+  }
+
   form label {
     margin-left: 0;
   }
