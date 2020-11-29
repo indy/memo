@@ -125,7 +125,7 @@ function NewCategoryForm() {
          name="new-category"
          value=${localState.text}
          onInput=${ onInput }/>
-  <input class="form-inline-item button save-button"
+  <input class="triaged-note-create-button-bodge form-inline-item button save-button"
          type="submit"
          value="Create"
          disabled=${ localState.disabled }/>

@@ -514,6 +514,13 @@ hr {
   padding: 1em 2em;
 }
 
+.section-controls-additional-bodge {
+  padding-top: 0;
+}
+.triaged-note-create-button-bodge {
+  margin-top: 1em !important;
+}
+
 #content {
   width: 100%;
   background: var(--textarea-bg);
