@@ -23,9 +23,32 @@ function Notes() {
   const notes = state.listing.notes;
   const listing = notes ? notes.map(n => NoteListItem(n, state.triageCategory)) : [];
 
+  function onCategorySelectChange(e) {
+    const value = e.target.value;
+    const category = state.categories.find(c => c.title === value);
+    console.assert(category, `${ category } should be part of the state's categories`);
+    setTriageCategory(dispatch, category);
+  }
+
+  const hasCategories = state.categories.length > 0;
+  const categoryOptions = state.categories.map(c => html`<option value="${c.title}">${c.title}</option>`);
+
+  if (hasCategories && !state.triageCategory) {
+    // set the default triage category
+    setTriageCategory(dispatch, state.categories[0]);
+  }
+
   return html`
     <div>
-      <${NoteSectionControls}/>
+      <div class="section-controls darken-border">
+        <${CreateNoteForm}/>
+        ${ hasCategories && html`<div class="pad-top-1em">
+          <label for="categories">Triage Categories:</label>
+          <select onChange=${ onCategorySelectChange } name="categories" id="categories">
+            ${ categoryOptions }
+          </select>
+        </div>`}
+      </div>
       <div class="hr"/>
       <div class="card-holder">
         ${ listing }
@@ -70,7 +93,7 @@ function NoteListItem(note, triageCategory) {
 
   const canTriage = !!triageCategory;
 
-  return html`<div class="card ${pigmentClass}">
+  return html`<div class="card ${pigmentClass} darken-border">
                 <div class="card-body">
                   <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
                   <p>${ note.content }</p>
@@ -98,7 +121,7 @@ function noteFromText(text) {
   }
 }
 
-function NoteSectionControls() {
+function CreateNoteForm() {
   const [userText, setUserText] = useState('');
   const [state, dispatch] = useStateValue();
 
@@ -123,48 +146,21 @@ function NoteSectionControls() {
     setUserText(newUserText);
   };
 
-  function onCategorySelectChange(e) {
-    const value = e.target.value;
-    const category = state.categories.find(c => c.title === value);
-    console.assert(category, `${ category } should be part of the state's categories`);
-    setTriageCategory(dispatch, category);
-  }
-
   const submitMessage = "Save";
   const disabled = userText.trim().length === 0;
 
-  const hasCategories = state.categories.length > 0;
-  const categoryOptions = state.categories.map(c => html`<option value="${c.title}">${c.title}</option>`);
-
-  if (hasCategories && !state.triageCategory) {
-    // set the default triage category
-    setTriageCategory(dispatch, state.categories[0]);
-  }
-
-  return html`<div class="section-controls">
-                <form class="add-note-form" onSubmit=${ onSubmit }>
-
-<div>
-                  <input class="button save-button"
-                         type="submit"
-                         value=${ submitMessage }
-                         disabled=${ disabled }/>
-
-        ${ hasCategories && html`<span class="pad-left-1em">
-          <label for="categories">Triage Categories:</label>
-          <select onChange=${ onCategorySelectChange } name="categories" id="categories">
-            ${ categoryOptions }
-          </select>
-        </span>`}
-</div>
-                  <br/>
-                  <textarea id="content"
-                            type="text"
-                            name="content"
-                            value=${ userText }
-                            onInput=${ handleChangeEvent }/>
-                </form>
-              </div>`;
+  return html`<form class="add-note-form" onSubmit=${ onSubmit }>
+                <input class="button save-button"
+                       type="submit"
+                       value=${ submitMessage }
+                       disabled=${ disabled }/>
+                <br/>
+                <textarea id="content"
+                          type="text"
+                          name="content"
+                          value=${ userText }
+                          onInput=${ handleChangeEvent }/>
+              </form>`;
 }
 
 function Note({ id }) {

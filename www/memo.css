@@ -25,7 +25,7 @@
   --save-on-bg: #6fdd6b;        /* clock02 */
   --save-on-fg: var(--fg);
 
-  --bg-section-controls: #e2e2e2;
+  --bg-section-controls: #e2e2e2; /* hsluv: 60.2, 0, 90 */
 
   --card-action-divider: rgba(160,160,160,0.2);
   --card-shadow: #ddd;
@@ -74,7 +74,7 @@
   --bg-clock-10: #f4ddde;
   --bg-clock-11: #f4ded3;
 
-  --ui-element-border-radius: 0.3em;
+  --ui-element-border-radius: 0.4em;
 }
 
 @media (max-width: 1200px) {
@@ -109,6 +109,8 @@
     /* clock12: hue 67, saturation: 70 lightness: 60 */
     --save-on-bg: #4fa24c;        /* clock02 */
     --save-on-fg: var(--bg1);
+
+    --bg-section-controls: #464646; /* hsluv: 60.2, 0, 30 */
 
     --card-action-divider: rgba(10,10,10,0.2);
     --card-shadow: #222;
@@ -435,18 +437,20 @@ a:visited.pigment-inherit {
 .pigment-fg-triaged { color: var(--fg-triaged); }
 .pigment-fg-bin { color: var(--fg-bin); }
 
-.pigment-clock-12 { background: var(--bg-clock-12); color: var(--fg-clock-12);}
-.pigment-clock-01 { background: var(--bg-clock-01); color: var(--fg-clock-01);}
-.pigment-clock-02 { background: var(--bg-clock-02); color: var(--fg-clock-02);}
-.pigment-clock-03 { background: var(--bg-clock-03); color: var(--fg-clock-03);}
-.pigment-clock-04 { background: var(--bg-clock-04); color: var(--fg-clock-04);}
-.pigment-clock-05 { background: var(--bg-clock-05); color: var(--fg-clock-05);}
-.pigment-clock-06 { background: var(--bg-clock-06); color: var(--fg-clock-06);}
-.pigment-clock-07 { background: var(--bg-clock-07); color: var(--fg-clock-07);}
-.pigment-clock-08 { background: var(--bg-clock-08); color: var(--fg-clock-08);}
-.pigment-clock-09 { background: var(--bg-clock-09); color: var(--fg-clock-09);}
-.pigment-clock-10 { background: var(--bg-clock-10); color: var(--fg-clock-10);}
-.pigment-clock-11 { background: var(--bg-clock-11); color: var(--fg-clock-11);}
+.pigment-clock-12 { background: var(--bg-clock-12); color: var(--fg-clock-12); }
+.pigment-clock-01 { background: var(--bg-clock-01); color: var(--fg-clock-01); }
+.pigment-clock-02 { background: var(--bg-clock-02); color: var(--fg-clock-02); }
+.pigment-clock-03 { background: var(--bg-clock-03); color: var(--fg-clock-03); }
+.pigment-clock-04 { background: var(--bg-clock-04); color: var(--fg-clock-04); }
+.pigment-clock-05 { background: var(--bg-clock-05); color: var(--fg-clock-05); }
+.pigment-clock-06 { background: var(--bg-clock-06); color: var(--fg-clock-06); }
+.pigment-clock-07 { background: var(--bg-clock-07); color: var(--fg-clock-07); }
+.pigment-clock-08 { background: var(--bg-clock-08); color: var(--fg-clock-08); }
+.pigment-clock-09 { background: var(--bg-clock-09); color: var(--fg-clock-09); }
+.pigment-clock-10 { background: var(--bg-clock-10); color: var(--fg-clock-10); }
+.pigment-clock-11 { background: var(--bg-clock-11); color: var(--fg-clock-11); }
+
+.darken-border { border: 1px solid rgba(0, 0, 0, 0.05)}
 
 .add-note-form {
   width: 100%;
@@ -510,18 +514,12 @@ hr {
   padding: 1em 2em;
 }
 
-@media (max-width: 760px) {
-  .section-controls {
-    width: 80%
-  }
-}
-
-
 #content {
   width: 100%;
   background: var(--textarea-bg);
   color: var(--textarea-fg);
   border-color: var(--textarea-border);
+  border-radius: var(--ui-element-border-radius);
 }
 
 #content:focus {
@@ -531,6 +529,10 @@ hr {
 
 .pad-left-1em {
   padding-left: 1em;
+}
+
+.pad-top-1em {
+  padding-top: 1em;
 }
 
 .card-holder {
@@ -545,6 +547,23 @@ hr {
   display: inline-block;
   vertical-align: top;
 }
+
+@media (max-width: 700px) {
+  form label {
+    margin-left: 0;
+  }
+
+  .section-controls {
+    width: 83%;
+    margin: 1.3em 0 0.8em 0;
+  }
+
+  .card {
+    width: 100%;
+    margin: 1.3em 0 0 0;
+  }
+}
+
 
 .card-body {
   overflow: hidden;
@@ -590,6 +609,10 @@ h3 {
 }
 .button:hover{
   background-color:rgba(0, 0, 0, 0.25);
+}
+
+.save-button {
+  margin-bottom: 1em;
 }
 
 .save-button:enabled {
