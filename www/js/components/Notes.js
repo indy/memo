@@ -5,7 +5,6 @@ import Net from '/js/Net.js';
 
 import { ensureListingLoaded } from '/js/NoteUtils.js';
 import { capitalise } from '/js/JsUtils.js';
-import CategorySelect from '/js/components/CategorySelect.js';
 
 import { svgBin } from '/js/svgIcons.js';
 
@@ -17,23 +16,6 @@ function Notes() {
   const notes = state.listing.notes;
   const listing = notes ? notes.map(n => NoteListItem(n, state.triageCategory)) : [];
 
-
-  function addNewCategoryFn(title) {
-    // setCategories(categories.concat(title));
-
-    Net.post(`/api/categories`, { title }).then(newCategory => {
-      console.log(newCategory);
-      Net.get('/api/categories').then(latestCategories => {
-        console.log(latestCategories);
-        dispatch({
-          type: 'set-categories',
-          categories: latestCategories
-        });
-        setTriageCategory(newCategory);
-      });
-    });
-  }
-
   function setTriageCategory(triageCategory) {
     dispatch({
       type: 'set-triage-category',
@@ -41,14 +23,31 @@ function Notes() {
     });
   }
 
+  const hasCategories = state.categories.length > 0;
+  const categoryOptions = state.categories.map(c => html`<option value="${c.title}">${c.title}</option>`);
+
+  if (hasCategories && !state.triageCategory) {
+    // set the default triage category
+    setTriageCategory(state.categories[0]);
+  }
+
+  function onCategorySelectChange(e) {
+    const value = e.target.value;
+    const category = state.categories.find(c => c.title === value);
+    console.assert(category, `${ category } should be part of the state's categories`);
+    setTriageCategory(category);
+  }
+
   return html`
     <div>
       <div class="centre-container">
         <${NoteCreateForm} dispatch=${ dispatch }/>
-        <${CategorySelect} category=${state.triageCategory}
-                           setCategory=${setTriageCategory}
-                           available=${ state.categories }
-                           addNewCategoryFn=${addNewCategoryFn}/>
+        ${ hasCategories && html`<div>
+          <label for="categories">Triage Categories:</label>
+          <select onChange=${ onCategorySelectChange } name="categories" id="categories">
+            ${ categoryOptions }
+          </select>
+        </div>`}
       </div>
       <div class="card-holder">
         ${ listing }

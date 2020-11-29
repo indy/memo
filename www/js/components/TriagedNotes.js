@@ -53,6 +53,7 @@ function TriagedNotes() {
     });
 
     return html`<div>
+                  <${NewCategoryForm }/>
                   <div>${ triagedSectionsHtml }</div>
                   <div>${ deletableHtml }</div>
                 </div>
@@ -60,6 +61,57 @@ function TriagedNotes() {
   }
 
   return html`<div></div>`;
+}
+
+function NewCategoryForm() {
+  const [state, dispatch] = useStateValue();
+
+  const [localState, setLocalState] = useState({
+    text: '',
+    disabled: true,
+    message: ''
+  });
+
+  function onInput(e) {
+    const value = e.target.value;
+    const found = state.categories.find(c => c.title === value);
+
+    const newState = {
+      ...localState,
+      disabled: !!found || value.length === 0,
+      text: value,
+      message: !!found ? `${found.title} already exists` : ''
+    };
+
+    setLocalState(newState);
+  }
+
+  function newCategorySubmit(e) {
+    e.preventDefault();
+
+    Net.post(`/api/categories`, { title: localState.text }).then(latestCategories => {
+      dispatch({
+        type: 'set-categories',
+        categories: latestCategories
+      });
+      setLocalState({...localState, text: ''});
+    });
+  }
+
+  return html`
+<form onSubmit=${ newCategorySubmit }>
+  <label for="new-category">New category:</label>
+  <input type="text"
+         id="new-category"
+         name="new-category"
+         value=${localState.text}
+         onInput=${ onInput }/>
+  <input class="button save-button"
+         type="submit"
+         value="Create"
+         disabled=${ localState.disabled }/>
+  <span>${ localState.message }</span>
+</form>`;
 }
 
 function NoteListItem(note) {

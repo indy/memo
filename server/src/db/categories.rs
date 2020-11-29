@@ -39,17 +39,23 @@ impl From<Category> for interop::Category {
     }
 }
 
+// note: this returns an array of all the user's categories rather
+// than the standard REST thing of the newly created category only
+// (client requires a list of all the categories for the UI)
+//
 pub(crate) async fn create(
     db_pool: &Pool,
     user_id: Key,
     category: &interop::ProtoCategory,
-) -> Result<interop::Category> {
+) -> Result<Vec<interop::Category>> {
     pg::one_from::<Category, interop::Category>(
         db_pool,
         include_str!("sql/categories_create.sql"),
         &[&user_id, &category.title],
     )
-    .await
+        .await?;
+
+    all(db_pool, user_id).await
 }
 
 pub(crate) async fn all(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::Category>> {
