@@ -18,7 +18,7 @@ function Notes() {
 
   function setTriageCategory(triageCategory) {
     dispatch({
-      type: 'set-triage-category',
+      type: 'triage-category-set',
       triageCategory
     });
   }
@@ -65,7 +65,7 @@ function NoteListItem(note, triageCategory) {
       console.log(triageCategory);
       Net.post(`/api/notes/${ note.id }/triage`, triageCategory).then(triagedNote => {
         dispatch({
-          type: 'triage-note',
+          type: 'note-triaged',
           note: triagedNote
         });
       });
@@ -78,7 +78,7 @@ function NoteListItem(note, triageCategory) {
     e.preventDefault();
     Net.post(`/api/notes/${ note.id }/bin`, {}).then(n => {
       dispatch({
-        type: 'bin-note',
+        type: 'note-binned',
         note
       });
     });
@@ -130,7 +130,7 @@ function NoteCreateForm({ dispatch }) {
     if (protoNote) {
       Net.post(`/api/notes`, protoNote).then(note => {
         dispatch({
-          type: 'append-note-to-listing',
+          type: 'listing-note-appended',
           note
         });
       });

@@ -45,10 +45,7 @@ function TriagedNotes() {
                                         </div>
                                       </div>`);
       } else {
-        // this is a category without notes, so can be deleted
-        deletableHtml.push(html`<div>
-                                  <p>can delete ${category.title}</p>
-                                </div>`);
+        deletableHtml.push(html`<${DeletableCategory} category=${category}/>`);
       }
     });
 
@@ -61,6 +58,26 @@ function TriagedNotes() {
   }
 
   return html`<div></div>`;
+}
+
+function DeletableCategory({ category }) {
+  const [state, dispatch] = useStateValue();
+
+  function onDeleteClicked(e) {
+    e.preventDefault();
+
+    Net.delete(`/api/categories/${ category.id }`, {}).then(c => {
+      dispatch({
+        type: 'category-deleted',
+        deletedCategory: category
+      });
+    });
+  }
+
+  return html`<div>
+                <button class="button" onClick=${ onDeleteClicked }>${ svgBin() }</button>
+                <span>can delete ${category.title}</span>
+              </div>`;
 }
 
 function NewCategoryForm() {
@@ -121,7 +138,7 @@ function NoteListItem(note) {
     e.preventDefault();
     Net.post(`/api/triaged/${ note.id }/bin`, {}).then(n => {
       dispatch({
-        type: 'bin-note',
+        type: 'note-binned',
         note
       });
     });

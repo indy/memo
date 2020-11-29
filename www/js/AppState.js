@@ -9,24 +9,34 @@ export const initialState = {
   }
 };
 
+// Message names are in 'object-verb' convention.
+// Verbs is in the past tense mean that the new state is reflecting changes made on the server
+//
 export const reducer = (state, action) => {
   switch (action.type) {
-  case 'set-user':
+  case 'user-set':
     return {
       ...state,
       user: action.user
     };
-  case 'set-categories':
+  case 'category-deleted':
+    {
+      return {
+        ...state,
+        categories: state.categories.filter(c => c.id !== action.deletedCategory.id)
+      }
+    }
+  case 'categories-set':
     return {
       ...state,
       categories: action.categories
     };
-  case 'set-triage-category':
+  case 'triage-category-set':
     return {
       ...state,
       triageCategory: action.triageCategory
     };
-  case 'set-listing':
+  case 'listing-set':
     {
       let listing = getListingFromState(state);
 
@@ -34,7 +44,7 @@ export const reducer = (state, action) => {
 
       return updateStateWithListing(state, listing);
     }
-  case 'append-note-to-listing':
+  case 'listing-note-appended':
     {
       let listing = getListingFromState(state);
 
@@ -46,7 +56,7 @@ export const reducer = (state, action) => {
 
       return updateStateWithListing(state, listing);
     }
-  case 'triage-note':
+  case 'note-triaged':
     {
       let listing = getListingFromState(state);
 
@@ -59,7 +69,7 @@ export const reducer = (state, action) => {
 
       return updateStateWithListing(state, listing);
     }
-  case 'bin-note':
+  case 'note-binned':
     {
       let listing = getListingFromState(state);
 
@@ -72,7 +82,7 @@ export const reducer = (state, action) => {
 
       return updateStateWithListing(state, listing);
     }
-  case 'delete-note':
+  case 'note-deleted':
     {
       let listing = getListingFromState(state);
 
@@ -80,7 +90,7 @@ export const reducer = (state, action) => {
 
       return updateStateWithListing(state, listing);
     }
-  case 'unbin-note':
+  case 'note-unbinned':
     {
       let listing = getListingFromState(state);
 
@@ -99,7 +109,7 @@ export const reducer = (state, action) => {
 
       return updateStateWithListing(state, listing);
     }
-  case 'empty-bin':
+  case 'bin-emptied':
     {
       let listing = getListingFromState(state);
 

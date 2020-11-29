@@ -20,7 +20,7 @@ function Bin() {
 
     Net.delete(`/api/bin`, {}).then(() => {
       dispatch({
-        type: 'empty-bin'
+        type: 'bin-emptied'
       });
     });
   }
@@ -54,7 +54,7 @@ function NoteListItem(note) {
     e.preventDefault();
     Net.delete(`/api/bin/${ note.id }`, {}).then(n => {
       dispatch({
-        type: 'delete-note',
+        type: 'note-deleted',
         note
       });
     });
@@ -64,7 +64,7 @@ function NoteListItem(note) {
     e.preventDefault();
     Net.post(`/api/bin/${ note.id }/unbin`, note).then(n => {
       dispatch({
-        type: 'unbin-note',
+        type: 'note-unbinned',
         note
       });
     });

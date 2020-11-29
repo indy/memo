@@ -32,7 +32,7 @@ function Login() {
 
   function loginCallback(user) {
     dispatch({
-      type: 'set-user',
+      type: 'user-set',
       user
     });
     // once the state has a user, the Login page will redirect to '/'
@@ -136,7 +136,7 @@ function Logout() {
   const handleLogout = (event) => {
     Net.delete('api/auth', {}).then(() => {
       dispatch({
-        type: 'set-user',
+        type: 'user-set',
         user: undefined
       });
       route('/login', true);

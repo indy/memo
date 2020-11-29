@@ -18,13 +18,13 @@ export async function buildInitialState() {
       // update initial state with user
       //
       let state = reducer(initialState, {
-        type: 'set-user',
+        type: 'user-set',
         user
       });
 
       let categories = await Net.get("/api/categories");
       state = reducer(state, {
-        type: 'set-categories',
+        type: 'categories-set',
         categories
       });
 
