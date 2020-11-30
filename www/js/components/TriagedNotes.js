@@ -6,7 +6,7 @@ import Net from '/js/Net.js';
 import { ensureListingLoaded } from '/js/NoteUtils.js';
 import { capitalise } from '/js/JsUtils.js';
 
-import { svgBin } from '/js/svgIcons.js';
+import { svgBin, svgExpand, svgMinimise } from '/js/svgIcons.js';
 
 function TriagedNotes() {
   const [state, dispatch] = useStateValue();
@@ -36,14 +36,9 @@ function TriagedNotes() {
 
     state.categories.forEach(category => {
       if (triagedByCategory[category.id]) {
-        const categoryNotes = triagedByCategory[category.id];
-        const notesHtml = categoryNotes.map(n => NoteListItem(n));
-        triagedSectionsHtml.push(html`<div>
-                                        <h1 class="pad-left-1em">${ category.title }</h1>
-                                        <div class="card-holder">
-                                          ${ notesHtml }
-                                        </div>
-                                      </div>`);
+        triagedSectionsHtml.push(html`<${TriagedCategory}
+                                        categoryNotes=${ triagedByCategory[category.id] }
+                                        categoryTitle=${ category.title }/>`);
       } else {
         deletableHtml.push(html`<${DeletableCategory} category=${category}/>`);
       }
@@ -56,11 +51,34 @@ function TriagedNotes() {
                   <div class="hr"/>
                   <div>${ triagedSectionsHtml }</div>
                   <div class="pad-left-1em">${ deletableHtml }</div>
-                </div>
-`;
+                </div>`;
   }
 
   return html`<div></div>`;
+}
+
+function TriagedCategory({ categoryNotes, categoryTitle }) {
+  let [show, setShow] = useState(true);
+
+  function toggleShow() {
+    setShow(!show);
+  }
+
+  const notesHtml = categoryNotes.map(n => NoteListItem(n));
+
+  if (show) {
+    return html`<div>
+                  <h1 class="pad-left-1em" onClick=${ toggleShow }>${ svgMinimise() }${ categoryTitle }</h1>
+                  <div class="card-holder">
+                    ${ notesHtml }
+                  </div>
+                </div>`;
+
+  } else {
+    return html`<div>
+                  <h1 class="pad-left-1em" onClick=${ toggleShow }>${ svgExpand() }${ categoryTitle }</h1>
+                </div>`;
+  }
 }
 
 function DeletableCategory({ category }) {
