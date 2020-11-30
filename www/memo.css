@@ -485,6 +485,13 @@ a.top-bar-menuitem {
   border-radius: var(--ui-element-border-radius);
 }
 
+a.top-bar-menuitem-active {
+  text-decoration-line: underline;
+  text-decoration-thickness: 0.1rem;
+  text-decoration-skip-ink: none;
+  text-decoration-color: rgba(0, 0, 0, 0.3);
+}
+
 hr {
   display: block;
   height: 1em;
@@ -535,11 +542,11 @@ hr {
 }
 
 .pad-left-1em {
-  padding-left: 1em;
+  padding-left: 1rem;
 }
 
 .pad-top-1em {
-  padding-top: 1em;
+  padding-top: 1rem;
 }
 
 .card-holder {

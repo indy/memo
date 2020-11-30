@@ -1,5 +1,6 @@
 export const initialState = {
   user: undefined,
+  activeTopBarMenuItem: '',
   categories: [],
   triageCategory: undefined,
   listing: {
@@ -14,6 +15,22 @@ export const initialState = {
 //
 export const reducer = (state, action) => {
   switch (action.type) {
+  case 'route-changed':
+    {
+      let activeTopBarMenuItem = '';
+      if (action.url === '/') {
+        activeTopBarMenuItem = 'notes';
+      } else if (action.url === '/triaged') {
+        activeTopBarMenuItem = 'triaged';
+      } else if (action.url === '/bin') {
+        activeTopBarMenuItem = 'bin';
+      }
+
+      return {
+        ...state,
+        activeTopBarMenuItem
+      };
+    }
   case 'user-set':
     return {
       ...state,

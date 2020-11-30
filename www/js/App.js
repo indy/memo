@@ -71,12 +71,24 @@ function TopBarMenu(props) {
     return state.user ? "/logout" : "/login";
   }
 
+  let notesExtraClass='';
+  let triagedExtraClass='';
+  let binExtraClass='';
+
+  if (state.activeTopBarMenuItem === 'notes') {
+    notesExtraClass = 'top-bar-menuitem-active';
+  } else if (state.activeTopBarMenuItem === 'triaged') {
+    triagedExtraClass = 'top-bar-menuitem-active';
+  } else if (state.activeTopBarMenuItem === 'bin') {
+    binExtraClass = 'top-bar-menuitem-active';
+  }
+
   return html`
     <div id='top-bar-menu' class="hr">
       <${Link} href=${ loggedLink() } id="login-menuitem" class="pigment-inherit">${ loggedStatus() }</${Link}>
-      <${Link} class='top-bar-menuitem pigment-notes' href=${'/'}>Notes</${Link}>
-      <${Link} class='top-bar-menuitem pigment-triaged' href=${'/triaged'}>Triaged</${Link}>
-      <${Link} class='top-bar-menuitem pigment-bin' href=${'/bin'}>Bin</${Link}>
+      <${Link} class='top-bar-menuitem pigment-notes ${notesExtraClass}' href=${'/'}>Notes</${Link}>
+      <${Link} class='top-bar-menuitem pigment-triaged ${triagedExtraClass}' href=${'/triaged'}>Triaged</${Link}>
+      <${Link} class='top-bar-menuitem pigment-bin ${binExtraClass}' href=${'/bin'}>Bin</${Link}>
     </div>
 `;
 }
@@ -85,6 +97,10 @@ function AppUI(props) {
   const [state, dispatch] = useStateValue();
 
   function handleRoute(e) {
+    dispatch({
+      type: 'route-changed',
+      url: e.url
+    });
     if (e.url !== '/login') {
       // all other pages require the user to be logged in
       if (!state.user) {
