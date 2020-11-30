@@ -10,8 +10,10 @@ export const initialState = {
   }
 };
 
-// Message names are in 'object-verb' convention.
-// Verbs is in the past tense mean that the new state is reflecting changes made on the server
+// - Message names are in 'object-verb' convention.
+// - Verbs is in the past tense mean that the new state is reflecting changes made
+//   by another 'source of ground truth', e.g. on the server, preact's routing, etc
+// - Verbs in the present tense mean that this state system holds the definitive truth
 //
 export const reducer = (state, action) => {
   switch (action.type) {

@@ -44,7 +44,7 @@ function Notes() {
         <${CreateNoteForm}/>
       </div>
       <div class="section-controls darken-border section-controls-additional-bodge">
-        ${ hasCategories && html`<div class="pad-top-1em">
+        ${ hasCategories && html`<div class="pad-top-1rem">
           <label for="categories">Triage Categories:</label>
           <select onChange=${ onCategorySelectChange } name="categories" id="categories">
             ${ categoryOptions }

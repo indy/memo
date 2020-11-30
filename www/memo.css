@@ -541,11 +541,11 @@ hr {
     box-shadow: 0 0 6px var(--textarea-bg);
 }
 
-.pad-left-1em {
+.pad-left-1rem {
   padding-left: 1rem;
 }
 
-.pad-top-1em {
+.pad-top-1rem {
   padding-top: 1rem;
 }
 

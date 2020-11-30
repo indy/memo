@@ -50,7 +50,8 @@ function TriagedNotes() {
                   </div>
                   <div class="hr"/>
                   <div>${ triagedSectionsHtml }</div>
-                  <div class="pad-left-1em">${ deletableHtml }</div>
+                  <div class="hr"/>
+                  <div class="pad-left-1rem pad-top-1rem">${ deletableHtml }</div>
                 </div>`;
   }
 
@@ -68,7 +69,7 @@ function TriagedCategory({ categoryNotes, categoryTitle }) {
 
   if (show) {
     return html`<div>
-                  <h1 class="pad-left-1em" onClick=${ toggleShow }>${ svgMinimise() }${ categoryTitle }</h1>
+                  <h1 class="pad-left-1rem" onClick=${ toggleShow }>${ svgMinimise() }${ categoryTitle }</h1>
                   <div class="card-holder">
                     ${ notesHtml }
                   </div>
@@ -76,7 +77,7 @@ function TriagedCategory({ categoryNotes, categoryTitle }) {
 
   } else {
     return html`<div>
-                  <h1 class="pad-left-1em" onClick=${ toggleShow }>${ svgExpand() }${ categoryTitle }</h1>
+                  <h1 class="pad-left-1rem" onClick=${ toggleShow }>${ svgExpand() }${ categoryTitle }</h1>
                 </div>`;
   }
 }
@@ -97,7 +98,7 @@ function DeletableCategory({ category }) {
 
   return html`<div>
                 <button class="button" onClick=${ onDeleteClicked }>${ svgBin() }</button>
-                <span class="pad-left-1em">can delete ${category.title}</span>
+                <span class="pad-left-1rem">Delete ${category.title}</span>
               </div>`;
 }
 
