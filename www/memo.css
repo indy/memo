@@ -93,8 +93,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #2b2b2b;
-    --fg: #a6a8aa;
+    --bg: #000;
+    --fg: #888;
 
     --fg1: #999; /* linked decks (i.e. tags) */
     --fg-inactive: var(--fg1);
@@ -110,36 +110,36 @@
     --save-on-bg: #4fa24c;        /* clock02 */
     --save-on-fg: var(--bg1);
 
-    --bg-section-controls: #464646; /* hsluv: 60.2, 0, 30 */
+    --bg-section-controls: #303030; /* hsluv: 60.2, 0, 20 */
 
     --card-action-divider: rgba(10,10,10,0.2);
     --card-shadow: #222;
     --divider: #444;
     --hyperlink: #5279a8;         /* clock06 saturation: 60.2 lightness: 50 */
 
-    /* hue: 67.1 saturation: 60.2 lightness: 50 */
-    --bg-notes: #5279a8;             /* clock06 */
-    --bg-triaged: #867548;      /* clock12 */
-    --bg-bin: #498348;    /* clock02 */
+    /* hue: 67.1 saturation: 60.2 lightness: 30 */
+    --bg-notes: #2f4866;             /* clock06 */
+    --bg-triaged: #504529;      /* clock12 */
+    --bg-bin: #294e28;    /* clock02 */
 
-    /* hue: 67.1 saturation: 60.2 lightness: 90 */
-    --fg-notes: #d9e3f3;             /* clock06 */
-    --fg-triaged: #f4e0b2;      /* clock12 */
-    --fg-bin: #a7f5a5;      /* clock02 */
+    /* hue: 67.1 saturation: 60.2 lightness: 60 */
+    --fg-notes: #6593cb;             /* clock06 */
+    --fg-triaged: #a28e59;      /* clock12 */
+    --fg-bin: #5aa058;      /* clock02 */
 
-    /* clock12: hue 67.1 saturation: 60.2 lightness: 90 */
-    --fg-clock-12: #f4e0b2;
-    --fg-clock-01: #d7eb8e;
-    --fg-clock-02: #a7f5a5;
-    --fg-clock-03: #98f4d1;
-    --fg-clock-04: #96f2ed;
-    --fg-clock-05: #c6e7f3;
-    --fg-clock-06: #d9e3f3;
-    --fg-clock-07: #e5dff3;
-    --fg-clock-08: #f3daf3;
-    --fg-clock-09: #f4dce7;
-    --fg-clock-10: #f4ddde;
-    --fg-clock-11: #f4ded3;
+    /* clock12: hue 67.1 saturation: 60.2 lightness: 60*/
+    --fg-clock-12: #a28e59;
+    --fg-clock-01: #899659;
+    --fg-clock-02: #5aa058;
+    --fg-clock-03: #5c9d84;
+    --fg-clock-04: #5e9b97;
+    --fg-clock-05: #6098a9;
+    --fg-clock-06: #6593cb;
+    --fg-clock-07: #9d82d3;
+    --fg-clock-08: #d167d2;
+    --fg-clock-09: #d86ba8;
+    --fg-clock-10: #dc6f7a;
+    --fg-clock-11: #bf825a;
 
     /* clock12: hue 67.1 saturation: 60.2 lightness: 30 */
     --bg-clock-12: #504529;
@@ -157,7 +157,6 @@
 
   }
 }
-
 /*
    ==========================================================================
    Old Tufte
@@ -171,6 +170,16 @@ html {
 body {
   font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
   background-color: var(--bg);
+  color: var(--fg);
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  border: 1px solid var(--bg-section-controls);
+  background: var(--bg);
   color: var(--fg);
 }
 
@@ -526,6 +535,13 @@ hr {
 }
 .triaged-note-create-button-bodge {
   margin-top: 1em !important;
+}
+
+#new-category {
+  background: var(--textarea-bg);
+  color: var(--textarea-fg);
+  border-color: var(--textarea-border);
+  border-radius: var(--ui-element-border-radius);
 }
 
 #content {
