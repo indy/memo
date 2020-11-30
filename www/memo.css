@@ -117,43 +117,43 @@
     --divider: #444;
     --hyperlink: #5279a8;         /* clock06 saturation: 60.2 lightness: 50 */
 
-    /* hue: 67.1 saturation: 60.2 lightness: 30 */
-    --bg-notes: #2f4866;             /* clock06 */
-    --bg-triaged: #504529;      /* clock12 */
-    --bg-bin: #294e28;    /* clock02 */
+    /* hue: 67.1 saturation: 60.2 lightness: 15 */
+    --bg-notes: #172638;             /* clock06 */
+    --bg-triaged: #2b2513;      /* clock12 */
+    --bg-bin: #142a13;    /* clock02 */
 
-    /* hue: 67.1 saturation: 60.2 lightness: 60 */
-    --fg-notes: #6593cb;             /* clock06 */
-    --fg-triaged: #a28e59;      /* clock12 */
-    --fg-bin: #5aa058;      /* clock02 */
+    /* hue: 67.1 saturation: 60.2 lightness: 50 */
+    --fg-notes: #5279a8;             /* clock06 */
+    --fg-triaged: #867548;      /* clock12 */
+    --fg-bin: #498348;      /* clock02 */
 
-    /* clock12: hue 67.1 saturation: 60.2 lightness: 60*/
-    --fg-clock-12: #a28e59;
-    --fg-clock-01: #899659;
-    --fg-clock-02: #5aa058;
-    --fg-clock-03: #5c9d84;
-    --fg-clock-04: #5e9b97;
-    --fg-clock-05: #6098a9;
-    --fg-clock-06: #6593cb;
-    --fg-clock-07: #9d82d3;
-    --fg-clock-08: #d167d2;
-    --fg-clock-09: #d86ba8;
-    --fg-clock-10: #dc6f7a;
-    --fg-clock-11: #bf825a;
+    /* clock12: hue 67.1 saturation: 60.2 lightness: 50*/
+    --fg-clock-12: #867548;
+    --fg-clock-01: #717c48;
+    --fg-clock-02: #498348;
+    --fg-clock-03: #4b816d;
+    --fg-clock-04: #4c7f7d;
+    --fg-clock-05: #4e7d8b;
+    --fg-clock-06: #5279a8;
+    --fg-clock-07: #8764c6;
+    --fg-clock-08: #ad54ae;
+    --fg-clock-09: #bc508e;
+    --fg-clock-10: #ca4b5b;
+    --fg-clock-11: #9e6b49;
 
-    /* clock12: hue 67.1 saturation: 60.2 lightness: 30 */
-    --bg-clock-12: #504529;
-    --bg-clock-01: #424929;
-    --bg-clock-02: #294e28;
-    --bg-clock-03: #2a4d40;
-    --bg-clock-04: #2b4c4a;
-    --bg-clock-05: #2d4b54;
-    --bg-clock-06: #2f4866;
-    --bg-clock-07: #543586;
-    --bg-clock-08: #69306a;
-    --bg-clock-09: #722d55;
-    --bg-clock-10: #7b2a35;
-    --bg-clock-11: #5f3f29;
+    /* clock12: hue 67.1 saturation: 60.2 lightness: 15*/
+    --bg-clock-12: #2b2513;
+    --bg-clock-01: #232713;
+    --bg-clock-02: #142a13;
+    --bg-clock-03: #142921;
+    --bg-clock-04: #152928;
+    --bg-clock-05: #16282d;
+    --bg-clock-06: #172638;
+    --bg-clock-07: #2e1b4c;
+    --bg-clock-08: #3a183b;
+    --bg-clock-09: #40162e;
+    --bg-clock-10: #46141a;
+    --bg-clock-11: #352113;
 
   }
 }
@@ -178,6 +178,7 @@ select {
   -moz-appearance: none;
   appearance: none;
 
+  border-radius: var(--ui-element-border-radius);
   border: 1px solid var(--bg-section-controls);
   background: var(--bg);
   color: var(--fg);
