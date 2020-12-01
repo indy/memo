@@ -3,7 +3,7 @@ import { html, route, Link, useState, useEffect } from '/lib/preact/mod.js';
 import { useStateValue } from '/js/StateProvider.js';
 import Net from '/js/Net.js';
 
-import { ensureListingLoaded } from '/js/NoteUtils.js';
+import { parseNoteContent, ensureListingLoaded } from '/js/NoteUtils.js';
 import { capitalise } from '/js/JsUtils.js';
 
 import { svgBin, svgExpand, svgMinimise } from '/js/svgIcons.js';
@@ -173,7 +173,7 @@ function NoteListItem(note) {
   return html`<div class="card ${pigmentClass}">
                 <div class="card-body">
                   <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
-                  <p>${ note.content }</p>
+                  ${ parseNoteContent(note) }
                   <div class="card-action">
                     <button class="button button-delete" onClick=${ onDeleteClicked }>${ svgBin() }</button>
                   </div>
@@ -211,7 +211,7 @@ function TriagedNote({ id }) {
   return html`
     <article>
       <h1>${ note.title }</h1>
-      <p>${ note.content }</p>
+      ${ parseNoteContent(note) }
     </article>`;
 }
 

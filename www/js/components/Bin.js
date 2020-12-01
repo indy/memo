@@ -3,7 +3,7 @@ import { html, route, Link, useState, useEffect } from '/lib/preact/mod.js';
 import { useStateValue } from '/js/StateProvider.js';
 import Net from '/js/Net.js';
 
-import { ensureListingLoaded } from '/js/NoteUtils.js';
+import { parseNoteContent, ensureListingLoaded } from '/js/NoteUtils.js';
 import { capitalise } from '/js/JsUtils.js';
 
 function Bin() {
@@ -70,7 +70,7 @@ function NoteListItem(note) {
   return html`<div class="card ${pigmentClass}">
                 <div class="card-body">
                   <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
-                  <p>${ note.content }</p>
+                  ${ parseNoteContent(note) }
                   <div class="card-action">
                     <button class="button" onClick=${ onUndeleteClicked }>Undelete</button>
                     <button class="button button-delete" onClick=${ onDeleteClicked }>Really Delete</button>
