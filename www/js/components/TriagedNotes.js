@@ -202,7 +202,7 @@ function TriagedNote({ id }) {
   const [state, dispatch] = useStateValue();
 
   function getNoteById(id) {
-    return state.listing.notes.find(n => n.id === id);
+    return state.listing.triaged.find(n => n.id === id);
   }
 
   const noteId = parseInt(id, 10);

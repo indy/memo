@@ -64,7 +64,7 @@ function NoteListItem(note) {
   const pigmentNum = (note.id % 12) + 1;
   const pigmentClass = pigmentNum < 10 ? `pigment-clock-0${pigmentNum}` : `pigment-clock-${pigmentNum}`;
 
-  const resource = 'notes';
+  const resource = 'bin';
   const href = `/${resource}/${note.id}`;
 
   return html`<div class="card ${pigmentClass}">
@@ -79,4 +79,22 @@ function NoteListItem(note) {
               </div>`;
 }
 
-export { Bin };
+function BinnedNote({ id }) {
+  const [state, dispatch] = useStateValue();
+
+  function getNoteById(id) {
+    let found = state.listing.bin.find(n => n.id === id);
+    return found;
+  }
+
+  const noteId = parseInt(id, 10);
+  const note = getNoteById(noteId);
+
+  return html`
+    <article>
+      <h1>${ note.title }</h1>
+      ${ parseNoteContent(note) }
+    </article>`;
+}
+
+export { Bin, BinnedNote };

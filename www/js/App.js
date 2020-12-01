@@ -5,7 +5,7 @@ import Net from '/js/Net.js';
 import { useStateValue, StateProvider } from '/js/StateProvider.js';
 
 import { TriagedNote, TriagedNotes } from '/js/components/TriagedNotes.js';
-import { Bin } from '/js/components/Bin.js';
+import { Bin, BinnedNote } from '/js/components/Bin.js';
 import { Note, Notes } from '/js/components/Notes.js';
 import { Login, Logout } from '/js/components/Login.js';
 
@@ -119,6 +119,7 @@ function AppUI(props) {
         <${TriagedNotes} path="/triaged"/>
         <${TriagedNote} path="/triaged/:id"/>
         <${Bin} path="/bin"/>
+        <${BinnedNote} path="/bin/:id"/>
         <${Login} path="/login"/>
         <${Logout} path="/logout"/>
       </${Router}>
