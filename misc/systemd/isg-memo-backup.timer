@@ -2,8 +2,8 @@
 Description=Run Memo Database backup weekly
 
 [Timer]
+Unit=isg-memo-backup.service
 OnCalendar=weekly
-Persistent=true
 
 [Install]
 WantedBy=timers.target
