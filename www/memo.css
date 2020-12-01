@@ -174,14 +174,17 @@ body {
 }
 
 select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+  -webkit-appearance: auto;
+  -moz-appearance: auto;
+  appearance: auto;
 
   border-radius: var(--ui-element-border-radius);
   border: 1px solid var(--bg-section-controls);
   background: var(--bg);
   color: var(--fg);
+
+  padding: 0.2rem 0.8rem 0.1rem 0.8rem;
+  margin-left: 0.5rem !important;
 }
 
 h1 {
