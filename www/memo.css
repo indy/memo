@@ -8,44 +8,6 @@
 */
 
 :root {
-  --bg: #f5f2f0;
-  --fg: rgb(15, 12, 10);
-
-  --fg1: #666; /* linked decks (i.e. tags) */
-  --fg-inactive: #999;
-
-  --bg1: #eeeee8;
-  --bg2: #ede7e3;
-
-  --textarea-bg: #fffff8;
-  --textarea-fg: rgb(15, 12, 10);
-  --textarea-border: #fffff8;
-
-  /* clock12: hue 67, saturation: 70 lightness: 80 */
-  --save-on-bg: #6fdd6b;        /* clock02 */
-  --save-on-fg: var(--fg);
-
-  --bg-section-controls: #e2e2e2; /* hsluv: 60.2, 0, 90 */
-
-  --card-action-divider: rgba(160,160,160,0.2);
-  --card-shadow: #ddd;
-  --divider: #ccc;
-  --hyperlink: #5279a8;         /* clock06 saturation: 60.2 lightness: 50 */
-
-  /* clock12: hue 52, saturation: 60.2 lightness: 90 */
-  --bg-notes: #b0ecf3;             /* clock05 */
-  --bg-triaged: #bef18e;    /* clock02 */
-  --bg-bin: #ebddf3;    /* clock08 */
-
-  /* clock12: hue 52, saturation: 60.2 lightness: 50 */
-  --fg-notes: #4d7e84;             /* clock05 */
-  --fg-triaged: #627f48;      /* clock02 */
-  --fg-bin: #a257c1;      /* clock08 */
-
-  --body-width: 80%;
-  --block-width: 55%;
-  --block-width-indented: 50%;
-
   /* clock12: hue 67.1 saturation: 60.2 lightness: 30 */
   --fg-clock-12: #504529;
   --fg-clock-01: #424929;
@@ -74,59 +36,62 @@
   --bg-clock-10: #f4ddde;
   --bg-clock-11: #f4ded3;
 
-  --ui-element-border-radius: 0.4em;
-}
+  /* clock12: hue 67.1 saturation: 60.2 lightness: 80 */
+  --bg-clock-12-hi: #dec47c;
+  --bg-clock-01-hi: #bdce7c;
+  --bg-clock-02-hi: #7edb7b;
+  --bg-clock-03-hi: #80d7b6;
+  --bg-clock-04-hi: #83d4d0;
+  --bg-clock-05-hi: #86d1e7;
+  --bg-clock-06-hi: #b2c7e9;
+  --bg-clock-07-hi: #ccc0e9;
+  --bg-clock-08-hi: #e8b6e9;
+  --bg-clock-09-hi: #eab8d0;
+  --bg-clock-10-hi: #eababe;
+  --bg-clock-11-hi: #ebbca3;
 
-@media (max-width: 1200px) {
-  :root {
-    --body-width: 93.5%;
-    --block-width: 70%;
-  }
-}
+  /* clock12: hue 67.1 saturation: 60.2 lightness: 70*/
+  --bg-clock-12-hi2: #c0a96a;
+  --bg-clock-01-hi2: #a3b26a;
+  --bg-clock-02-hi2: #6cbd6a;
+  --bg-clock-03-hi2: #6eb99d;
+  --bg-clock-04-hi2: #70b7b3;
+  --bg-clock-05-hi2: #73b4c8;
+  --bg-clock-06-hi2: #89adde;
+  --bg-clock-07-hi2: #b4a1de;
+  --bg-clock-08-hi2: #dd90de;
+  --bg-clock-09-hi2: #e193bb;
+  --bg-clock-10-hi2: #e2969d;
+  --bg-clock-11-hi2: #e29b6b;
 
-@media (max-width: 800px) {
-  :root {
-    --body-width: 97.5%;
-    --block-width: 90%;
-  }
+  --bg: #f5f2f0;
+  --fg: rgb(15, 12, 10);
+
+  --fg1: #666; /* linked decks (i.e. tags) */
+  --fg-inactive: #999;
+
+  --bg1: #eeeee8;
+  --bg2: #ede7e3;
+
+  --textarea-bg: #fffff8;
+  --textarea-fg: rgb(15, 12, 10);
+
+  /* clock12: hue 67, saturation: 70 lightness: 80 */
+  --save-on-bg: #6fdd6b;        /* clock02 */
+  --save-on-fg: var(--fg);
+
+  --bg-section-controls: #e2e2e2; /* hsluv: 60.2, 0, 90 */
+
+  --card-action-divider: rgba(160,160,160,0.2);
+  --card-shadow: #ddd;
+  --divider: #ccc;
+
+  /* clock12: hue 67, saturation: 100 lightness: 60 */
+  --hyperlink: #0095f0;         /* clock06 */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #000;
-    --fg: #888;
-
-    --fg1: #999; /* linked decks (i.e. tags) */
-    --fg-inactive: var(--fg1);
-
-    --bg1: #171717;
-    --bg2: #12181C;
-
-    --textarea-bg: #12181C;
-    --textarea-fg: #a6a8aa;
-    --textarea-border: #12181C;
-
-    /* clock12: hue 67, saturation: 70 lightness: 60 */
-    --save-on-bg: #4fa24c;        /* clock02 */
-    --save-on-fg: var(--bg1);
-
-    --bg-section-controls: #303030; /* hsluv: 60.2, 0, 20 */
-
-    --card-action-divider: rgba(10,10,10,0.2);
-    --card-shadow: #222;
-    --divider: #444;
-    --hyperlink: #5279a8;         /* clock06 saturation: 60.2 lightness: 50 */
-
-    /* hue: 67.1 saturation: 60.2 lightness: 15 */
-    --bg-notes: #172638;             /* clock06 */
-    --bg-triaged: #2b2513;      /* clock12 */
-    --bg-bin: #142a13;    /* clock02 */
-
-    /* hue: 67.1 saturation: 60.2 lightness: 50 */
-    --fg-notes: #5279a8;             /* clock06 */
-    --fg-triaged: #867548;      /* clock12 */
-    --fg-bin: #498348;      /* clock02 */
-
     /* clock12: hue 67.1 saturation: 60.2 lightness: 50*/
     --fg-clock-12: #867548;
     --fg-clock-01: #717c48;
@@ -155,8 +120,96 @@
     --bg-clock-10: #46141a;
     --bg-clock-11: #352113;
 
+    /* clock12: hue 67.1 saturation: 60.2 lightness: 25*/
+    --bg-clock-12-hi: #433a21;
+    --bg-clock-01-hi: #383e21;
+    --bg-clock-02-hi: #224221;
+    --bg-clock-03-hi: #234135;
+    --bg-clock-04-hi: #24403e;
+    --bg-clock-05-hi: #253f46;
+    --bg-clock-06-hi: #273c56;
+    --bg-clock-07-hi: #472c72;
+    --bg-clock-08-hi: #592859;
+    --bg-clock-09-hi: #612548;
+    --bg-clock-10-hi: #69232c;
+    --bg-clock-11-hi: #513422;
+
+    /* clock12: hue 67.1 saturation: 60.2 lightness: 35*/
+    --bg-clock-12-hi2: #5d5130;
+    --bg-clock-01-hi2: #4e5530;
+    --bg-clock-02-hi2: #315b30;
+    --bg-clock-03-hi2: #32594b;
+    --bg-clock-04-hi2: #335856;
+    --bg-clock-05-hi2: #355761;
+    --bg-clock-06-hi2: #375476;
+    --bg-clock-07-hi2: #623e9b;
+    --bg-clock-08-hi2: #79397a;
+    --bg-clock-09-hi2: #843663;
+    --bg-clock-10-hi2: #8e323e;
+    --bg-clock-11-hi2: #6f4931;
+
+
+    --bg: #000;
+    --fg: #888;
+
+    --fg1: #999; /* linked decks (i.e. tags) */
+    --fg-inactive: var(--fg1);
+
+    --bg1: #171717;
+    --bg2: #12181C;
+
+    --textarea-bg: #12181C;
+    --textarea-fg: #a6a8aa;
+
+    /* clock12: hue 67, saturation: 70 lightness: 60 */
+    --save-on-bg: #4fa24c;        /* clock02 */
+    --save-on-fg: var(--bg1);
+
+    --bg-section-controls: #303030; /* hsluv: 60.2, 0, 20 */
+
+    --card-action-divider: rgba(10,10,10,0.2);
+    --card-shadow: #222;
+    --divider: #444;
+
+    /* clock12: hue 67, saturation: 80 lightness: 40 */
+    --hyperlink: #2e6193;         /* clock06 */
   }
 }
+
+:root {
+  --bg-notes: var(--bg-clock-06);
+  --bg-triaged: var(--bg-clock-12);
+  --bg-bin: var(--bg-clock-02);
+
+  --fg-notes: var(--fg-clock-06);
+  --fg-triaged: var(--fg-clock-12);
+  --fg-bin: var(--fg-clock-02);
+
+  --textarea-border: var(--textarea-bg);
+
+  --body-width: 80%;
+  --block-width: 55%;
+  --block-width-indented: 50%;
+
+  --ui-element-border-radius: 0.4em;
+}
+
+
+@media (max-width: 1200px) {
+  :root {
+    --body-width: 93.5%;
+    --block-width: 70%;
+  }
+}
+
+@media (max-width: 800px) {
+  :root {
+    --body-width: 97.5%;
+    --block-width: 90%;
+  }
+}
+
+
 /*
    ==========================================================================
    Old Tufte
@@ -463,6 +516,32 @@ a:visited.pigment-inherit {
 .pigment-clock-10 { background: var(--bg-clock-10); color: var(--fg-clock-10); }
 .pigment-clock-11 { background: var(--bg-clock-11); color: var(--fg-clock-11); }
 
+.pigment-clock-12-hi { background: var(--bg-clock-12-hi); color: var(--fg-clock-12); }
+.pigment-clock-01-hi { background: var(--bg-clock-01-hi); color: var(--fg-clock-01); }
+.pigment-clock-02-hi { background: var(--bg-clock-02-hi); color: var(--fg-clock-02); }
+.pigment-clock-03-hi { background: var(--bg-clock-03-hi); color: var(--fg-clock-03); }
+.pigment-clock-04-hi { background: var(--bg-clock-04-hi); color: var(--fg-clock-04); }
+.pigment-clock-05-hi { background: var(--bg-clock-05-hi); color: var(--fg-clock-05); }
+.pigment-clock-06-hi { background: var(--bg-clock-06-hi); color: var(--fg-clock-06); }
+.pigment-clock-07-hi { background: var(--bg-clock-07-hi); color: var(--fg-clock-07); }
+.pigment-clock-08-hi { background: var(--bg-clock-08-hi); color: var(--fg-clock-08); }
+.pigment-clock-09-hi { background: var(--bg-clock-09-hi); color: var(--fg-clock-09); }
+.pigment-clock-10-hi { background: var(--bg-clock-10-hi); color: var(--fg-clock-10); }
+.pigment-clock-11-hi { background: var(--bg-clock-11-hi); color: var(--fg-clock-11); }
+
+.pigment-clock-12-hi:hover { background: var(--bg-clock-12-hi2); }
+.pigment-clock-01-hi:hover { background: var(--bg-clock-01-hi2); }
+.pigment-clock-02-hi:hover { background: var(--bg-clock-02-hi2); }
+.pigment-clock-03-hi:hover { background: var(--bg-clock-03-hi2); }
+.pigment-clock-04-hi:hover { background: var(--bg-clock-04-hi2); }
+.pigment-clock-05-hi:hover { background: var(--bg-clock-05-hi2); }
+.pigment-clock-06-hi:hover { background: var(--bg-clock-06-hi2); }
+.pigment-clock-07-hi:hover { background: var(--bg-clock-07-hi2); }
+.pigment-clock-08-hi:hover { background: var(--bg-clock-08-hi2); }
+.pigment-clock-09-hi:hover { background: var(--bg-clock-09-hi2); }
+.pigment-clock-10-hi:hover { background: var(--bg-clock-10-hi2); }
+.pigment-clock-11-hi:hover { background: var(--bg-clock-11-hi2); }
+
 .darken-border { border: 1px solid rgba(0, 0, 0, 0.05)}
 
 .add-note-form {
@@ -612,6 +691,10 @@ hr {
   padding: 1em;
 }
 
+.in-note-link {
+  color: var(--hyperlink);
+}
+
 /* card title */
 h3 {
   font-weight: bold;
@@ -641,16 +724,13 @@ h3 {
   border-radius: var(--ui-element-border-radius);
   box-sizing: border-box;
   text-decoration:none;
-  color: var(--fg);
-  background-color:rgba(0, 0, 0, 0.15);
+  /* color: var(--fg); */
+  /* background-color:rgba(0, 0, 0, 0.15); */
   text-align:center;
   transition: all 0.2s;
 
   border-width: 0px;
   box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.05);
-}
-.button:hover{
-  background-color:rgba(0, 0, 0, 0.25);
 }
 
 .save-button {
@@ -664,4 +744,11 @@ h3 {
 .save-button:disabled {
   color: var(--fg-inactive);
   background: var(--bg1);
+}
+
+.bg2 {
+  background: var(--bg2);
+}
+.bg2:hover {
+  background: rgba(0, 0, 0, 0.1);
 }
