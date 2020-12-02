@@ -1,10 +1,10 @@
-import { html, route, Link, useState, useEffect } from '/lib/preact/mod.js';
+import { html, Link, useState } from '/lib/preact/mod.js';
 
-import { useStateValue } from '/js/StateProvider.js';
 import Net from '/js/Net.js';
+import { parseNoteContent, ensureListingLoaded } from '/js/NoteUtils.js';
+import { useStateValue } from '/js/StateProvider.js';
 
-import { parseNoteContent, parseNoteTitle, ensureListingLoaded } from '/js/NoteUtils.js';
-import { capitalise } from '/js/JsUtils.js';
+import BaseNote from '/js/components/BaseNote.js';
 
 function Bin() {
   const [state, dispatch] = useStateValue();
@@ -81,21 +81,7 @@ function NoteListItem(note) {
 }
 
 function BinnedNote({ id }) {
-  const [state, dispatch] = useStateValue();
-
-  function getNoteById(id) {
-    let found = state.listing.bin.find(n => n.id === id);
-    return found;
-  }
-
-  const noteId = parseInt(id, 10);
-  const note = getNoteById(noteId);
-
-  return html`
-    <article>
-      ${ parseNoteTitle(note) }
-      ${ parseNoteContent(note) }
-    </article>`;
+  return html`<${BaseNote} id=${id} noteKind='bin'/>`;
 }
 
 export { Bin, BinnedNote };

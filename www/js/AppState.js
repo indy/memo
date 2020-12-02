@@ -75,6 +75,19 @@ export const reducer = (state, action) => {
 
       return updateStateWithListing(state, listing);
     }
+  case 'note-content-updated':
+    {
+      let listing = getListingFromState(state);
+
+      let note = findNote(listing.notes, action.note.id)
+          || findNote(listing.triaged, action.note.id)
+          || findNote(listing.bin, action.note.id);
+      if (note) {
+        note.content = action.note.content;
+      }
+
+      return updateStateWithListing(state, listing);
+    }
   case 'note-triaged':
     {
       let listing = getListingFromState(state);
@@ -140,6 +153,10 @@ export const reducer = (state, action) => {
     return state;
   }
 };
+
+function findNote(array, noteId) {
+  return array && array.find(n => n.id === noteId);
+}
 
 function removeNoteFromArray(array, noteId) {
   return array ? array.filter(n => n.id !== noteId) : array;

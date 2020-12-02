@@ -353,7 +353,11 @@ textarea {
   width: var(--block-width);
 }
 
-textarea:focus {
+.edit textarea {
+  height: 15em;
+}
+
+.add-note-form textarea:focus {
   height: 15em;
 }
 

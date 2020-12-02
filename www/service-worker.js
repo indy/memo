@@ -39,6 +39,7 @@ var precacheConfig = [
   "/js/components/Login.js",
   "/js/components/Bin.js",
   "/js/components/Notes.js",
+  "/js/components/BaseNote.js",
   "/js/components/TriagedNotes.js",
 
   "/apple-touch-icon.png",

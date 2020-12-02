@@ -1,12 +1,11 @@
-import { html, route, Link, useState, useEffect } from '/lib/preact/mod.js';
+import { html, Link, useState } from '/lib/preact/mod.js';
 
-import { useStateValue } from '/js/StateProvider.js';
 import Net from '/js/Net.js';
-
-import { parseNoteContent, parseNoteTitle, ensureListingLoaded } from '/js/NoteUtils.js';
-import { capitalise } from '/js/JsUtils.js';
-
+import { parseNoteContent, ensureListingLoaded } from '/js/NoteUtils.js';
 import { svgBin, svgExpand, svgMinimise } from '/js/svgIcons.js';
+import { useStateValue } from '/js/StateProvider.js';
+
+import BaseNote from '/js/components/BaseNote.js';
 
 function TriagedNotes() {
   const [state, dispatch] = useStateValue();
@@ -201,20 +200,7 @@ function noteFromText(text) {
 }
 
 function TriagedNote({ id }) {
-  const [state, dispatch] = useStateValue();
-
-  function getNoteById(id) {
-    return state.listing.triaged.find(n => n.id === id);
-  }
-
-  const noteId = parseInt(id, 10);
-  const note = getNoteById(noteId);
-
-  return html`
-    <article>
-      ${ parseNoteTitle(note) }
-      ${ parseNoteContent(note) }
-    </article>`;
+  return html`<${BaseNote} id=${id} noteKind='triaged'/>`;
 }
 
 export { TriagedNotes, TriagedNote };

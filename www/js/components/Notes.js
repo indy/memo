@@ -1,12 +1,11 @@
-import { html, route, Link, useState, useEffect } from '/lib/preact/mod.js';
+import { html, Link, useState } from '/lib/preact/mod.js';
 
-import { useStateValue } from '/js/StateProvider.js';
 import Net from '/js/Net.js';
-
-import { parseNoteContent, parseNoteTitle, ensureListingLoaded } from '/js/NoteUtils.js';
-import { capitalise } from '/js/JsUtils.js';
-
+import { parseNoteContent, ensureListingLoaded } from '/js/NoteUtils.js';
 import { svgBin } from '/js/svgIcons.js';
+import { useStateValue } from '/js/StateProvider.js';
+
+import BaseNote from '/js/components/BaseNote.js';
 
 function setTriageCategory(dispatch, triageCategory) {
   dispatch({
@@ -168,20 +167,7 @@ function CreateNoteForm() {
 }
 
 function Note({ id }) {
-  const [state, dispatch] = useStateValue();
-
-  function getNoteById(id) {
-    return state.listing.notes.find(n => n.id === id);
-  }
-
-  const noteId = parseInt(id, 10);
-  const note = getNoteById(noteId);
-
-  return html`
-    <article>
-      ${ parseNoteTitle(note) }
-      ${ parseNoteContent(note) }
-    </article>`;
+  return html`<${BaseNote} id=${id} noteKind='notes'/>`;
 }
 
 export { Notes, Note };
