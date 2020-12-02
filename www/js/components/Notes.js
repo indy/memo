@@ -98,12 +98,12 @@ function NoteListItem(note, triageCategory) {
 
   return html`<div class="card ${pigmentClass} darken-border">
                 <div class="card-body">
-                  <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
-                  ${ parseNoteContent(note) }
                   <div class="card-action">
                     ${ canTriage && html`<button class="${pigmentClassHi} button button-height-bodge" onClick=${ onTriagedClicked }>Triage to ${ triageCategory.title }</button>`}
                     <button class="${pigmentClassHi} button button-delete" onClick=${ onDeleteClicked }>${ svgBin(`--fg-clock-${pigmentNumString}`) }</button>
                   </div>
+                  <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
+                  ${ parseNoteContent(note) }
                 </div>
               </div>`;
 }

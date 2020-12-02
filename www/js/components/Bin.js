@@ -70,12 +70,12 @@ function NoteListItem(note) {
 
   return html`<div class="card ${pigmentClass}">
                 <div class="card-body">
-                  <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
-                  ${ parseNoteContent(note) }
                   <div class="card-action">
                     <button class="${pigmentClassHi} button" onClick=${ onUndeleteClicked }>Undelete</button>
                     <button class="${pigmentClassHi} button button-delete" onClick=${ onDeleteClicked }>Really Delete</button>
                   </div>
+                  <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
+                  ${ parseNoteContent(note) }
                 </div>
               </div>`;
 }
