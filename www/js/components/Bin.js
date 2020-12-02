@@ -3,7 +3,7 @@ import { html, route, Link, useState, useEffect } from '/lib/preact/mod.js';
 import { useStateValue } from '/js/StateProvider.js';
 import Net from '/js/Net.js';
 
-import { parseNoteContent, ensureListingLoaded } from '/js/NoteUtils.js';
+import { parseNoteContent, parseNoteTitle, ensureListingLoaded } from '/js/NoteUtils.js';
 import { capitalise } from '/js/JsUtils.js';
 
 function Bin() {
@@ -63,6 +63,7 @@ function NoteListItem(note) {
 
   const pigmentNum = (note.id % 12) + 1;
   const pigmentClass = pigmentNum < 10 ? `pigment-clock-0${pigmentNum}` : `pigment-clock-${pigmentNum}`;
+  const pigmentClassHi = `${pigmentClass}-hi`;
 
   const resource = 'bin';
   const href = `/${resource}/${note.id}`;
@@ -72,8 +73,8 @@ function NoteListItem(note) {
                   <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
                   ${ parseNoteContent(note) }
                   <div class="card-action">
-                    <button class="button" onClick=${ onUndeleteClicked }>Undelete</button>
-                    <button class="button button-delete" onClick=${ onDeleteClicked }>Really Delete</button>
+                    <button class="${pigmentClassHi} button" onClick=${ onUndeleteClicked }>Undelete</button>
+                    <button class="${pigmentClassHi} button button-delete" onClick=${ onDeleteClicked }>Really Delete</button>
                   </div>
                 </div>
               </div>`;
@@ -92,7 +93,7 @@ function BinnedNote({ id }) {
 
   return html`
     <article>
-      <h1>${ note.title }</h1>
+      ${ parseNoteTitle(note) }
       ${ parseNoteContent(note) }
     </article>`;
 }

@@ -3,7 +3,7 @@ import { html, route, Link, useState, useEffect } from '/lib/preact/mod.js';
 import { useStateValue } from '/js/StateProvider.js';
 import Net from '/js/Net.js';
 
-import { parseNoteContent, ensureListingLoaded } from '/js/NoteUtils.js';
+import { parseNoteContent, parseNoteTitle, ensureListingLoaded } from '/js/NoteUtils.js';
 import { capitalise } from '/js/JsUtils.js';
 
 import { svgBin } from '/js/svgIcons.js';
@@ -88,7 +88,9 @@ function NoteListItem(note, triageCategory) {
   }
 
   const pigmentNum = (note.id % 12) + 1;
-  const pigmentClass = pigmentNum < 10 ? `pigment-clock-0${pigmentNum}` : `pigment-clock-${pigmentNum}`;
+  const pigmentNumString = pigmentNum < 10 ? `0${pigmentNum}` : `${pigmentNum}`;
+  const pigmentClass = `pigment-clock-${pigmentNumString}`;
+  const pigmentClassHi = `${pigmentClass}-hi`;
 
   const resource = 'notes';
   const href = `/${resource}/${note.id}`;
@@ -100,8 +102,8 @@ function NoteListItem(note, triageCategory) {
                   <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
                   ${ parseNoteContent(note) }
                   <div class="card-action">
-                    ${ canTriage && html`<button class="button button-height-bodge" onClick=${ onTriagedClicked }>Triage to ${ triageCategory.title }</button>`}
-                    <button class="button button-delete" onClick=${ onDeleteClicked }>${ svgBin() }</button>
+                    ${ canTriage && html`<button class="${pigmentClassHi} button button-height-bodge" onClick=${ onTriagedClicked }>Triage to ${ triageCategory.title }</button>`}
+                    <button class="${pigmentClassHi} button button-delete" onClick=${ onDeleteClicked }>${ svgBin(`--fg-clock-${pigmentNumString}`) }</button>
                   </div>
                 </div>
               </div>`;
@@ -177,7 +179,7 @@ function Note({ id }) {
 
   return html`
     <article>
-      <h1>${ note.title }</h1>
+      ${ parseNoteTitle(note) }
       ${ parseNoteContent(note) }
     </article>`;
 }

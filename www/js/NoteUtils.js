@@ -30,13 +30,21 @@ export function setListing(dispatch, resource, listing) {
 // but write an actual lexer+parser+compiler if other markup is required
 //
 export function parseNoteContent(note) {
-  const lines = note.content.split("\n");
+  return parseNoteText(note.content, "p");
+}
+
+export function parseNoteTitle(note) {
+  return parseNoteText(note.title, "h1");
+}
+
+function parseNoteText(text, parentTag) {
+  const lines = text.split("\n");
   const elems = [];
 
   lines.forEach((line, i) => {
     splitLineByHyperlinks(line).forEach(seg => {
       if (isHyperlinkSegment(seg)) {
-        elems.push(h("a", { href: ensureLinkable(seg) }, seg));
+        elems.push(h("a", { href: ensureLinkable(seg), class: "in-note-link" }, seg));
       } else {
         elems.push(seg);
       }
@@ -46,7 +54,7 @@ export function parseNoteContent(note) {
     }
   });
 
-  return h("p", {}, elems);
+  return h(parentTag, {}, elems);
 }
 
 function splitLineByHyperlinks(line) {
