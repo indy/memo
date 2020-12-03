@@ -3,6 +3,21 @@ import { h, useEffect } from '/lib/preact/mod.js';
 import { useStateValue } from '/js/StateProvider.js';
 import Net from '/js/Net.js';
 
+
+export function notePigment(note) {
+  const pigmentNum = (note.id % 12) + 1;
+  const pigmentNumString = pigmentNum < 10 ? `0${pigmentNum}` : `${pigmentNum}`;
+  const pigmentClass = `pigment-clock-${pigmentNumString}`;
+  const pigmentClassHi = `${pigmentClass}-hi`;
+
+  return {
+    num: pigmentNum,
+    numString: pigmentNumString,
+    class: pigmentClass,
+    classHi: pigmentClassHi
+  }
+}
+
 export function ensureListingLoaded(resource, url) {
   const [state, dispatch] = useStateValue();
 
@@ -35,6 +50,10 @@ export function parseNoteContent(note) {
 
 export function parseNoteTitle(note) {
   return parseNoteText(note.title, "h1");
+}
+
+export function parseCardTitle(note) {
+  return parseNoteText(note.title, "h3");
 }
 
 function parseNoteText(text, parentTag) {

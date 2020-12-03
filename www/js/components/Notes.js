@@ -1,11 +1,12 @@
-import { html, Link, useState } from '/lib/preact/mod.js';
+import { html, useState } from '/lib/preact/mod.js';
 
 import Net from '/js/Net.js';
-import { parseNoteContent, ensureListingLoaded } from '/js/NoteUtils.js';
+import { notePigment, ensureListingLoaded } from '/js/NoteUtils.js';
 import { svgBin } from '/js/svgIcons.js';
 import { useStateValue } from '/js/StateProvider.js';
 
 import BaseNote from '/js/components/BaseNote.js';
+import Card from '/js/components/Card.js';
 
 function setTriageCategory(dispatch, triageCategory) {
   dispatch({
@@ -60,6 +61,9 @@ function Notes() {
 function NoteListItem(note, triageCategory) {
   const [state, dispatch] = useStateValue();
 
+  const resource = 'notes';
+  const pigment = notePigment(note);
+
   function onTriagedClicked(e) {
     e.preventDefault();
 
@@ -85,26 +89,14 @@ function NoteListItem(note, triageCategory) {
     });
   }
 
-  const pigmentNum = (note.id % 12) + 1;
-  const pigmentNumString = pigmentNum < 10 ? `0${pigmentNum}` : `${pigmentNum}`;
-  const pigmentClass = `pigment-clock-${pigmentNumString}`;
-  const pigmentClassHi = `${pigmentClass}-hi`;
-
-  const resource = 'notes';
-  const href = `/${resource}/${note.id}`;
-
   const canTriage = !!triageCategory;
 
-  return html`<div class="card ${pigmentClass} darken-border">
-                <div class="card-body">
+  return html`<${Card} note=${note} resource=${resource} pigment=${pigment}>
                   <div class="card-action">
-                    ${ canTriage && html`<button class="${pigmentClassHi} button button-height-bodge" onClick=${ onTriagedClicked }>Triage to ${ triageCategory.title }</button>`}
-                    <button class="${pigmentClassHi} button button-delete" onClick=${ onDeleteClicked }>${ svgBin(`--fg-clock-${pigmentNumString}`) }</button>
+                    ${ canTriage && html`<button class="${pigment.classHi} button button-height-bodge" onClick=${ onTriagedClicked }>Triage to ${ triageCategory.title }</button>`}
+                    <button class="${pigment.classHi} button button-delete" onClick=${ onDeleteClicked }>${ svgBin(`--fg-clock-${pigment.numString}`) }</button>
                   </div>
-                  <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
-                  ${ parseNoteContent(note) }
-                </div>
-              </div>`;
+              </${Card}>`;
 }
 
 function noteFromText(text) {

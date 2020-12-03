@@ -38,6 +38,7 @@ var precacheConfig = [
   "/js/svgIcons.js",
   "/js/components/Login.js",
   "/js/components/Bin.js",
+  "/js/components/Card.js",
   "/js/components/Notes.js",
   "/js/components/BaseNote.js",
   "/js/components/TriagedNotes.js",

@@ -1,10 +1,11 @@
-import { html, Link, useState } from '/lib/preact/mod.js';
+import { html, route, Link, useState } from '/lib/preact/mod.js';
 
 import Net from '/js/Net.js';
-import { parseNoteContent, ensureListingLoaded } from '/js/NoteUtils.js';
+import { notePigment, ensureListingLoaded } from '/js/NoteUtils.js';
 import { useStateValue } from '/js/StateProvider.js';
 
 import BaseNote from '/js/components/BaseNote.js';
+import Card from '/js/components/Card.js';
 
 function Bin() {
   const [state, dispatch] = useStateValue();
@@ -41,15 +42,8 @@ function Bin() {
 function NoteListItem(note) {
   const [state, dispatch] = useStateValue();
 
-  function onDeleteClicked(e) {
-    e.preventDefault();
-    Net.delete(`/api/bin/${ note.id }`, {}).then(n => {
-      dispatch({
-        type: 'note-deleted',
-        note
-      });
-    });
-  }
+  const resource = 'bin';
+  const pigment = notePigment(note);
 
   function onUndeleteClicked(e) {
     e.preventDefault();
@@ -61,23 +55,22 @@ function NoteListItem(note) {
     });
   }
 
-  const pigmentNum = (note.id % 12) + 1;
-  const pigmentClass = pigmentNum < 10 ? `pigment-clock-0${pigmentNum}` : `pigment-clock-${pigmentNum}`;
-  const pigmentClassHi = `${pigmentClass}-hi`;
+  function onDeleteClicked(e) {
+    e.preventDefault();
+    Net.delete(`/api/bin/${ note.id }`, {}).then(n => {
+      dispatch({
+        type: 'note-deleted',
+        note
+      });
+    });
+  }
 
-  const resource = 'bin';
-  const href = `/${resource}/${note.id}`;
-
-  return html`<div class="card ${pigmentClass}">
-                <div class="card-body">
+  return html`<${Card} note=${note} resource=${resource} pigment=${pigment}>
                   <div class="card-action">
-                    <button class="${pigmentClassHi} button" onClick=${ onUndeleteClicked }>Undelete</button>
-                    <button class="${pigmentClassHi} button button-delete" onClick=${ onDeleteClicked }>Really Delete</button>
+                    <button class="${pigment.classHi} button" onClick=${ onUndeleteClicked }>Undelete</button>
+                    <button class="${pigment.classHi} button button-delete" onClick=${ onDeleteClicked }>Really Delete</button>
                   </div>
-                  <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
-                  ${ parseNoteContent(note) }
-                </div>
-              </div>`;
+              </${Card}>`;
 }
 
 function BinnedNote({ id }) {
