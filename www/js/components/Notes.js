@@ -64,7 +64,6 @@ function NoteListItem(note, triageCategory) {
     e.preventDefault();
 
     if (triageCategory) {
-      console.log(triageCategory);
       Net.post(`/api/notes/${ note.id }/triage`, triageCategory).then(triagedNote => {
         dispatch({
           type: 'note-triaged',

@@ -101,6 +101,19 @@ export const reducer = (state, action) => {
 
       return updateStateWithListing(state, listing);
     }
+  case 'note-untriaged':
+    {
+      let listing = getListingFromState(state);
+
+      listing.triaged = removeNoteFromArray(listing.triaged, action.note.id);
+
+      if (listing.notes) {
+        // todo: maybe insert this note in the correct position, not just at the beginning
+        listing.notes.unshift(action.note);
+      }
+
+      return updateStateWithListing(state, listing);
+    }
   case 'note-binned':
     {
       let listing = getListingFromState(state);

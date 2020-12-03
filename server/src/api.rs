@@ -57,6 +57,7 @@ pub fn public_api(mount_point: &str) -> actix_web::Scope {
             scope("/triaged")
                 .route("", get().to(triaged::get_all))
                 .route("/{id}", get().to(triaged::get))
+                .route("/{id}/untriage", post().to(triaged::untriage))
                 .route("/{id}/bin", post().to(triaged::bin)),
         )
         // binned notes

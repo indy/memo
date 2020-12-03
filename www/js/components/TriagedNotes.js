@@ -163,6 +163,16 @@ function NoteListItem(note) {
     });
   }
 
+  function onUntriageClicked(e) {
+    e.preventDefault();
+    Net.post(`/api/triaged/${ note.id }/untriage`, {}).then(n => {
+      dispatch({
+        type: 'note-untriaged',
+        note
+      });
+    });
+  }
+
   const pigmentNum = (note.id % 12) + 1;
   const pigmentNumString = pigmentNum < 10 ? `0${pigmentNum}` : `${pigmentNum}`;
   const pigmentClass = `pigment-clock-${pigmentNumString}`;
@@ -174,8 +184,14 @@ function NoteListItem(note) {
   return html`<div class="card ${pigmentClass}">
                 <div class="card-body">
                   <div class="card-action">
-                   <button class="${pigmentClassHi} button button-height-bodge">Untriage</button>
-                    <button class="${pigmentClassHi} button button-delete" onClick=${ onDeleteClicked }>${ svgBin(`--fg-clock-${pigmentNumString}`) }</button>
+                    <button class="${pigmentClassHi} button button-height-bodge"
+                            onClick=${ onUntriageClicked }>
+                      Untriage
+                    </button>
+                    <button class="${pigmentClassHi} button button-delete"
+                            onClick=${ onDeleteClicked }>
+                      ${ svgBin(`--fg-clock-${pigmentNumString}`) }
+                    </button>
                   </div>
                   <h3><${Link} class="${pigmentClass}" href=${ href }>${ note.title }</${Link}></h3>
                   ${ parseNoteContent(note) }

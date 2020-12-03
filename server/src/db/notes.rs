@@ -139,6 +139,15 @@ pub(crate) async fn triage(
     .await
 }
 
+pub(crate) async fn untriage(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<interop::Note> {
+    pg::one_from::<Note, interop::Note>(
+        db_pool,
+        include_str!("sql/notes_untriage.sql"),
+        &[&user_id, &note_id],
+    )
+    .await
+}
+
 pub(crate) async fn bin(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<interop::Note> {
     pg::one_from::<Note, interop::Note>(
         db_pool,
