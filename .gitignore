@@ -1,3 +1,4 @@
 .env
 dist
 core/target
+www/client.wasm
