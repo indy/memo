@@ -15,7 +15,7 @@
     ],
     "theme_color": "#ece7db",
     "background_color": "#ece7db",
-    "start_url": "./index.html",
+    "start_url": "/",
     "display": "standalone",
     "share_target": {
         "action": "/api/notes/bookmark",
