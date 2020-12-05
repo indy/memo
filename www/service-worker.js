@@ -169,13 +169,20 @@ self.addEventListener("activate", function (e) {
 });
 
 self.addEventListener("fetch", function (event) {
+  // some urls should always ignore service worker caches, regardless of devMode
+  if (event.request.url.includes("/nocache/")) {
+    return fetch(event.request);
+  }
+
   if ("GET" === event.request.method || "HEAD" === event.request.method) {
     var url = stripIgnoredUrlParameters(event.request.url, ignoreUrlParametersMatching);
 
     var isCached = urlsToCache.has(url);
 
-    if (devMode && isCached)
-      return;
+    // one of the urls to cache  but we're in devMode so fetch the resource from the network anyway
+    if (devMode && isCached) {
+      return fetch(event.request);
+    }
 
     if (!isCached && "navigate" === event.request.mode) {
       url = new URL("/index.html", self.location).toString();

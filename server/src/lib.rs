@@ -116,6 +116,7 @@ pub async fn start_server() -> Result<()> {
             .wrap(session_store)
             .wrap(error_handlers)
             .service(api::public_api("/api"))
+            .service(fs::Files::new("/nocache", &www_path))
             .service(fs::Files::new("/", &www_path).index_file("index.html"))
     })
     .bind(format!("127.0.0.1:{}", port))?
