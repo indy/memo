@@ -1,3 +1,4 @@
 .env
 dist
-www/client.wasm
+www/client_bg.wasm
+www/client.js

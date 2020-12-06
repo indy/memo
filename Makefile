@@ -50,7 +50,7 @@ wasm: www/client.wasm
 
 www/client.wasm: $(WASM_FILES)
 	cargo build --manifest-path client/Cargo.toml --target wasm32-unknown-unknown
-	cp client/target/wasm32-unknown-unknown/debug/client.wasm www/.
+	wasm-bindgen client/target/wasm32-unknown-unknown/debug/client.wasm --out-dir www --no-typescript --no-modules
 
 wasm-dist: dist/www/client.wasm
 client-dist: dist/www/index.html

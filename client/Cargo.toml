@@ -10,10 +10,12 @@ categories = ["wasm"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-web = "0"
+js-sys = "0.3"
+# web = "0"
+yew = "0.17.4"
 
-[lib]
-crate-type =["cdylib"]
+# [lib]
+# crate-type =["cdylib"]
 
-[profile.release]
-lto = true
+# [profile.release]
+# lto = true

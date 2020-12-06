@@ -15,14 +15,14 @@
     <meta name="theme-color" content="#ece7db">
 
     <link type="text/css" rel="stylesheet" href="/memo.css" media="all" />
-    <script src="/js-wasm.js"></script>
-    <script type="application/wasm" src="/client.wasm"></script>
+
+    <script src="/client.js"></script>
+    <script>wasm_bindgen('/client_bg.wasm').catch(console.error);</script>
   </head>
   <body>
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
-    <div id="root"></div>
     <!-- <script> -->
     <!--   if('serviceWorker' in navigator) { -->
     <!--     navigator.serviceWorker.register('/service-worker.js'); -->
