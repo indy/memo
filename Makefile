@@ -46,26 +46,27 @@ run:
 	cargo run --manifest-path server/Cargo.toml
 
 # build debug version of client
-wasm: www/client.wasm
+wasm: www/client_bg.wasm
 
-www/client.wasm: $(WASM_FILES)
+www/client_bg.wasm: $(WASM_FILES)
 	cargo build --manifest-path client/Cargo.toml --target wasm32-unknown-unknown
 	wasm-bindgen client/target/wasm32-unknown-unknown/debug/client.wasm --out-dir www --no-typescript --no-modules
 
-wasm-dist: dist/www/client.wasm
+wasm-dist: dist/www/client_bg.wasm
 client-dist: dist/www/index.html
 server-dist: dist/memo_server
 systemd-dist: dist/systemd/isg-memo.sh
 
-dist/www/client.wasm: $(WASM_FILES)
+dist/www/client_bg.wasm: $(WASM_FILES)
 	mkdir -p $(@D)
 	cargo build --manifest-path client/Cargo.toml --target wasm32-unknown-unknown --release
-	cp client/target/wasm32-unknown-unknown/debug/client.wasm dist/www/.
+	wasm-bindgen client/target/wasm32-unknown-unknown/release/client.wasm --out-dir dist/www --no-typescript --no-modules
 
 dist/www/index.html: $(CLIENT_FILES)
 	mkdir -p $(@D)
 	cp -r www dist/.
-	rm dist/www/client.wasm
+	rm dist/www/client.js
+	rm dist/www/client_bg.wasm
 ifdef MINIFY
 	minify -o dist/www/ --match=\.css www
 	minify -r -o dist/www/js --match=\.js www/js
