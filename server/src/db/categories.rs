@@ -50,10 +50,12 @@ pub(crate) async fn create(
 ) -> Result<Vec<interop::Category>> {
     pg::one_from::<Category, interop::Category>(
         db_pool,
-        include_str!("sql/categories_create.sql"),
+        "INSERT INTO categories(user_id, title)
+         VALUES ($1, $2)
+         RETURNING $table_fields",
         &[&user_id, &category.title],
     )
-        .await?;
+    .await?;
 
     all(db_pool, user_id).await
 }
@@ -61,7 +63,11 @@ pub(crate) async fn create(
 pub(crate) async fn all(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::Category>> {
     pg::many_from::<Category, interop::Category>(
         db_pool,
-        include_str!("sql/categories_all.sql"),
+        "SELECT c.id,
+                c.title
+         FROM   categories c
+         WHERE  c.user_id = $1
+         ORDER BY c.title asc",
         &[&user_id],
     )
     .await
@@ -74,7 +80,10 @@ pub(crate) async fn get(
 ) -> Result<interop::Category> {
     pg::one_from::<Category, interop::Category>(
         db_pool,
-        include_str!("sql/categories_get.sql"),
+        "SELECT c.id,
+                c.title
+         FROM categories c
+         WHERE c.user_id = $1 AND c.id = $2",
         &[&user_id, &category_id],
     )
     .await
@@ -88,7 +97,10 @@ pub(crate) async fn edit(
 ) -> Result<interop::Category> {
     pg::one_from::<Category, interop::Category>(
         db_pool,
-        include_str!("sql/categories_edit.sql"),
+        "UPDATE categories
+         SET title = $3
+         WHERE id = $2 and user_id = $1
+         RETURNING $table_fields",
         &[&user_id, &category_id, &category.title],
     )
     .await
@@ -97,7 +109,8 @@ pub(crate) async fn edit(
 pub(crate) async fn delete(db_pool: &Pool, user_id: Key, id: Key) -> Result<()> {
     pg::zero_from(
         db_pool,
-        include_str!("sql/categories_delete.sql"),
+        "DELETE FROM categories
+         WHERE user_id = $1 AND id = $2",
         &[&user_id, &id],
     )
     .await

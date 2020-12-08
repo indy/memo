@@ -17,8 +17,8 @@
 
 use super::pg;
 use crate::error::Result;
-use crate::interop::notes as interop;
 use crate::interop::categories as interop_categories;
+use crate::interop::notes as interop;
 use crate::interop::Key;
 use deadpool_postgres::Pool;
 use serde::{Deserialize, Serialize};
@@ -74,21 +74,41 @@ pub(crate) async fn create(
 ) -> Result<interop::Note> {
     pg::one_from::<Note, interop::Note>(
         db_pool,
-        include_str!("sql/notes_create.sql"),
-        &[&user_id, &note.title, &note.content],
+        "INSERT INTO notes(user_id, title, content)
+         VALUES ($1, $2, $3)
+         RETURNING $table_fields",
+        &[&user_id, &note.title, &note.content]
     )
     .await
 }
 
 pub(crate) async fn all_non_triaged(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::Note>> {
-    pg::many_from::<Note, interop::Note>(db_pool, include_str!("sql/notes_all.sql"), &[&user_id])
-        .await
+    pg::many_from::<Note, interop::Note>(
+        db_pool,
+        "SELECT n.id,
+                n.title,
+                n.content,
+                n.triaged_at,
+                n.category_id
+         FROM   notes n
+         WHERE  n.user_id = $1 and n.triaged_at is null and n.deleted_at is null
+         ORDER BY n.id desc",
+        &[&user_id]
+    )
+    .await
 }
 
 pub(crate) async fn all_binned(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::Note>> {
     pg::many_from::<Note, interop::Note>(
         db_pool,
-        include_str!("sql/binned_notes_all.sql"),
+        "SELECT n.id,
+                n.title,
+                n.content,
+                n.triaged_at,
+                n.category_id
+         FROM   notes n
+         WHERE  n.user_id = $1 and n.deleted_at is not null
+         ORDER BY n.deleted_at desc",
         &[&user_id],
     )
     .await
@@ -97,16 +117,31 @@ pub(crate) async fn all_binned(db_pool: &Pool, user_id: Key) -> Result<Vec<inter
 pub(crate) async fn triaged_all(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::TriagedNote>> {
     pg::many_from::<Note, interop::TriagedNote>(
         db_pool,
-        include_str!("sql/triaged_notes_all.sql"),
+        "SELECT n.id,
+                n.title,
+                n.content,
+                n.triaged_at,
+                n.category_id
+         FROM   notes n
+         WHERE  n.user_id = $1 and n.triaged_at is not null and n.deleted_at is null
+         ORDER BY n.id desc",
         &[&user_id],
     )
     .await
 }
 
+/// note: get and triaged_get are the same query
+
 pub(crate) async fn get(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<interop::Note> {
     pg::one_from::<Note, interop::Note>(
         db_pool,
-        include_str!("sql/notes_get.sql"),
+        "SELECT n.id,
+                n.title,
+                n.content,
+                n.triaged_at,
+                n.category_id
+         FROM notes n
+         WHERE n.id = $2 AND n.user_id = $1",
         &[&user_id, &note_id],
     )
     .await
@@ -119,7 +154,13 @@ pub(crate) async fn triaged_get(
 ) -> Result<interop::TriagedNote> {
     pg::one_from::<Note, interop::TriagedNote>(
         db_pool,
-        include_str!("sql/notes_get.sql"),
+        "SELECT n.id,
+                n.title,
+                n.content,
+                n.triaged_at,
+                n.category_id
+        FROM notes n
+        WHERE n.id = $2 AND n.user_id = $1",
         &[&user_id, &note_id],
     )
     .await
@@ -133,7 +174,10 @@ pub(crate) async fn triage(
 ) -> Result<interop::TriagedNote> {
     pg::one_from::<Note, interop::TriagedNote>(
         db_pool,
-        include_str!("sql/notes_triage.sql"),
+        "UPDATE notes
+         SET triaged_at = now(), category_id = $3
+         WHERE id = $2 and user_id = $1
+         RETURNING $table_fields",
         &[&user_id, &note_id, &category.id],
     )
     .await
@@ -142,7 +186,10 @@ pub(crate) async fn triage(
 pub(crate) async fn untriage(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<interop::Note> {
     pg::one_from::<Note, interop::Note>(
         db_pool,
-        include_str!("sql/notes_untriage.sql"),
+        "UPDATE notes
+         SET triaged_at = null, category_id = null
+         WHERE id = $2 and user_id = $1
+         RETURNING $table_fields",
         &[&user_id, &note_id],
     )
     .await
@@ -151,7 +198,10 @@ pub(crate) async fn untriage(db_pool: &Pool, user_id: Key, note_id: Key) -> Resu
 pub(crate) async fn bin(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<interop::Note> {
     pg::one_from::<Note, interop::Note>(
         db_pool,
-        include_str!("sql/notes_bin.sql"),
+        "UPDATE notes
+         SET deleted_at = now()
+         WHERE id = $2 and user_id = $1
+         RETURNING $table_fields",
         &[&user_id, &note_id],
     )
     .await
@@ -165,7 +215,10 @@ pub(crate) async fn edit(
 ) -> Result<interop::Note> {
     pg::one_from::<Note, interop::Note>(
         db_pool,
-        include_str!("sql/notes_edit.sql"),
+        "UPDATE notes
+         SET title = $3, content = $4
+         WHERE id = $2 and user_id = $1
+         RETURNING $table_fields",
         &[&user_id, &note_id, &note.title, &note.content],
     )
     .await
@@ -174,7 +227,10 @@ pub(crate) async fn edit(
 pub(crate) async fn unbin(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<interop::Note> {
     pg::one_from::<Note, interop::Note>(
         db_pool,
-        include_str!("sql/notes_unbin.sql"),
+        "UPDATE notes
+         SET deleted_at = null
+         WHERE id = $2 and user_id = $1
+         RETURNING $table_fields",
         &[&user_id, &note_id],
     )
     .await
@@ -183,7 +239,8 @@ pub(crate) async fn unbin(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<
 pub(crate) async fn delete(db_pool: &Pool, user_id: Key, id: Key) -> Result<()> {
     pg::zero_from(
         db_pool,
-        include_str!("sql/notes_delete.sql"),
+        "DELETE FROM notes
+         WHERE id = $2 AND user_id = $1",
         &[&user_id, &id],
     )
     .await
@@ -192,7 +249,8 @@ pub(crate) async fn delete(db_pool: &Pool, user_id: Key, id: Key) -> Result<()> 
 pub(crate) async fn delete_all(db_pool: &Pool, user_id: Key) -> Result<()> {
     pg::zero_from(
         db_pool,
-        include_str!("sql/notes_delete_all.sql"),
+        "DELETE FROM notes
+         WHERE user_id = $1 AND deleted_at is not null",
         &[&user_id],
     )
     .await

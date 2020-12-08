@@ -17,8 +17,8 @@
 
 use crate::db::notes as db;
 use crate::error::Result;
-use crate::interop::notes as interop;
 use crate::interop::categories as interop_categories;
+use crate::interop::notes as interop;
 use crate::interop::IdParam;
 use crate::session;
 use actix_multipart::Multipart;
