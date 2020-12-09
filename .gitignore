@@ -2,3 +2,5 @@
 dist
 www/client_yew_bg.wasm
 www/client_yew.js
+www/client_seed_bg.wasm
+www/client_seed.js
