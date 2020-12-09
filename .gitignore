@@ -1,4 +1,4 @@
 .env
 dist
-www/client_bg.wasm
-www/client.js
+www/client_yew_bg.wasm
+www/client_yew.js
