@@ -577,16 +577,12 @@ section > form { width: var(--block-width); }
 
 #top-bar-menu {
   overflow: hidden;
-  position: fixed; /* Set the navbar to fixed position */
-  top: 0; /* Position the navbar at the top of the page */
-  width: 100%; /* Full width */
+  position: fixed;
+  top: 0;
+  width: 100%;
 
   padding-top: 1em;
   background: var(--bg);
-}
-
-#app-content {
-  margin-top: 3em;
 }
 
 a.top-bar-menuitem {
@@ -623,6 +619,13 @@ hr {
   vertical-align: middle;
 }
 
+.fixed-section-controls-padding {
+  padding-top: 1em;
+}
+.section-controls-headroom {
+  padding-top: 2em !important;
+}
+
 .section-controls {
   background: var(--bg-section-controls);
   border-radius: var(--ui-element-border-radius);
@@ -632,9 +635,13 @@ hr {
   padding: 1em 2em;
 }
 
-.section-controls-additional-bodge {
-  padding-top: 0;
+.fixed-section-controls {
+  position: fixed;
+  background: var(--bg);
+  width: 100%;
+  padding: 0.25em 2em;
 }
+
 .triaged-note-create-button-bodge {
   margin-top: 1em !important;
 }
@@ -683,6 +690,10 @@ hr {
 }
 
 @media (max-width: 700px) {
+  .fixed-section-controls-padding {
+    padding-top: 3.5em;
+  }
+
   a.top-bar-menuitem {
     margin-left: 0;
   }

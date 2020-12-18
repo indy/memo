@@ -44,7 +44,8 @@ function TriagedNotes() {
       }
     });
 
-    return html`<div>
+    return html`<div class="fixed-section-controls-padding">
+                  <div class="section-controls-headroom"></div>
                   <div class="section-controls">
                     <${NewCategoryForm }/>
                   </div>

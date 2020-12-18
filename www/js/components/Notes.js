@@ -39,17 +39,19 @@ function Notes() {
   }
 
   return html`
-    <div>
+    <div class="fixed-section-controls-padding">
+      ${ hasCategories && html`
+        <div class="fixed-section-controls darken-border">
+          <div>
+            <label for="categories">Triage Categories:</label>
+            <select onChange=${ onCategorySelectChange } name="categories" id="categories">
+              ${ categoryOptions }
+            </select>
+          </div>
+        </div>`}
+      <div class="section-controls-headroom"></div>
       <div class="section-controls darken-border">
         <${CreateNoteForm}/>
-      </div>
-      <div class="section-controls darken-border section-controls-additional-bodge">
-        ${ hasCategories && html`<div class="pad-top-1rem">
-          <label for="categories">Triage Categories:</label>
-          <select onChange=${ onCategorySelectChange } name="categories" id="categories">
-            ${ categoryOptions }
-          </select>
-        </div>`}
       </div>
       <div class="hr"/>
       <div class="card-holder">
