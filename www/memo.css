@@ -620,7 +620,7 @@ hr {
 }
 
 .fixed-section-controls-padding {
-  padding-top: 1em;
+  padding-top: 1.25em;
 }
 .section-controls-headroom {
   padding-top: 2em !important;
@@ -691,7 +691,7 @@ hr {
 
 @media (max-width: 700px) {
   .fixed-section-controls-padding {
-    padding-top: 3.5em;
+    padding-top: 2.2em;
   }
 
   a.top-bar-menuitem {
