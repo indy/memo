@@ -563,6 +563,7 @@ p {
 #login-menuitem {
   float: right;
   clear:both;
+  padding-right: 2em;
 }
 
 section > form { width: var(--block-width); }
@@ -572,6 +573,20 @@ section > form { width: var(--block-width); }
   border-bottom-width: 0.1em;
   border-bottom-style: solid;
   border-color: var(--divider);
+}
+
+#top-bar-menu {
+  overflow: hidden;
+  position: fixed; /* Set the navbar to fixed position */
+  top: 0; /* Position the navbar at the top of the page */
+  width: 100%; /* Full width */
+
+  padding-top: 1em;
+  background: var(--bg);
+}
+
+#app-content {
+  margin-top: 3em;
 }
 
 a.top-bar-menuitem {

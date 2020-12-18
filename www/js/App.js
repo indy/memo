@@ -113,15 +113,17 @@ function AppUI(props) {
   return html`
     <div id='memo-app'>
       <${TopBarMenu}/>
-      <${Router} onChange=${ handleRoute }>
-        <${Notes} path="/"/>
-        <${Note} path="/notes/:id"/>
-        <${TriagedNotes} path="/triaged"/>
-        <${TriagedNote} path="/triaged/:id"/>
-        <${Bin} path="/bin"/>
-        <${BinnedNote} path="/bin/:id"/>
-        <${Login} path="/login"/>
-        <${Logout} path="/logout"/>
-      </${Router}>
+      <div id="app-content">
+        <${Router} onChange=${ handleRoute }>
+          <${Notes} path="/"/>
+          <${Note} path="/notes/:id"/>
+          <${TriagedNotes} path="/triaged"/>
+          <${TriagedNote} path="/triaged/:id"/>
+          <${Bin} path="/bin"/>
+          <${BinnedNote} path="/bin/:id"/>
+          <${Login} path="/login"/>
+          <${Logout} path="/logout"/>
+        </${Router}>
+      </div>
     </div>`;
 }
