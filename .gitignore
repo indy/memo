@@ -2,3 +2,5 @@
 dist
 www/client_bg.wasm
 www/client.js
+www/client_colour_bg.wasm
+www/client_colour.js

@@ -1,5 +1,11 @@
 export const initialState = {
   user: undefined,
+  settings: {
+    // note: extra setting variables are declared in
+    // ColourCreator.js::augmentSettingsWithCssModifierParameters
+    hueOffset: 0,
+    hueDelta: 30
+  },
   activeTopBarMenuItem: '',
   categories: [],
   triageCategory: undefined,
@@ -17,6 +23,48 @@ export const initialState = {
 //
 export const reducer = (state, action) => {
   switch (action.type) {
+  case 'settings-hue-offset':
+    {
+      let newState = { ...state };
+      newState.settings.hueOffset = parseInt(action.value, 10);
+      return newState;
+    }
+  case 'settings-hue-delta':
+    {
+      let newState = { ...state };
+      newState.settings.hueDelta = parseInt(action.value, 10);
+      return newState;
+    }
+  case 'settings-saturation':
+    {
+      let newState = { ...state };
+      newState.settings.saturation = parseInt(action.value, 10);
+      return newState;
+    }
+  case 'settings-lightness-fg':
+    {
+      let newState = { ...state };
+      newState.settings.lightnessFg = parseInt(action.value, 10);
+      return newState;
+    }
+  case 'settings-lightness-bg':
+    {
+      let newState = { ...state };
+      newState.settings.lightnessBg = parseInt(action.value, 10);
+      return newState;
+    }
+  case 'settings-lightness-hi':
+    {
+      let newState = { ...state };
+      newState.settings.lightnessHi = parseInt(action.value, 10);
+      return newState;
+    }
+  case 'settings-lightness-hi2':
+    {
+      let newState = { ...state };
+      newState.settings.lightnessHi2 = parseInt(action.value, 10);
+      return newState;
+    }
   case 'route-changed':
     {
       let activeTopBarMenuItem = '';

@@ -8,61 +8,7 @@
 */
 
 :root {
-  /* clock12: hue 67.1 saturation: 60.2 lightness: 30 */
-  --fg-clock-12: #504529;
-  --fg-clock-01: #424929;
-  --fg-clock-02: #294e28;
-  --fg-clock-03: #2a4d40;
-  --fg-clock-04: #2b4c4a;
-  --fg-clock-05: #2d4b54;
-  --fg-clock-06: #2f4866;
-  --fg-clock-07: #543586;
-  --fg-clock-08: #69306a;
-  --fg-clock-09: #722d55;
-  --fg-clock-10: #7b2a35;
-  --fg-clock-11: #5f3f29;
-
-  /* clock12: hue 67.1 saturation: 60.2 lightness: 90 */
-  --bg-clock-12: #f4e0b2;
-  --bg-clock-01: #d7eb8e;
-  --bg-clock-02: #a7f5a5;
-  --bg-clock-03: #98f4d1;
-  --bg-clock-04: #96f2ed;
-  --bg-clock-05: #c6e7f3;
-  --bg-clock-06: #d9e3f3;
-  --bg-clock-07: #e5dff3;
-  --bg-clock-08: #f3daf3;
-  --bg-clock-09: #f4dce7;
-  --bg-clock-10: #f4ddde;
-  --bg-clock-11: #f4ded3;
-
-  /* clock12: hue 67.1 saturation: 60.2 lightness: 80 */
-  --bg-clock-12-hi: #dec47c;
-  --bg-clock-01-hi: #bdce7c;
-  --bg-clock-02-hi: #7edb7b;
-  --bg-clock-03-hi: #80d7b6;
-  --bg-clock-04-hi: #83d4d0;
-  --bg-clock-05-hi: #86d1e7;
-  --bg-clock-06-hi: #b2c7e9;
-  --bg-clock-07-hi: #ccc0e9;
-  --bg-clock-08-hi: #e8b6e9;
-  --bg-clock-09-hi: #eab8d0;
-  --bg-clock-10-hi: #eababe;
-  --bg-clock-11-hi: #ebbca3;
-
-  /* clock12: hue 67.1 saturation: 60.2 lightness: 70*/
-  --bg-clock-12-hi2: #c0a96a;
-  --bg-clock-01-hi2: #a3b26a;
-  --bg-clock-02-hi2: #6cbd6a;
-  --bg-clock-03-hi2: #6eb99d;
-  --bg-clock-04-hi2: #70b7b3;
-  --bg-clock-05-hi2: #73b4c8;
-  --bg-clock-06-hi2: #89adde;
-  --bg-clock-07-hi2: #b4a1de;
-  --bg-clock-08-hi2: #dd90de;
-  --bg-clock-09-hi2: #e193bb;
-  --bg-clock-10-hi2: #e2969d;
-  --bg-clock-11-hi2: #e29b6b;
+  --mode: light;
 
   --bg: #f5f2f0;
   --fg: rgb(15, 12, 10);
@@ -92,73 +38,18 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* clock12: hue 67.1 saturation: 60.2 lightness: 50*/
-    --fg-clock-12: #867548;
-    --fg-clock-01: #717c48;
-    --fg-clock-02: #498348;
-    --fg-clock-03: #4b816d;
-    --fg-clock-04: #4c7f7d;
-    --fg-clock-05: #4e7d8b;
-    --fg-clock-06: #5279a8;
-    --fg-clock-07: #8764c6;
-    --fg-clock-08: #ad54ae;
-    --fg-clock-09: #bc508e;
-    --fg-clock-10: #ca4b5b;
-    --fg-clock-11: #9e6b49;
+    --mode: dark;
 
-    /* clock12: hue 67.1 saturation: 60.2 lightness: 15*/
-    --bg-clock-12: #2b2513;
-    --bg-clock-01: #232713;
-    --bg-clock-02: #142a13;
-    --bg-clock-03: #142921;
-    --bg-clock-04: #152928;
-    --bg-clock-05: #16282d;
-    --bg-clock-06: #172638;
-    --bg-clock-07: #2e1b4c;
-    --bg-clock-08: #3a183b;
-    --bg-clock-09: #40162e;
-    --bg-clock-10: #46141a;
-    --bg-clock-11: #352113;
-
-    /* clock12: hue 67.1 saturation: 60.2 lightness: 25*/
-    --bg-clock-12-hi: #433a21;
-    --bg-clock-01-hi: #383e21;
-    --bg-clock-02-hi: #224221;
-    --bg-clock-03-hi: #234135;
-    --bg-clock-04-hi: #24403e;
-    --bg-clock-05-hi: #253f46;
-    --bg-clock-06-hi: #273c56;
-    --bg-clock-07-hi: #472c72;
-    --bg-clock-08-hi: #592859;
-    --bg-clock-09-hi: #612548;
-    --bg-clock-10-hi: #69232c;
-    --bg-clock-11-hi: #513422;
-
-    /* clock12: hue 67.1 saturation: 60.2 lightness: 35*/
-    --bg-clock-12-hi2: #5d5130;
-    --bg-clock-01-hi2: #4e5530;
-    --bg-clock-02-hi2: #315b30;
-    --bg-clock-03-hi2: #32594b;
-    --bg-clock-04-hi2: #335856;
-    --bg-clock-05-hi2: #355761;
-    --bg-clock-06-hi2: #375476;
-    --bg-clock-07-hi2: #623e9b;
-    --bg-clock-08-hi2: #79397a;
-    --bg-clock-09-hi2: #843663;
-    --bg-clock-10-hi2: #8e323e;
-    --bg-clock-11-hi2: #6f4931;
-
-
-    --bg: #000;
+    --bg: #333;
     --fg: #888;
 
     --fg1: #999; /* linked decks (i.e. tags) */
     --fg-inactive: var(--fg1);
 
-    --bg1: #171717;
-    --bg2: #12181C;
+    --bg1: #555;
+    --bg2: #444;
 
-    --textarea-bg: #12181C;
+    --textarea-bg: #222;
     --textarea-fg: #a6a8aa;
 
     /* clock12: hue 67, saturation: 70 lightness: 60 */
@@ -168,7 +59,7 @@
     --bg-section-controls: #303030; /* hsluv: 60.2, 0, 20 */
 
     --card-action-divider: rgba(10,10,10,0.2);
-    --card-shadow: #222;
+    --card-shadow: #282828;
     --divider: #444;
 
     /* clock12: hue 67, saturation: 80 lightness: 40 */

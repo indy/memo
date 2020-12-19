@@ -21,7 +21,7 @@
 
 // NOTE: Makefile will alter these variables when building a release build
 var devMode = true;
-var CACHE_NAME = "memo-20201205";
+var CACHE_NAME = "memo-20201212";
 
 var precacheConfig = [
   "/memo.css",
@@ -29,17 +29,19 @@ var precacheConfig = [
 
   "/js/App.js",
   "/js/AppState.js",
-  "/js/NoteUtils.js",
+  "/js/ColourCreator.js",
   "/js/JsUtils.js",
   "/js/Net.js",
-  "/js/index.js",
+  "/js/NoteUtils.js",
   "/js/StateProvider.js",
+  "/js/index.js",
   "/js/svgIcons.js",
-  "/js/components/Login.js",
+  "/js/components/BaseNote.js",
   "/js/components/Bin.js",
   "/js/components/Card.js",
+  "/js/components/Login.js",
   "/js/components/Notes.js",
-  "/js/components/BaseNote.js",
+  "/js/components/Settings.js",
   "/js/components/TriagedNotes.js",
 
   "/apple-touch-icon.png",
