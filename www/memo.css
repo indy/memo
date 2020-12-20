@@ -9,75 +9,15 @@
 
 :root {
   --mode: light;
-
-  --bg: #f5f2f0;
-  --fg: rgb(15, 12, 10);
-
-  --fg1: #666; /* linked decks (i.e. tags) */
-  --fg-inactive: #999;
-
-  --bg1: #eeeee8;
-  --bg2: #ede7e3;
-
-  --textarea-bg: #fffff8;
-  --textarea-fg: rgb(15, 12, 10);
-
-  /* clock12: hue 67, saturation: 70 lightness: 80 */
-  --save-on-bg: #6fdd6b;        /* clock02 */
-  --save-on-fg: var(--fg);
-
-  --bg-section-controls: #e2e2e2; /* hsluv: 60.2, 0, 90 */
-
-  --card-action-divider: rgba(160,160,160,0.2);
-  --card-shadow: #ddd;
-  --divider: #ccc;
-
-  /* clock12: hue 67, saturation: 100 lightness: 60 */
-  --hyperlink: #0095f0;         /* clock06 */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --mode: dark;
-
-    --bg: #333;
-    --fg: #888;
-
-    --fg1: #999; /* linked decks (i.e. tags) */
-    --fg-inactive: var(--fg1);
-
-    --bg1: #555;
-    --bg2: #444;
-
-    --textarea-bg: #222;
-    --textarea-fg: #a6a8aa;
-
-    /* clock12: hue 67, saturation: 70 lightness: 60 */
-    --save-on-bg: #4fa24c;        /* clock02 */
-    --save-on-fg: var(--bg1);
-
-    --bg-section-controls: #303030; /* hsluv: 60.2, 0, 20 */
-
-    --card-action-divider: rgba(10,10,10,0.2);
-    --card-shadow: #282828;
-    --divider: #444;
-
-    /* clock12: hue 67, saturation: 80 lightness: 40 */
-    --hyperlink: #2e6193;         /* clock06 */
   }
 }
 
 :root {
-  --bg-notes: var(--bg-clock-06);
-  --bg-triaged: var(--bg-clock-12);
-  --bg-bin: var(--bg-clock-02);
-
-  --fg-notes: var(--fg-clock-06);
-  --fg-triaged: var(--fg-clock-12);
-  --fg-bin: var(--fg-clock-02);
-
-  --textarea-border: var(--textarea-bg);
-
   --body-width: 80%;
   --block-width: 55%;
   --block-width-indented: 50%;
@@ -628,7 +568,6 @@ h3 {
 }
 
 .card-action {
-  border-bottom: 1px solid var(--card-action-divider);
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
 }

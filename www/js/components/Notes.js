@@ -94,7 +94,7 @@ function NoteListItem(note, triageCategory) {
   const canTriage = !!triageCategory;
 
   return html`<${Card} note=${note} resource=${resource} pigment=${pigment}>
-                  <div class="card-action">
+                  <div class="card-action" style="border-bottom: 1px solid var(--bg-clock-${pigment.numString}-hi)">
                     ${ canTriage && html`<button class="${pigment.classHi} button button-height-bodge" onClick=${ onTriagedClicked }>Triage to ${ triageCategory.title }</button>`}
                     <button class="${pigment.classHi} button button-delete" onClick=${ onDeleteClicked }>${ svgBin(`--fg-clock-${pigment.numString}`) }</button>
                   </div>

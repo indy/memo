@@ -27,28 +27,63 @@ function buildColourConversionFn(wasm_bindgen) {
 }
 
 function augmentSettingsWithCssModifierParameters(settings) {
-  let root = document.getElementById("root");
+  let root = document.body;
   let mode = getComputedStyle(root).getPropertyValue("--mode").trim();
 
   let s;
 
-  if (mode === "dark") {
+  if (mode === "light") {
     s = {
       ...settings,
-      saturation: 70,
-      lightnessFg: 60.0,
-      lightnessBg: 30.0,
-      lightnessHi: 25.0,
-      lightnessHi2: 15.0
-    }
-  } else {
-    s = {
-      ...settings,
+
+      bg: [46.5, 19.2, 95.7],
+      fg: [53.2, 17.4, 3.4],
+      fg1: [0, 0, 40.7],
+      fg_inactive: [0, 0, 59.8],
+      bg1: [85.9, 4.5, 93.9],
+      bg2: [46.2, 20.1, 92],
+      textarea_bg: [85.9, 100, 99.8],
+      textarea_fg: [53.2, 17.4, 3.4],
+
+      save_on_bg: [127, 70, 80],
+      save_on_fg: [53.2, 17.4, 3.4],
+      bg_section_controls: [0, 0, 90],
+      card_shadow: [0, 0, 83.5],
+      divider: [0, 0, 77.7],
+      hyperlink: [247, 100, 60],
+
       saturation: 60.2,
       lightnessFg: 30.0,
       lightnessBg: 90.0,
       lightnessHi: 80.0,
       lightnessHi2: 70.0
+    }
+  } else {
+    s = {
+      ...settings,
+
+      bg: [0, 0, 20],
+      fg: [0, 0, 53.6],
+      fg1: [0, 0, 60],
+      fg_inactive: [0, 0, 60],
+      bg1: [0, 0, 34],
+      bg2: [0, 0, 27],
+      textarea_bg: [0, 0, 12],
+      textarea_fg: [236, 2.7, 69],
+
+      save_on_bg: [127, 70, 60],
+      save_on_fg: [0, 0, 34],
+      bg_section_controls: [0, 0, 20],
+      card_shadow: [0, 0, 16],
+      divider: [0, 0, 27.7],
+      hyperlink: [247, 80, 40],
+
+
+      saturation: 70,
+      lightnessFg: 60.0,
+      lightnessBg: 30.0,
+      lightnessHi: 25.0,
+      lightnessHi2: 15.0
     }
   }
 
@@ -56,7 +91,28 @@ function augmentSettingsWithCssModifierParameters(settings) {
 }
 
 function declareCssVariables(settings, wasmInterface) {
-  let root = document.getElementById("root");
+  let root = document.body;
+
+  function updateVariable(label) {
+    let cssName = '--' + label.replaceAll('_', '-');
+
+    root.style.setProperty(cssName, wasmInterface.RgbFromHsl(settings[label]));
+  }
+
+  updateVariable('bg');
+  updateVariable('fg');
+  updateVariable('fg1');
+  updateVariable('fg_inactive');
+  updateVariable('bg1');
+  updateVariable('bg2');
+  updateVariable('textarea_bg');
+  updateVariable('textarea_fg');
+  updateVariable('save_on_bg');
+  updateVariable('save_on_fg');
+  updateVariable('bg_section_controls');
+  updateVariable('card_shadow');
+  updateVariable('divider');
+  updateVariable('hyperlink');
 
   let hue, rgb, index;
   for(let i = 0; i < 12; i++) {
@@ -76,6 +132,21 @@ function declareCssVariables(settings, wasmInterface) {
     rgb = wasmInterface.RgbFromHsl([hue, settings.saturation, settings.lightnessHi2]);
     root.style.setProperty(`--bg-clock-${index}-hi2`, rgb);
   }
+
+  function updateDerivedVariable(cssLabel, copyFrom) {
+    let source = getComputedStyle(root).getPropertyValue(copyFrom);
+    root.style.setProperty(cssLabel, source);
+  }
+
+  updateDerivedVariable('--bg-notes', '--bg-clock-06');
+  updateDerivedVariable('--bg-triaged', '--bg-clock-12');
+  updateDerivedVariable('--bg-bin', '--bg-clock-02');
+
+  updateDerivedVariable('--fg-notes', '--fg-clock-06');
+  updateDerivedVariable('--fg-triaged', '--fg-clock-12');
+  updateDerivedVariable('--fg-bin', '--fg-clock-02');
+
+  updateDerivedVariable('--textarea-border', '--textarea-bg');
 }
 
 // let current = getComputedStyle(root).getPropertyValue("--fg-clock-12");

@@ -23,46 +23,18 @@ export const initialState = {
 //
 export const reducer = (state, action) => {
   switch (action.type) {
-  case 'settings-hue-offset':
+  case 'settings-colour-triple': // these triples are in HSLuv colour space
     {
       let newState = { ...state };
-      newState.settings.hueOffset = parseInt(action.value, 10);
+      newState.settings[action.id] = [parseInt(action.value[0], 10),
+                                      parseInt(action.value[1], 10),
+                                      parseInt(action.value[2], 10)];
       return newState;
     }
-  case 'settings-hue-delta':
+  case 'settings-colour-scalar':
     {
       let newState = { ...state };
-      newState.settings.hueDelta = parseInt(action.value, 10);
-      return newState;
-    }
-  case 'settings-saturation':
-    {
-      let newState = { ...state };
-      newState.settings.saturation = parseInt(action.value, 10);
-      return newState;
-    }
-  case 'settings-lightness-fg':
-    {
-      let newState = { ...state };
-      newState.settings.lightnessFg = parseInt(action.value, 10);
-      return newState;
-    }
-  case 'settings-lightness-bg':
-    {
-      let newState = { ...state };
-      newState.settings.lightnessBg = parseInt(action.value, 10);
-      return newState;
-    }
-  case 'settings-lightness-hi':
-    {
-      let newState = { ...state };
-      newState.settings.lightnessHi = parseInt(action.value, 10);
-      return newState;
-    }
-  case 'settings-lightness-hi2':
-    {
-      let newState = { ...state };
-      newState.settings.lightnessHi2 = parseInt(action.value, 10);
+      newState.settings[action.id] = parseInt(action.value, 10);
       return newState;
     }
   case 'route-changed':
