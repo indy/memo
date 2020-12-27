@@ -8,7 +8,6 @@ export const initialState = {
   },
   activeTopBarMenuItem: '',
   categories: [],
-  triageCategory: undefined,
   listing: {
     notes: undefined,
     triaged: undefined,
@@ -69,11 +68,6 @@ export const reducer = (state, action) => {
     return {
       ...state,
       categories: action.categories
-    };
-  case 'triage-category-set':
-    return {
-      ...state,
-      triageCategory: action.triageCategory
     };
   case 'listing-set':
     {

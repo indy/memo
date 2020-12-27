@@ -8,13 +8,6 @@ import { useStateValue } from '/js/StateProvider.js';
 import BaseNote from '/js/components/BaseNote.js';
 import Card from '/js/components/Card.js';
 
-function setTriageCategory(dispatch, triageCategory) {
-  dispatch({
-    type: 'triage-category-set',
-    triageCategory
-  });
-}
-
 function Notes() {
   const [state, dispatch] = useStateValue();
 
@@ -23,32 +16,11 @@ function Notes() {
   const notes = state.listing.notes;
   const listing = notes ? notes.map(n => NoteListItem(n, state.categories)) : [];
 
-  function onCategorySelectChange(e) {
-    const value = e.target.value;
-    const category = state.categories.find(c => c.title === value);
-    console.assert(category, `${ category } should be part of the state's categories`);
-    setTriageCategory(dispatch, category);
-  }
-
   const hasCategories = state.categories.length > 0;
   const categoryOptions = state.categories.map(c => html`<option value="${c.title}">${c.title}</option>`);
 
-  if (hasCategories && !state.triageCategory) {
-    // set the default triage category
-    setTriageCategory(dispatch, state.categories[0]);
-  }
-
   return html`
-    <div class="fixed-section-controls-padding">
-      ${ hasCategories && html`
-        <div class="fixed-section-controls darken-border">
-          <div>
-            <label for="categories">Triage Categories:</label>
-            <select onChange=${ onCategorySelectChange } name="categories" id="categories">
-              ${ categoryOptions }
-            </select>
-          </div>
-        </div>`}
+    <div>
       <div class="section-controls-headroom"></div>
       <div class="section-controls darken-border">
         <${CreateNoteForm}/>
