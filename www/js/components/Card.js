@@ -1,7 +1,7 @@
 import { html, route } from '/lib/preact/mod.js';
 import { parseNoteContent, parseCardTitle } from '/js/NoteUtils.js';
 
-export default function Card({ note, pigment, resource, children }) {
+export default function Card({ note, pigment, resource, heightLimited, children }) {
   const href = `/${resource}/${note.id}`;
 
   function onCardClicked(e) {
@@ -11,7 +11,15 @@ export default function Card({ note, pigment, resource, children }) {
     }
   }
 
-  return html`<div class="card ${pigment.class} darken-border" onClick=${ onCardClicked }>
+  let classes = `card ${pigment.class} darken-border`;
+  if (heightLimited === undefined) {
+    heightLimited = true;
+  }
+  if (heightLimited) {
+    classes += ' card-height-limited';
+  }
+
+  return html`<div class=${classes} onClick=${ onCardClicked }>
                 <div class="card-body">
                   ${ children }
                   ${ parseCardTitle(note)}

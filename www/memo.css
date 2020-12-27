@@ -506,8 +506,11 @@ hr {
   border-radius: var(--ui-element-border-radius);
   display: inline-block;
   vertical-align: top;
-  max-height: 20rem;
   overflow: hidden;
+}
+
+.card-height-limited {
+  max-height: 20rem;
 }
 
 @media (max-width: 700px) {
