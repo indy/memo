@@ -34,7 +34,7 @@ function Notes() {
 
 function NoteListItem(note, categories) {
   const [state, dispatch] = useStateValue();
-  const [heightLimited, setHeightLimited] = useState(true);
+  const [fullHeight, setFullHeight] = useState(false);
 
   const resource = 'notes';
   const pigment = notePigment(note);
@@ -59,24 +59,24 @@ function NoteListItem(note, categories) {
     });
   }
 
-  return html`<${Card} note=${note} resource=${resource} pigment=${pigment} heightLimited=${heightLimited}>
+  return html`<${Card} note=${note} resource=${resource} pigment=${pigment} fullHeight=${fullHeight}>
                   <div class="card-action" style="border-bottom: 1px solid var(--bg-clock-${pigment.numString}-hi)">
                     <${TriageDropDown} noteId=${note.id}
                                        categories=${categories}
                                        pigment=${pigment}
-                                       cardHeightLimitedFn=${setHeightLimited}
+                                       cardFullHeightFn=${setFullHeight}
                                        onSelectCallback=${onTriageCategorySelected}/>
                     <button class="${pigment.classHi} button button-delete" onClick=${ onDeleteClicked }>${ svgBin(`--fg-clock-${pigment.numString}`) }</button>
                   </div>
               </${Card}>`;
 }
 
-function TriageDropDown({ noteId, categories, pigment, cardHeightLimitedFn, onSelectCallback }) {
+function TriageDropDown({ noteId, categories, pigment, cardFullHeightFn, onSelectCallback }) {
   const [showList, setShowList] = useState(false);
 
   function onToggleShowList(e) {
     e.preventDefault();
-    cardHeightLimitedFn(showList);
+    cardFullHeightFn(!showList);
     setShowList(!showList);
   }
 
