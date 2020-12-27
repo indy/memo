@@ -10,8 +10,7 @@ export default function BaseNote({ id, noteKind }) {
 
   const [localState, setLocalState] = useState({
     editing: false,
-    userText: undefined,
-    editButtonText: 'Edit'
+    userText: undefined
   });
 
   ensureListingLoaded(noteKind);
@@ -25,8 +24,7 @@ export default function BaseNote({ id, noteKind }) {
 
     setLocalState({
       ...localState,
-      editing: !localState.editing,
-      editButtonText: localState.editing ? "Edit" : "Cancel Editing"
+      editing: !localState.editing
     })
   }
 
@@ -84,6 +82,8 @@ export default function BaseNote({ id, noteKind }) {
   }
 
 
+  let editButtonText = localState.editing ? "Cancel Editing" : "Edit";
+
   return html`
     <article>
       ${ parseNoteTitle(note) }
@@ -96,6 +96,6 @@ export default function BaseNote({ id, noteKind }) {
         </div>
       `}
       <button class="button" onClick=${ onDeleteClicked }>${ svgBin(`--fg1`) }</button>
-      <button class="button" onClick=${ onEditClicked }>${ localState.editButtonText }</button>
+      <button class="button" onClick=${ onEditClicked }>${ editButtonText }</button>
     </article>`;
 }
