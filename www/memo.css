@@ -580,6 +580,37 @@ h3 {
   height: 2.44em;
 }
 
+.button-title-ellipses::after {
+  content: '\2026';
+}
+
+.triage-dropdown {
+  display:inline-block;
+}
+
+.triage-dropdown-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.triage-dropdown-item {
+  text-decoration: none;
+
+  /* copied from .button but with display:inline-block deleted */
+  padding:0.3em 1.2em;
+  margin:0 0.3em 0.3em 0;
+  border-radius: var(--ui-element-border-radius);
+  box-sizing: border-box;
+  text-decoration:none;
+  /* color: var(--fg); */
+  /* background-color:rgba(0, 0, 0, 0.15); */
+  text-align:center;
+  transition: all 0.2s;
+
+  border-width: 0px;
+  box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.05);
+}
+
 .button{
   display:inline-block;
   padding:0.3em 1.2em;

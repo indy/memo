@@ -5,7 +5,7 @@ export default function Card({ note, pigment, resource, children }) {
   const href = `/${resource}/${note.id}`;
 
   function onCardClicked(e) {
-    if (!clickedOnButton(e.target) && !clickedOnInCardHyperlink(e.target)) {
+    if (!clickedOnCardUI(e.target) && !clickedOnInCardHyperlink(e.target)) {
       e.preventDefault();
       route(href);
     }
@@ -21,19 +21,20 @@ export default function Card({ note, pigment, resource, children }) {
 
 }
 
-
-function clickedOnButton(n) {
+function clickedOnCardUI(n) {
   if (!n) {
     return false;
   }
 
   // svg elements have a property called className but it isn't a string
   // fucking retarded web development.
-  if (!(n instanceof SVGElement) && n.className && n.className.includes("button")) {
+  if (!(n instanceof SVGElement) &&
+      n.className &&
+      (n.className.includes("button") || n.className.includes("triage-dropdown-item"))) {
     return true;
   }
 
-  return clickedOnButton(n.parentNode);
+  return clickedOnCardUI(n.parentNode);
 }
 
 function clickedOnInCardHyperlink(n) {
