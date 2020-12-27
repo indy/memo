@@ -25,7 +25,7 @@ mod colour;
 mod error;
 mod utils;
 
-use crate::colour::{Colour, Format};
+use crate::colour::{Rgb, Hsluv};
 use cfg_if::cfg_if;
 use wasm_bindgen::prelude::*;
 
@@ -83,22 +83,28 @@ impl Transport3C {
     }
 }
 
-#[wasm_bindgen]
-pub fn hsl_from_rgb(r: f64, g: f64, b: f64) -> Transport3C {
-    let hsluv = Colour::RGB(r, g, b, 1.0).clone_as(Format::HSLuv).unwrap();
+impl From<Rgb> for Transport3C {
+    fn from(rgb: Rgb) -> Transport3C {
+        Transport3C::new(rgb.r.into(), rgb.g.into(), rgb.b.into())
+    }
+}
 
-    match hsluv {
-        Colour::HSLuv(h, s, l, _) => Transport3C::new(h, s, l),
-        _ => Transport3C::blank(),
+impl From<Hsluv> for Transport3C {
+    fn from(hsluv: Hsluv) -> Transport3C {
+        Transport3C::new(hsluv.h.into(), hsluv.s.into(), hsluv.l.into())
     }
 }
 
 #[wasm_bindgen]
-pub fn rgb_from_hsl(h: f64, s: f64, l: f64) -> Transport3C {
-    let rgb = Colour::HSLuv(h, s, l, 1.0).clone_as(Format::RGB).unwrap();
+pub fn hsl_from_rgb(r: f64, g: f64, b: f64) -> Transport3C {
+    let hsluv: Hsluv = Rgb::new(r as f32, g as f32, b as f32, 1.0).into();
 
-    match rgb {
-        Colour::RGB(r, g, b, _) => Transport3C::new(r, g, b),
-        _ => Transport3C::blank(),
-    }
+    hsluv.into()
+}
+
+#[wasm_bindgen]
+pub fn rgb_from_hsl(h: f64, s: f64, l: f64) -> Transport3C {
+    let rgb: Rgb = Hsluv::new(h as f32, s as f32, l as f32, 1.0).into();
+
+    rgb.into()
 }

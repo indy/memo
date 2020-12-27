@@ -13,11 +13,31 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+use std::error;
+use std::fmt;
+
 pub type Result<T> = ::std::result::Result<T, Error>;
 
 #[derive(Debug)]
 pub enum Error {
-    IncorrectColourFormat,
-    InvalidColourHue,
-    InvalidColourChannel,
+    RgbFromHexError,
+    ParseIntError(std::num::ParseIntError),
+}
+
+impl From<std::num::ParseIntError> for Error {
+    fn from(e: std::num::ParseIntError) -> Error {
+        Error::ParseIntError(e)
+    }
+}
+
+// don't need to implement any of the trait's methods
+impl error::Error for Error {}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Error::RgbFromHexError => write!(f, "RGB from Hex error"),
+            Error::ParseIntError(_) => write!(f, "ParseIntError"),
+        }
+    }
 }

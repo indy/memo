@@ -1,32 +1,43 @@
-// Copyright (C) 2018 Inderjit Gill
+// Copyright (C) 2020 Inderjit Gill <email@indy.io>
 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
+// This file is part of Memo
+
+// Seni is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-// This program is distributed in the hope that it will be useful,
+// Seni is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// GNU Affero General Public License for more details.
 
-// You should have received a copy of the GNU General Public License
+// You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+// colour spaces
+//
+// Rgb  : what the world uses, avoid any colour manipulation in RGB space
+// Hsluv: for humans to manipulate colours
+// Oklab: for my code to manipulate colours
+//
 // |--------+-----------+-------------+-------------|
 // | format | element 0 | element 1   | element 2   |
 // |--------+-----------+-------------+-------------|
-// | RGB    | R 0..1    | G 0..1      | B 0..1      |
-// | HSL    | H 0..360  | S 0..1      | L 0..1      |
-// | HSLuv  | H 0..360  | S 0..100    | L 0..100    |
-// | LAB    | L 0..100  | A -128..128 | B -128..128 |
+// | Rgb    | R 0..1    | G 0..1      | B 0..1      |
+// | Hsluv  | H 0..360  | S 0..100    | L 0..100    |
+// | Oklab  | L 0..100  | A -128..128 | B -128..128 |
 // |--------+-----------+-------------+-------------|
 
 use crate::error::{Error, Result};
 use std;
 
-const REF_U: f64 = 0.197_830_006_642_836_807_64;
-const REF_V: f64 = 0.468_319_994_938_791_003_70;
+const COLOUR_UNIT_ANGLE: f32 = 360.0 / 12.0;
+const COLOUR_COMPLIMENTARY_ANGLE: f32 = COLOUR_UNIT_ANGLE * 6.0;
+const COLOUR_TRIAD_ANGLE: f32 = COLOUR_UNIT_ANGLE * 4.0;
+
+const REF_U: f64 = 0.197_830_006_642_836_807_640;
+const REF_V: f64 = 0.468_319_994_938_791_003_700;
 
 //  http://www.brucelindbloom.com/index.html?Equations.html
 //  http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
@@ -42,119 +53,593 @@ const WHITEPOINT_2: f64 = 1.0888;
 const CIE_EPSILON: f64 = 0.008_856;
 const CIE_KAPPA: f64 = 903.3;
 
-// intent from the CIE
-//
-// #define CIE_EPSILON (216.0f / 24389.0f)
-// #define CIE_KAPPA (24389.0f / 27.0f)
-
-// RGB to XYZ (M)
-// 0.4124564  0.3575761  0.1804375
-// 0.2126729  0.7151522  0.0721750
-// 0.0193339  0.1191920  0.9503041
-
-// XYZ to RBG (M)^-1
-//  3.2404542 -1.5371385 -0.4985314
-// -0.9692660  1.8760108  0.0415560
-//  0.0556434 -0.2040259  1.0572252
-
-#[derive(Debug, PartialEq, Clone, Copy)]
-pub enum Format {
-    RGB,
-    HSLuv,
-    HSL,
-    LAB,
-    HSV,
+// sRGB colour space
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Rgb {
+    pub r: f32,
+    pub g: f32,
+    pub b: f32,
+    pub alpha: f32,
 }
 
-#[derive(Debug, Clone, Copy)]
-pub enum Colour {
-    RGB(f64, f64, f64, f64),
-    HSLuv(f64, f64, f64, f64),
-    HSL(f64, f64, f64, f64),
-    LAB(f64, f64, f64, f64),
-    HSV(f64, f64, f64, f64),
-    XYZ(f64, f64, f64, f64),
-    LUV(f64, f64, f64, f64),
-    LCH(f64, f64, f64, f64),
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Oklab {
+    pub l: f32,
+    pub a: f32,
+    pub b: f32,
+    pub alpha: f32,
 }
 
-impl Colour {
-    pub fn is_format(&self, format: Format) -> bool {
-        match format {
-            Format::RGB => match *self {
-                Colour::RGB(_, _, _, _) => true,
-                _ => false,
-            },
-            Format::HSLuv => match *self {
-                Colour::HSLuv(_, _, _, _) => true,
-                _ => false,
-            },
-            Format::HSL => match *self {
-                Colour::HSL(_, _, _, _) => true,
-                _ => false,
-            },
-            Format::LAB => match *self {
-                Colour::LAB(_, _, _, _) => true,
-                _ => false,
-            },
-            Format::HSV => match *self {
-                Colour::HSV(_, _, _, _) => true,
-                _ => false,
-            },
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Hsluv {
+    pub h: f32,
+    pub s: f32,
+    pub l: f32,
+    pub alpha: f32,
+}
+
+#[derive(Debug)]
+struct InternalLinearRgb {
+    r: f64,
+    g: f64,
+    b: f64,
+    alpha: f32
+}
+
+#[derive(Debug)]
+struct InternalOklab {
+    l: f64,
+    a: f64,
+    b: f64,
+    alpha: f32,
+}
+
+#[derive(Debug)]
+struct InternalHsluv {
+    h: f64,
+    s: f64,
+    l: f64,
+    alpha: f32,
+}
+
+#[derive(Debug)]
+struct InternalXyz {
+    x: f64,
+    y: f64,
+    z: f64,
+    alpha: f32,
+}
+
+#[derive(Debug)]
+struct InternalLuv {
+    l: f64,
+    u: f64,
+    v: f64,
+    alpha: f32,
+}
+
+#[derive(Debug)]
+struct InternalLch {
+    l: f64,
+    c: f64,
+    h: f64,
+    alpha: f32,
+}
+
+impl Rgb {
+    pub fn new(r: f32, g: f32, b: f32, alpha: f32) -> Self {
+        Rgb {r, b, g, alpha}
+    }
+
+    // hex in the form: "ff00ff"
+    pub fn from_rgb_hex(hex: &str) -> Result<Self> {
+        if hex.len() != 6 {
+            // error!(
+            //     "Colour::from_rgb_hex expects input as 6 hex digits, actual: {}",
+            //     hex
+            // );
+            return Err(Error::RgbFromHexError);
+        }
+
+        Ok(Rgb::new(
+            Rgb::normalised_colour_from_hex_string(&hex[0..2])?,
+            Rgb::normalised_colour_from_hex_string(&hex[2..4])?,
+            Rgb::normalised_colour_from_hex_string(&hex[4..])?,
+            1.0,
+        ))
+    }
+
+    fn normalised_colour_from_hex_string(hex_component: &str) -> Result<f32> {
+        let value = i32::from_str_radix(hex_component, 16)?;
+        Ok(value as f32 / 255.0)
+    }
+}
+
+impl Default for Rgb {
+    fn default() -> Rgb {
+        Rgb {
+            r: 0.0,
+            g: 0.0,
+            b: 0.0,
+            alpha: 1.0,
         }
     }
+}
 
-    pub fn clone_as(&self, format: Format) -> Result<Colour> {
-        match *self {
-            Colour::HSL(h, s, l, alpha) => match format {
-                Format::HSL => Ok(Colour::HSL(h, s, l, alpha)),
-                Format::HSLuv => hsluv_from_xyz(xyz_from_rgb(rgb_from_hsl(*self)?)?),
-                Format::HSV => hsv_from_rgb(rgb_from_hsl(*self)?),
-                Format::LAB => lab_from_xyz(xyz_from_rgb(rgb_from_hsl(*self)?)?),
-                Format::RGB => rgb_from_hsl(*self),
-            },
-            Colour::HSLuv(h, s, l, alpha) => match format {
-                Format::HSL => hsl_from_rgb(rgb_from_xyz(xyz_from_hsluv(*self)?)?),
-                Format::HSLuv => Ok(Colour::HSLuv(h, s, l, alpha)),
-                Format::HSV => hsv_from_rgb(rgb_from_xyz(xyz_from_hsluv(*self)?)?),
-                Format::LAB => lab_from_xyz(xyz_from_hsluv(*self)?),
-                Format::RGB => rgb_from_xyz(xyz_from_hsluv(*self)?),
-            },
-            Colour::HSV(h, s, v, alpha) => match format {
-                Format::HSL => hsl_from_rgb(rgb_from_hsv(*self)?),
-                Format::HSLuv => hsluv_from_xyz(xyz_from_rgb(rgb_from_hsv(*self)?)?),
-                Format::HSV => Ok(Colour::HSV(h, s, v, alpha)),
-                Format::LAB => lab_from_xyz(xyz_from_rgb(rgb_from_hsv(*self)?)?),
-                Format::RGB => rgb_from_hsv(*self),
-            },
-            Colour::LAB(l, a, b, alpha) => match format {
-                Format::HSL => hsl_from_rgb(rgb_from_xyz(xyz_from_lab(*self)?)?),
-                Format::HSLuv => hsluv_from_xyz(xyz_from_lab(*self)?),
-                Format::HSV => hsv_from_rgb(rgb_from_xyz(xyz_from_lab(*self)?)?),
-                Format::LAB => Ok(Colour::LAB(l, a, b, alpha)),
-                Format::RGB => rgb_from_xyz(xyz_from_lab(*self)?),
-            },
-            Colour::RGB(r, g, b, alpha) => match format {
-                Format::HSL => hsl_from_rgb(*self),
-                Format::HSLuv => hsluv_from_xyz(xyz_from_rgb(*self)?),
-                Format::HSV => hsv_from_rgb(*self),
-                Format::LAB => lab_from_xyz(xyz_from_rgb(*self)?),
-                Format::RGB => Ok(Colour::RGB(r, g, b, alpha)),
-            },
-            _ => Err(Error::IncorrectColourFormat),
+impl From<Hsluv> for Rgb {
+    fn from(colour: Hsluv) -> Rgb {
+        let internal_hsluv: InternalHsluv = (&colour).into();
+        let internal_xyz: InternalXyz = (&internal_hsluv).into();
+        let internal_rgb: InternalLinearRgb = (&internal_xyz).into();
+        (&internal_rgb).into()
+    }
+}
+
+impl From<&Hsluv> for Rgb {
+    fn from(colour: &Hsluv) -> Rgb {
+        let internal_hsluv: InternalHsluv = colour.into();
+        let internal_xyz: InternalXyz = (&internal_hsluv).into();
+        let internal_rgb: InternalLinearRgb = (&internal_xyz).into();
+        (&internal_rgb).into()
+    }
+}
+
+impl From<Oklab> for Rgb {
+    fn from(colour: Oklab) -> Rgb {
+        let oklab64: InternalOklab = (&colour).into();
+        let rgb64: InternalLinearRgb = (&oklab64).into();
+        Rgb::from(&rgb64)
+    }
+}
+
+impl From<&Oklab> for Rgb {
+    fn from(colour: &Oklab) -> Rgb {
+        let oklab64: InternalOklab = colour.into();
+        let rgb64: InternalLinearRgb = (&oklab64).into();
+        Rgb::from(&rgb64)
+    }
+}
+
+impl From<&InternalLinearRgb> for Rgb {
+    fn from(colour: &InternalLinearRgb) -> Rgb {
+        Rgb::new(
+            srgb_companding(colour.r) as f32,
+            srgb_companding(colour.g) as f32,
+            srgb_companding(colour.b) as f32,
+            colour.alpha,
+        )
+    }
+}
+
+impl Hsluv {
+    pub fn new(h: f32, s: f32, l: f32, alpha: f32) -> Self {
+        Hsluv {h, s, l, alpha}
+    }
+
+    pub fn complementary(&self) -> Hsluv {
+        self.add_angle(COLOUR_COMPLIMENTARY_ANGLE)
+    }
+
+    pub fn split_complementary(&self) -> (Hsluv, Hsluv) {
+        self.add_angle(COLOUR_COMPLIMENTARY_ANGLE).pair(COLOUR_UNIT_ANGLE)
+    }
+
+    pub fn analagous(&self) -> (Hsluv, Hsluv) {
+        self.pair(COLOUR_UNIT_ANGLE)
+    }
+
+    pub fn triad(&self) -> (Hsluv, Hsluv) {
+        self.pair(COLOUR_TRIAD_ANGLE)
+    }
+
+    fn add_angle(&self, angle: f32) -> Hsluv {
+        Hsluv::new((self.h + angle) * 360.0, self.s, self.l, self.alpha)
+    }
+
+    fn pair(&self, angle: f32) -> (Hsluv, Hsluv) {
+        (self.add_angle(-angle), self.add_angle(angle))
+    }
+}
+
+impl Default for Hsluv {
+    fn default() -> Hsluv {
+        Hsluv {
+            h: 0.0,
+            s: 0.0,
+            l: 0.0,
+            alpha: 1.0,
         }
     }
 }
 
-fn colour_to_axis(component: f64) -> f64 {
-    if component > 0.04045 {
-        ((component + 0.055) / 1.055).powf(2.4)
-    } else {
-        component / 12.92
+impl From<Rgb> for Hsluv {
+    fn from(colour: Rgb) -> Hsluv {
+        let internal_rgb: InternalLinearRgb = (&colour).into();
+        let internal_xyz: InternalXyz = (&internal_rgb).into();
+        let internal_hsluv: InternalHsluv = (&internal_xyz).into();
+        (&internal_hsluv).into()
     }
 }
 
-fn axis_to_colour(a: f64) -> f64 {
+impl From<&Rgb> for Hsluv {
+    fn from(colour: &Rgb) -> Hsluv {
+        let internal_rgb: InternalLinearRgb = colour.into();
+        let internal_xyz: InternalXyz = (&internal_rgb).into();
+        let internal_hsluv: InternalHsluv = (&internal_xyz).into();
+        (&internal_hsluv).into()
+    }
+}
+
+impl From<Oklab> for Hsluv {
+    fn from(colour: Oklab) -> Hsluv {
+        let internal_oklab: InternalOklab = (&colour).into();
+        let internal_xyz: InternalXyz = (&internal_oklab).into();
+        let internal_hsluv: InternalHsluv = (&internal_xyz).into();
+        (&internal_hsluv).into()
+    }
+}
+
+impl From<&Oklab> for Hsluv {
+    fn from(colour: &Oklab) -> Hsluv {
+        let internal_oklab: InternalOklab = colour.into();
+        let internal_xyz: InternalXyz = (&internal_oklab).into();
+        let internal_hsluv: InternalHsluv = (&internal_xyz).into();
+        (&internal_hsluv).into()
+    }
+}
+
+impl From<&InternalHsluv> for Hsluv {
+    fn from(colour: &InternalHsluv) -> Hsluv {
+        Hsluv {
+            h: colour.h as f32,
+            s: colour.s as f32,
+            l: colour.l as f32,
+            alpha: colour.alpha
+        }
+    }
+}
+
+impl Oklab {
+    pub fn new(l: f32, a: f32, b: f32, alpha: f32) -> Self {
+        Oklab {l, a, b, alpha}
+    }
+}
+
+impl Default for Oklab {
+    fn default() -> Oklab {
+        Oklab {
+            l: 0.0,
+            a: 0.0,
+            b: 0.0,
+            alpha: 1.0,
+        }
+    }
+}
+
+impl From<&Rgb> for Oklab {
+    fn from(colour: &Rgb) -> Oklab {
+        // make sure these two lines are equivalent
+        // Oklab::try_from(oklab_from_xyz(xyz_from_rgb(c)?)?),
+        // Oklab::try_from(oklab_from_rgb(c)?)
+
+        let internal_rgb: InternalLinearRgb = colour.into();
+        let internal_oklab: InternalOklab = (&internal_rgb).into();
+        (&internal_oklab).into()
+    }
+}
+
+impl From<&Hsluv> for Oklab {
+    fn from(colour: &Hsluv) -> Oklab {
+        let internal_hsluv: InternalHsluv = colour.into();
+        let internal_xyz: InternalXyz = (&internal_hsluv).into();
+        let internal_oklab: InternalOklab = (&internal_xyz).into();
+        (&internal_oklab).into()
+    }
+}
+
+impl From<&InternalOklab> for Oklab {
+    fn from(colour: &InternalOklab) -> Oklab {
+        Oklab {
+            l: colour.l as f32,
+            a: colour.a as f32,
+            b: colour.b as f32,
+            alpha: colour.alpha
+        }
+    }
+}
+
+impl From<&InternalLinearRgb> for InternalOklab {
+    fn from(colour: &InternalLinearRgb) -> InternalOklab {
+        let lr = colour.r;
+        let lg = colour.g;
+        let lb = colour.b;
+        let alpha = colour.alpha;
+
+        let l = 0.4121656120 * lr + 0.5362752080 * lg + 0.0514575653 * lb;
+        let m = 0.2118591070 * lr + 0.6807189584 * lg + 0.1074065790 * lb;
+        let s = 0.0883097947 * lr + 0.2818474174 * lg + 0.6302613616 * lb;
+
+        let l_ = l.cbrt();
+        let m_ = m.cbrt();
+        let s_ = s.cbrt();
+
+        let okl = 0.2104542553*l_ + 0.7936177850*m_ - 0.0040720468*s_;
+        let oka = 1.9779984951*l_ - 2.4285922050*m_ + 0.4505937099*s_;
+        let okb = 0.0259040371*l_ + 0.7827717662*m_ - 0.8086757660*s_;
+
+        InternalOklab { l: okl, a: oka, b: okb, alpha }
+    }
+}
+
+
+impl From<&InternalXyz> for InternalOklab {
+    fn from(colour: &InternalXyz) -> InternalOklab {
+        let x = colour.x;
+        let y = colour.y;
+        let z = colour.z;
+        let alpha = colour.alpha;
+
+        let l = (x * 0.818933) + (y * 0.361866) - (z * 0.1288597);
+        let m = (x * 0.032984) + (y * 0.929311) + (z * 0.0361456);
+        let s = (x * 0.048200) + (y * 0.264366) + (z * 0.6338517);
+
+        let ll = l.cbrt();
+        let mm = m.cbrt();
+        let ss = s.cbrt();
+
+        let okl = (ll * 0.2104542553) + (mm * 0.7936177850) - (ss * 0.0040720468);
+        let oka = (ll * 1.9779984951) - (mm * 2.4285922050) + (ss * 0.4505937099);
+        let okb = (ll * 0.0259040371) + (mm * 0.7827717662) - (ss * 0.8086757660);
+
+        InternalOklab { l: okl, a: oka, b: okb, alpha }
+    }
+}
+
+impl From<&Oklab> for InternalOklab {
+    fn from(colour: &Oklab) -> InternalOklab {
+        InternalOklab {
+            l: f64::from(colour.l),
+            a: f64::from(colour.a),
+            b: f64::from(colour.b),
+            alpha: colour.alpha
+        }
+    }
+}
+
+impl From<&InternalLinearRgb> for InternalXyz {
+    fn from(colour: &InternalLinearRgb) -> InternalXyz {
+        let x = (colour.r * 0.4124) + (colour.g * 0.3576) + (colour.b * 0.1805);
+        let y = (colour.r * 0.2126) + (colour.g * 0.7152) + (colour.b * 0.0722);
+        let z = (colour.r * 0.0193) + (colour.g * 0.1192) + (colour.b * 0.9505);
+        let alpha = colour.alpha;
+
+        InternalXyz { x, y, z, alpha }
+    }
+}
+
+impl From<&InternalOklab> for InternalXyz {
+    fn from(colour: &InternalOklab) -> InternalXyz {
+        let l = colour.l;
+        let a = colour.a;
+        let b = colour.b;
+        let alpha = colour.alpha;
+
+        let ll = (l * 0.99999999845051981432) + (a * 0.39633779217376785678) + (b * 0.21580375806075880339);
+        let aa = (l * 1.0000000088817607767) - (a * 0.1055613423236563494) - (b * 0.063854174771705903402);
+        let bb = (l * 1.0000000546724109177) - (a * 0.089484182094965759684) - (b * 1.2914855378640917399);
+
+        let lll = ll * ll * ll;
+        let aaa = aa * aa * aa;
+        let bbb = bb * bb * bb;
+
+        let x = (lll * 1.2270135808797242712) - (aaa * 0.55779929373936236039) + (bbb * 0.28125599738846247759);
+        let y = (lll * -0.040579504210222529446) + (aaa * 1.1122575496728821897) - (bbb * 0.071676512386310776724);
+        let z = (lll * -0.076380979002443348587) - (aaa * 0.42148211232782669384) + (bbb * 1.5861632836188583913);
+
+        InternalXyz { x, y, z, alpha }
+    }
+}
+
+impl From<&InternalHsluv> for InternalXyz {
+    fn from(colour: &InternalHsluv) -> InternalXyz {
+        let internal_lch: InternalLch = colour.into();
+        let internal_luv: InternalLuv = (&internal_lch).into();
+        (&internal_luv).into()
+    }
+}
+
+impl From<&InternalLuv> for InternalXyz {
+    fn from(colour: &InternalLuv) -> InternalXyz {
+        let l = colour.l;
+        let u = colour.u;
+        let v = colour.v;
+        let alpha = colour.alpha;
+
+        if l <= 0.000_000_01 {
+            return InternalXyz { x: 0.0, y: 0.0, z: 0.0, alpha };
+        }
+
+        let var_u = u / (13.0 * l) + REF_U;
+        let var_v = v / (13.0 * l) + REF_V;
+        let y = l2y(l);
+        let x = -(9.0 * y * var_u) / ((var_u - 4.0) * var_v - var_u * var_v);
+        let z = (9.0 * y - (15.0 * var_v * y) - (var_v * x)) / (3.0 * var_v);
+
+        InternalXyz { x, y, z, alpha }
+    }
+}
+
+impl From<&InternalXyz> for InternalHsluv {
+    fn from(colour: &InternalXyz) -> InternalHsluv {
+        let internal_luv: InternalLuv = colour.into();
+        let internal_lch: InternalLch = (&internal_luv).into();
+        (&internal_lch).into()
+    }
+}
+
+impl From<&Hsluv> for InternalHsluv {
+    fn from(colour: &Hsluv) -> InternalHsluv {
+        InternalHsluv {
+            h: f64::from(colour.h),
+            s: f64::from(colour.s),
+            l: f64::from(colour.l),
+            alpha: colour.alpha
+        }
+    }
+}
+
+impl From<&InternalLch> for InternalHsluv {
+    fn from(colour: &InternalLch) -> InternalHsluv {
+        let l = colour.l;
+        let c = colour.c;
+        let h = colour.h;
+        let alpha = colour.alpha;
+
+        let s = if l > 99.999_999_9 || l < 0.000_000_01 {
+            0.0
+        } else {
+            c / max_chroma_for_lh(l, h) * 100.0
+        };
+
+        if c < 0.000_000_01 {
+            InternalHsluv { h: 0.0, s, l, alpha }
+        } else {
+            InternalHsluv { h, s, l, alpha }
+        }
+    }
+}
+
+impl From<&Rgb> for InternalLinearRgb {
+    fn from(colour: &Rgb) -> InternalLinearRgb {
+        InternalLinearRgb {
+            r: inverse_srgb_companding(f64::from(colour.r)),
+            g: inverse_srgb_companding(f64::from(colour.g)),
+            b: inverse_srgb_companding(f64::from(colour.b)),
+            alpha: colour.alpha,
+        }
+    }
+}
+
+impl From<&InternalOklab> for InternalLinearRgb {
+    fn from(colour: &InternalOklab) -> InternalLinearRgb {
+        let okl = colour.l;
+        let oka = colour.a;
+        let okb = colour.b;
+        let alpha = colour.alpha;
+
+        let l_ = okl + 0.3963377774 * oka + 0.2158037573 * okb;
+        let m_ = okl - 0.1055613458 * oka - 0.0638541728 * okb;
+        let s_ = okl - 0.0894841775 * oka - 1.2914855480 * okb;
+
+        let l = l_*l_*l_;
+        let m = m_*m_*m_;
+        let s = s_*s_*s_;
+
+        let r = 4.0767245293*l - 3.3072168827*m + 0.2307590544*s;
+        let g = - 1.2681437731*l + 2.6093323231*m - 0.3411344290*s;
+        let b = - 0.0041119885*l - 0.7034763098*m + 1.7068625689*s;
+
+        InternalLinearRgb { r, g, b, alpha }
+    }
+}
+
+impl From<&InternalXyz> for InternalLinearRgb {
+    fn from(colour: &InternalXyz) -> InternalLinearRgb {
+        let x = colour.x;
+        let y = colour.y;
+        let z = colour.z;
+        let alpha = colour.alpha;
+
+        let r = (x * 3.2406) + (y * -1.5372) + (z * -0.4986);
+        let g = (x * -0.9689) + (y * 1.8758) + (z * 0.0415);
+        let b = (x * 0.0557) + (y * -0.2040) + (z * 1.0570);
+
+        InternalLinearRgb { r, g, b, alpha }
+    }
+}
+
+impl From<&InternalXyz> for InternalLuv {
+    fn from(colour: &InternalXyz) -> InternalLuv {
+        let x = colour.x;
+        let y = colour.y;
+        let z = colour.z;
+        let alpha = colour.alpha;
+
+        let var_u = (4.0 * x) / (x + (15.0 * y) + (3.0 * z));
+        let var_v = (9.0 * y) / (x + (15.0 * y) + (3.0 * z));
+        let l = y2l(y);
+        let u = 13.0 * l * (var_u - REF_U);
+        let v = 13.0 * l * (var_v - REF_V);
+
+        if l < 0.000_000_01 {
+            InternalLuv { l, u: 0.0, v: 0.0, alpha }
+        } else {
+            InternalLuv { l, u, v, alpha }
+        }
+    }
+}
+
+impl From<&InternalLch> for InternalLuv {
+    fn from(colour: &InternalLch) -> InternalLuv {
+        let l = colour.l;
+        let c = colour.c;
+        let h = colour.h;
+        let alpha = colour.alpha;
+
+        let hrad = h * 0.017_453_292_519_943_295_77; /* (pi / 180.0) */
+        let u = hrad.cos() * c;
+        let v = hrad.sin() * c;
+
+        InternalLuv { l, u, v, alpha }
+    }
+}
+
+impl From<&InternalHsluv> for InternalLch {
+    fn from(colour: &InternalHsluv) -> InternalLch {
+        let h = colour.h;
+        let s = colour.s;
+        let l = colour.l;
+        let alpha = colour.alpha;
+
+        let c = if l > 99.999_999_9 || l < 0.000_000_01 {
+            0.0
+        } else {
+            max_chroma_for_lh(l, h) / 100.0 * s
+        };
+
+        if s < 0.000_000_01 {
+            InternalLch{ l, c, h: 0.0, alpha }
+        } else {
+            InternalLch{ l, c, h, alpha }
+        }
+    }
+}
+
+impl From<&InternalLuv> for InternalLch {
+    fn from(colour: &InternalLuv) -> InternalLch {
+        let l = colour.l;
+        let u = colour.u;
+        let v = colour.v;
+        let alpha = colour.alpha;
+
+        let mut h: f64;
+        let c = (u * u + v * v).sqrt();
+
+        if c < 0.000_000_01 {
+            h = 0.0;
+        } else {
+            h = v.atan2(u) * 57.295_779_513_082_320_876_80; /* (180 / pi) */
+            if h < 0.0 {
+                h += 360.0;
+            }
+        }
+
+        InternalLch { l, c, h, alpha }
+    }
+}
+
+// http://www.brucelindbloom.com/index.html?Eqn_RGB_to_XYZ.html
+fn srgb_companding(a: f64) -> f64 {
     if a > 0.003_130_8 {
         (1.055 * a.powf(1.0 / 2.4)) - 0.055
     } else {
@@ -162,283 +647,26 @@ fn axis_to_colour(a: f64) -> f64 {
     }
 }
 
-fn xyz_from_rgb(rgb: Colour) -> Result<Colour> {
-    match rgb {
-        Colour::RGB(r, g, b, alpha) => {
-            let rr = colour_to_axis(r);
-            let gg = colour_to_axis(g);
-            let bb = colour_to_axis(b);
-
-            // multiply by matrix
-            // see http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
-            // sRGB colour space with D65 reference white
-            //
-
-            let x = (rr * 0.412_390_799_265_959_5)
-                + (gg * 0.357_584_339_383_877_96)
-                + (bb * 0.180_480_788_401_834_3);
-            let y = (rr * 0.212_639_005_871_510_36)
-                + (gg * 0.715_168_678_767_755_927_46)
-                + (bb * 0.072_192_315_360_733_715_00);
-            let z = (rr * 0.019_330_818_715_591_850_69)
-                + (gg * 0.119_194_779_794_625_987_91)
-                + (bb * 0.950_532_152_249_660_580_86);
-
-            Ok(Colour::XYZ(x, y, z, alpha))
-        }
-        _ => Err(Error::IncorrectColourFormat),
-    }
-}
-
-fn rgb_from_xyz(xyz: Colour) -> Result<Colour> {
-    match xyz {
-        Colour::XYZ(x, y, z, alpha) => {
-            let r = (x * 3.240_969_941_904_521_343_77)
-                + (y * -1.537_383_177_570_093_457_94)
-                + (z * -0.498_610_760_293_003_283_66);
-            let g = (x * -0.969_243_636_280_879_826_13)
-                + (y * 1.875_967_501_507_720_667_72)
-                + (z * 0.041_555_057_407_175_612_47);
-            let b = (x * 0.055_630_079_696_993_608_46)
-                + (y * -0.203_976_958_888_976_564_35)
-                + (z * 1.056_971_514_242_878_560_72);
-
-            let rr = axis_to_colour(r);
-            let gg = axis_to_colour(g);
-            let bb = axis_to_colour(b);
-
-            Ok(Colour::RGB(rr, gg, bb, alpha))
-        }
-        _ => Err(Error::IncorrectColourFormat),
-    }
-}
-
-fn axis_to_lab_component(a: f64) -> f64 {
-    if a > CIE_EPSILON {
-        a.cbrt()
+fn l2y(l: f64) -> f64 {
+    if l <= 8.0 {
+        l / CIE_KAPPA
     } else {
-        ((CIE_KAPPA * a) + 16.0) / 116.0
+        let x = (l + 16.0) / 116.0;
+        x * x * x
     }
 }
 
-fn lab_from_xyz(xyz: Colour) -> Result<Colour> {
-    match xyz {
-        Colour::XYZ(x, y, z, alpha) => {
-            let xr = x / WHITEPOINT_0;
-            let yr = y / WHITEPOINT_1;
-            let zr = z / WHITEPOINT_2;
-
-            let fx = axis_to_lab_component(xr);
-            let fy = axis_to_lab_component(yr);
-            let fz = axis_to_lab_component(zr);
-
-            let l = (116.0 * fy) - 16.0;
-            let a = 500.0 * (fx - fy);
-            let b = 200.0 * (fy - fz);
-
-            Ok(Colour::LAB(l, a, b, alpha))
-        }
-        _ => Err(Error::IncorrectColourFormat),
-    }
-}
-
-fn max_channel(r: f64, g: f64, b: f64) -> i32 {
-    let hi = if r > g { 0 } else { 1 };
-    let hival = if r > g { r } else { g };
-
-    if b > hival {
-        2
+// http://www.brucelindbloom.com/index.html?Eqn_RGB_to_XYZ.html
+fn inverse_srgb_companding(component: f64) -> f64 {
+    if component > 0.04045 {
+        ((component + 0.055) / 1.055).powf(2.4)
     } else {
-        hi
+        component / 12.92
     }
 }
-
-// TODO: implement a better fmod, this one is not exact
-fn fmod(a: f64, b: f64) -> f64 {
-    a - b * (a / b).floor()
-}
-
-// http://www.rapidtables.com/convert/color/rgb-to-hsl.htm
-fn hue(colour: Colour, max_chan: i32, chroma: f64) -> Result<f64> {
-    if chroma == 0.0 {
-        // return Err(Error::InvalidColourHue)
-        return Ok(0.0);
-    }
-
-    let mut angle: f64;
-
-    match colour {
-        Colour::RGB(r, g, b, _) => {
-            angle = match max_chan {
-                0 => fmod((g - b) / chroma, 6.0),
-                1 => ((b - r) / chroma) + 2.0,
-                2 => ((r - g) / chroma) + 4.0,
-                _ => return Err(Error::InvalidColourChannel),
-            }
-        }
-        _ => return Err(Error::IncorrectColourFormat),
-    }
-
-    angle *= 60.0;
-
-    while angle < 0.0 {
-        angle += 360.0;
-    }
-
-    Ok(angle)
-}
-
-// http://www.rapidtables.com/convert/color/rgb-to-hsl.htm
-fn hsl_from_rgb(colour: Colour) -> Result<Colour> {
-    match colour {
-        Colour::RGB(r, g, b, alpha) => {
-            let min_val = r.min(g).min(b);
-            let max_val = r.max(g).max(b);
-            let max_ch = max_channel(r, g, b);
-
-            let delta = max_val - min_val;
-
-            let h = hue(colour, max_ch, delta)?;
-            let lightness = 0.5 * (min_val + max_val);
-            let saturation: f64 = if delta == 0.0 {
-                0.0
-            } else {
-                delta / (1.0 - ((2.0 * lightness) - 1.0).abs())
-            };
-
-            Ok(Colour::HSL(h, saturation, lightness, alpha))
-        }
-        _ => Err(Error::IncorrectColourFormat),
-    }
-}
-
-fn hsv_from_rgb(colour: Colour) -> Result<Colour> {
-    match colour {
-        Colour::RGB(r, g, b, alpha) => {
-            let min_val = r.min(g).min(b);
-            let max_val = r.max(g).max(b);
-            let max_ch = max_channel(r, g, b);
-
-            let chroma = max_val - min_val;
-            let h = hue(colour, max_ch, chroma)?;
-
-            // valid_hue: bool = chroma != 0.0;
-
-            let saturation: f64 = if chroma == 0.0 { 0.0 } else { chroma / max_val };
-
-            // TODO: set valid_hue
-            // return col.set('valid_hue', valid_hue);
-
-            Ok(Colour::HSV(h, saturation, max_val, alpha))
-        }
-        _ => Err(Error::IncorrectColourFormat),
-    }
-}
-
-fn rgb_from_chm(chroma: f64, h: f64, m: f64, alpha: f64) -> Colour {
-    // todo: validhue test
-    //
-    // if (c.get('validHue') === undefined) {
-    // return construct(Format.RGB, [m, m, m, element(c, ALPHA)]);
-    //}
-
-    let hprime = h / 60.0;
-    let x = chroma * (1.0 - (fmod(hprime, 2.0) - 1.0).abs());
-    let mut r = 0.0;
-    let mut g = 0.0;
-    let mut b = 0.0;
-
-    if hprime < 1.0 {
-        r = chroma;
-        g = x;
-        b = 0.0;
-    } else if hprime < 2.0 {
-        r = x;
-        g = chroma;
-        b = 0.0;
-    } else if hprime < 3.0 {
-        r = 0.0;
-        g = chroma;
-        b = x;
-    } else if hprime < 4.0 {
-        r = 0.0;
-        g = x;
-        b = chroma;
-    } else if hprime < 5.0 {
-        r = x;
-        g = 0.0;
-        b = chroma;
-    } else if hprime < 6.0 {
-        r = chroma;
-        g = 0.0;
-        b = x;
-    }
-
-    Colour::RGB(r + m, g + m, b + m, alpha)
-}
-
-fn rgb_from_hsl(hsl: Colour) -> Result<Colour> {
-    match hsl {
-        Colour::HSL(h, s, l, alpha) => {
-            let chroma = (1.0 - ((2.0 * l) - 1.0).abs()) * s;
-            let m = l - (0.5 * chroma);
-
-            // todo: set validhue
-            // f64 col = c.set('validHue', true);
-
-            Ok(rgb_from_chm(chroma, h, m, alpha))
-        }
-        _ => Err(Error::IncorrectColourFormat),
-    }
-}
-
-fn lab_component_to_axis(l: f64) -> f64 {
-    if l.powf(3.0) > CIE_EPSILON {
-        l.powf(3.0)
-    } else {
-        ((116.0 * l) - 16.0) / CIE_KAPPA
-    }
-}
-
-fn xyz_from_lab(lab: Colour) -> Result<Colour> {
-    match lab {
-        Colour::LAB(l, a, b, alpha) => {
-            let fy = (l + 16.0) / 116.0;
-            let fz = fy - (b / 200.0);
-            let fx = (a / 500.0) + fy;
-
-            let xr = lab_component_to_axis(fx);
-            let mut yr;
-            if l > (CIE_EPSILON * CIE_KAPPA) {
-                yr = (l + 16.0) / 116.0;
-                yr = yr * yr * yr;
-            } else {
-                yr = l / CIE_KAPPA;
-            }
-            let zr = lab_component_to_axis(fz);
-
-            Ok(Colour::XYZ(
-                WHITEPOINT_0 * xr,
-                WHITEPOINT_1 * yr,
-                WHITEPOINT_2 * zr,
-                alpha,
-            ))
-        }
-        _ => Err(Error::IncorrectColourFormat),
-    }
-}
-
-fn rgb_from_hsv(hsv: Colour) -> Result<Colour> {
-    match hsv {
-        Colour::HSV(h, s, v, alpha) => {
-            let chroma = v * s;
-            let m = v - chroma;
-
-            Ok(rgb_from_chm(chroma, h, m, alpha))
-        }
-        _ => Err(Error::IncorrectColourFormat),
-    }
-}
+// make sure these two lines are equivalent
+// Rgb::try_from(rgb_from_xyz(xyz_from_oklab(c)?))
+// Rgb::try_from(rgb_from_oklab(c)?)
 
 // the luv and hsluv code is based on https://github.com/hsluv/hsluv-c
 // which uses the MIT License:
@@ -546,264 +774,127 @@ fn y2l(y: f64) -> f64 {
     }
 }
 
-fn l2y(l: f64) -> f64 {
-    if l <= 8.0 {
-        l / CIE_KAPPA
-    } else {
-        let x = (l + 16.0) / 116.0;
-        x * x * x
-    }
-}
-
-fn luv_from_xyz(xyz: Colour) -> Result<Colour> {
-    match xyz {
-        Colour::XYZ(x, y, z, alpha) => {
-            let var_u = (4.0 * x) / (x + (15.0 * y) + (3.0 * z));
-            let var_v = (9.0 * y) / (x + (15.0 * y) + (3.0 * z));
-            let l = y2l(y);
-            let u = 13.0 * l * (var_u - REF_U);
-            let v = 13.0 * l * (var_v - REF_V);
-
-            if l < 0.000_000_01 {
-                Ok(Colour::LUV(l, 0.0, 0.0, alpha))
-            } else {
-                Ok(Colour::LUV(l, u, v, alpha))
-            }
-        }
-        _ => Err(Error::IncorrectColourFormat),
-    }
-}
-
-fn xyz_from_luv(luv: Colour) -> Result<Colour> {
-    match luv {
-        Colour::LUV(l, u, v, alpha) => {
-            if l <= 0.000_000_01 {
-                return Ok(Colour::XYZ(0.0, 0.0, 0.0, alpha));
-            }
-
-            let var_u = u / (13.0 * l) + REF_U;
-            let var_v = v / (13.0 * l) + REF_V;
-            let y = l2y(l);
-            let x = -(9.0 * y * var_u) / ((var_u - 4.0) * var_v - var_u * var_v);
-            let z = (9.0 * y - (15.0 * var_v * y) - (var_v * x)) / (3.0 * var_v);
-
-            Ok(Colour::XYZ(x, y, z, alpha))
-        }
-        _ => Err(Error::IncorrectColourFormat),
-    }
-}
-
-fn lch_from_luv(luv: Colour) -> Result<Colour> {
-    match luv {
-        Colour::LUV(l, u, v, alpha) => {
-            let mut h: f64;
-            let c = (u * u + v * v).sqrt();
-
-            if c < 0.000_000_01 {
-                h = 0.0;
-            } else {
-                h = v.atan2(u) * 57.295_779_513_082_320_876_80; /* (180 / pi) */
-                if h < 0.0 {
-                    h += 360.0;
-                }
-            }
-
-            Ok(Colour::LCH(l, c, h, alpha))
-        }
-        _ => Err(Error::IncorrectColourFormat),
-    }
-}
-
-fn luv_from_lch(lch: Colour) -> Result<Colour> {
-    match lch {
-        Colour::LCH(l, c, h, alpha) => {
-            let hrad = h * 0.017_453_292_519_943_295_77; /* (pi / 180.0) */
-            let u = hrad.cos() * c;
-            let v = hrad.sin() * c;
-
-            Ok(Colour::LUV(l, u, v, alpha))
-        }
-        _ => Err(Error::IncorrectColourFormat),
-    }
-}
-
-fn lch_from_hsluv(hsluv: Colour) -> Result<Colour> {
-    match hsluv {
-        Colour::HSLuv(h, s, l, alpha) => {
-            let c = if l > 99.999_999_9 || l < 0.000_000_01 {
-                0.0
-            } else {
-                max_chroma_for_lh(l, h) / 100.0 * s
-            };
-
-            if s < 0.000_000_01 {
-                Ok(Colour::LCH(l, c, 0.0, alpha))
-            } else {
-                Ok(Colour::LCH(l, c, h, alpha))
-            }
-        }
-        _ => Err(Error::IncorrectColourFormat),
-    }
-}
-
-fn hsluv_from_lch(lch: Colour) -> Result<Colour> {
-    match lch {
-        Colour::LCH(l, c, h, alpha) => {
-            let s = if l > 99.999_999_9 || l < 0.000_000_01 {
-                0.0
-            } else {
-                c / max_chroma_for_lh(l, h) * 100.0
-            };
-
-            if c < 0.000_000_01 {
-                Ok(Colour::HSLuv(0.0, s, l, alpha))
-            } else {
-                Ok(Colour::HSLuv(h, s, l, alpha))
-            }
-        }
-        _ => Err(Error::IncorrectColourFormat),
-    }
-}
-
-fn xyz_from_hsluv(hsluv: Colour) -> Result<Colour> {
-    xyz_from_luv(luv_from_lch(lch_from_hsluv(hsluv)?)?)
-}
-
-fn hsluv_from_xyz(xyz: Colour) -> Result<Colour> {
-    hsluv_from_lch(lch_from_luv(luv_from_xyz(xyz)?)?)
-}
-
 #[cfg(test)]
 mod tests {
-
     use super::*;
 
-    const TOLERANCE: f64 = 0.02;
-
-    fn f64_within(tolerance: f64, a: f64, b: f64, msg: &'static str) {
+    fn f64_within(a: f64, b: f64, msg: &'static str) {
+        const TOLERANCE_64: f64 = 0.005;
         assert!(
-            (a - b).abs() < tolerance,
+            (a - b).abs() < TOLERANCE_64,
             format!("{} expected: {}, actual: {}", msg, b, a)
         )
     }
 
-    fn is_format(expected: Format, actual: Format) {
+    fn f32_within(a: f32, b: f32, msg: &'static str) {
+        const TOLERANCE_32: f32 = 0.005;
         assert!(
-            expected == actual,
-            format!("expected: {:?}, actual: {:?}", expected, actual)
+            (a - b).abs() < TOLERANCE_32,
+            format!("{} expected: {}, actual: {}", msg, b, a)
         )
     }
 
-    fn assert_col(col: Colour, format: Format, c0: f64, c1: f64, c2: f64, c3: f64) {
-        match col {
-            Colour::HSL(h, s, l, alpha) => {
-                is_format(format, Format::HSL);
-                f64_within(TOLERANCE, h, c0, "HSL H");
-                f64_within(TOLERANCE, s, c1, "HSL_S");
-                f64_within(TOLERANCE, l, c2, "HSL_L");
-                f64_within(TOLERANCE, alpha, c3, "HSL_alpha");
-            }
-            Colour::HSLuv(h, s, l, alpha) => {
-                is_format(format, Format::HSLuv);
-                f64_within(TOLERANCE, h, c0, "HSLuv H");
-                f64_within(TOLERANCE, s, c1, "HSLuv_S");
-                f64_within(TOLERANCE, l, c2, "HSLuv_L");
-                f64_within(TOLERANCE, alpha, c3, "HSLuv_alpha");
-            }
-            Colour::HSV(h, s, v, alpha) => {
-                is_format(format, Format::HSV);
-                f64_within(TOLERANCE, h, c0, "HSV H");
-                f64_within(TOLERANCE, s, c1, "HSV_S");
-                f64_within(TOLERANCE, v, c2, "HSV_V");
-                f64_within(TOLERANCE, alpha, c3, "HSV_alpha");
-            }
-            Colour::LAB(l, a, b, alpha) => {
-                is_format(format, Format::LAB);
-                f64_within(TOLERANCE, l, c0, "LAB_L");
-                f64_within(TOLERANCE, a, c1, "LAB_A");
-                f64_within(TOLERANCE, b, c2, "LAB_B");
-                f64_within(TOLERANCE, alpha, c3, "LAB_alpha");
-            }
-            Colour::RGB(r, g, b, alpha) => {
-                is_format(format, Format::RGB);
-                f64_within(TOLERANCE, r, c0, "RGB R");
-                f64_within(TOLERANCE, g, c1, "RGB_G");
-                f64_within(TOLERANCE, b, c2, "RGB_B");
-                f64_within(TOLERANCE, alpha, c3, "RGB_alpha");
-            }
-            _ => assert_eq!(true, false),
-        }
+    fn assert_rgb(rgb: &Rgb, expected: [f32;3]) {
+        f32_within(rgb.r, expected[0], "r");
+        f32_within(rgb.g, expected[1], "g");
+        f32_within(rgb.b, expected[2], "b");
     }
 
-    fn assert_colour_match(expected: Colour, col: Colour) {
-        match expected {
-            Colour::HSL(h, s, l, alpha) => assert_col(col, Format::HSL, h, s, l, alpha),
-            Colour::HSLuv(h, s, l, alpha) => assert_col(col, Format::HSLuv, h, s, l, alpha),
-            Colour::HSV(h, s, v, alpha) => assert_col(col, Format::HSV, h, s, v, alpha),
-            Colour::LAB(l, a, b, alpha) => assert_col(col, Format::LAB, l, a, b, alpha),
-            Colour::RGB(r, g, b, alpha) => assert_col(col, Format::RGB, r, g, b, alpha),
-            _ => assert_eq!(true, false),
-        }
-    }
-
-    fn assert_colour_rgb_hsl_match(r: f64, g: f64, b: f64, h: f64, s: f64, l: f64) {
-        let rgb = Colour::RGB(r, g, b, 1.0);
-        let hsl = Colour::HSL(h, s, l, 1.0);
-
-        assert_colour_match(rgb, hsl.clone_as(Format::RGB).unwrap());
-        assert_colour_match(hsl, rgb.clone_as(Format::HSL).unwrap());
+    fn assert_hsluv(hsluv: &Hsluv, expected: [f32;3]) {
+        f32_within(hsluv.h, expected[0], "h");
+        f32_within(hsluv.s, expected[1], "s");
+        f32_within(hsluv.l, expected[2], "l");
     }
 
     #[test]
-    fn test_colour() {
-        let rgb = Colour::RGB(0.2, 0.09803921568627451, 0.49019607843137253, 1.0);
-        let hsl = Colour::HSL(255.6, 0.6666, 0.294, 1.0);
-        let lab = Colour::LAB(
-            19.555676428108306,
-            39.130689315704764,
-            -51.76254071703564,
-            1.0,
+    fn test_hex_colour_parsing() {
+        let rgb = Rgb::from_rgb_hex("ff00ff").unwrap();
+        assert_rgb(&rgb, [1.0, 0.0, 1.0]);
+    }
+
+    fn assert_equal_f64(a: f64, b: f64) {
+        let diff = (a - b).abs();
+        let delta: f64 = 0.0001;
+
+        assert!(diff < delta, "a = {}, b = {}", a, b);
+    }
+
+    // fn compare_oklab_from_linear_rgb(r: f64, g: f64, b: f64) {
+    //     // making sure that the following lines are equivalent:
+    //     //
+    //     // oklab_from_xyz(xyz_from_rgb(*self)?),
+    //     // oklab_from_rgb(*self),
+
+    //     let a = ConvertibleColour::LinearRGB(r, g, b, 1.0);
+
+    //     let oklab = oklab_from_rgb(a).unwrap();
+    //     let oklab2 = oklab_from_xyz(xyz_from_rgb(a).unwrap()).unwrap();
+
+    //     match oklab {
+    //         ConvertibleColour::OKLAB(la, aa, ba, alphaa) => {
+    //             match oklab2 {
+    //                 ConvertibleColour::OKLAB(lb, ab, bb, alphab) => {
+    //                     f64_within(la, lb, "oklab l");
+    //                     f64_within(aa, ab, "oklab a");
+    //                     f64_within(ba, bb, "oklab b");
+    //                     f64_within(alphaa, alphab, "oklab alpha");
+    //                 },
+    //                 _ => assert_eq!(true, false)
+    //             }
+    //         },
+    //         _ => assert_eq!(true, false)
+    //     };
+    // }
+
+    // #[test]
+    // fn test_oklab_via_xyz() {
+    //     compare_oklab_from_linear_rgb(0.2, 0.098, 0.490);
+    //     compare_oklab_from_linear_rgb(0.3, 0.98, 0.10);
+    //     compare_oklab_from_linear_rgb(0.0, 0.4, 0.0);
+    //     compare_oklab_from_linear_rgb(0.9, 0.1, 0.90);
+    // }
+
+    fn compare_oklab_reversability(x: f64, y: f64, z: f64) {
+        // making sure that xyz_from_oklab is the opposite of oklab_from_xyz
+
+        let a = InternalXyz { x, y, z, alpha: 1.0 };
+
+        let oklab: InternalOklab = (&a).into();
+        let xyz: InternalXyz = (&oklab).into();
+
+        f64_within(x, xyz.x, "x");
+        f64_within(y, xyz.y, "y");
+        f64_within(z, xyz.z, "z");
+    }
+
+    #[test]
+    fn test_xyz_from_oklab() {
+        compare_oklab_reversability(0.5, 0.5, 0.5);
+        compare_oklab_reversability(0.0, 0.0, 0.0);
+        compare_oklab_reversability(1.0, 1.0, 1.0);
+    }
+
+
+    fn test_rgb_hsluv_conversions(hex: &str, rgb: [f32;3], hsluv: [f32;3]) {
+        let rgbcol = Rgb::from_rgb_hex(hex).unwrap();
+        assert_rgb(&rgbcol, rgb);
+
+        let hsluvcol: Hsluv = (&rgbcol).into();
+        assert_hsluv(&hsluvcol, hsluv);
+
+        let rgbcol2: Rgb = (&hsluvcol).into();
+        assert_rgb(&rgbcol2, rgb);
+    }
+
+    #[test]
+    fn test_known_conversions() {
+        test_rgb_hsluv_conversions("11ee00",
+                                   [0.0666666666666666657, 0.933333333333333348, 0.0], // rgb
+                                   [127.478988192005161, 100.000000000002416, 82.5213119008325577] // hsluv
         );
 
-        assert_colour_match(rgb, rgb.clone_as(Format::RGB).unwrap());
-        assert_colour_match(rgb, hsl.clone_as(Format::RGB).unwrap());
-        assert_colour_match(rgb, lab.clone_as(Format::RGB).unwrap());
-
-        assert_colour_match(hsl, rgb.clone_as(Format::HSL).unwrap());
-        assert_colour_match(hsl, hsl.clone_as(Format::HSL).unwrap());
-        assert_colour_match(hsl, lab.clone_as(Format::HSL).unwrap());
-
-        assert_colour_match(lab, rgb.clone_as(Format::LAB).unwrap());
-        assert_colour_match(lab, hsl.clone_as(Format::LAB).unwrap());
-        assert_colour_match(lab, lab.clone_as(Format::LAB).unwrap());
-    }
-
-    #[test]
-    fn test_colour_2() {
-        let rgb = Colour::RGB(0.066666, 0.8, 0.86666666, 1.0);
-        let hsluv = Colour::HSLuv(205.7022764106217, 98.91247496876854, 75.15356872935901, 1.0);
-
-        assert_colour_match(rgb, hsluv.clone_as(Format::RGB).unwrap());
-        assert_colour_match(hsluv, rgb.clone_as(Format::HSLuv).unwrap());
-    }
-
-    #[test]
-    fn test_colour_3() {
-        assert_colour_rgb_hsl_match(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-        assert_colour_rgb_hsl_match(1.0, 1.0, 1.0, 0.0, 0.0, 1.0);
-        assert_colour_rgb_hsl_match(1.0, 0.0, 0.0, 0.0, 1.0, 0.5);
-        assert_colour_rgb_hsl_match(0.0, 1.0, 0.0, 120.0, 1.0, 0.5);
-        assert_colour_rgb_hsl_match(0.0, 0.0, 1.0, 240.0, 1.0, 0.5);
-        assert_colour_rgb_hsl_match(1.0, 1.0, 0.0, 60.0, 1.0, 0.5);
-        assert_colour_rgb_hsl_match(0.0, 1.0, 1.0, 180.0, 1.0, 0.5);
-        assert_colour_rgb_hsl_match(1.0, 0.0, 1.0, 300.0, 1.0, 0.5);
-        assert_colour_rgb_hsl_match(0.7529, 0.7529, 0.7529, 0.0, 0.0, 0.75);
-        assert_colour_rgb_hsl_match(0.5, 0.5, 0.5, 0.0, 0.0, 0.5);
-        assert_colour_rgb_hsl_match(0.5, 0.0, 0.0, 0.0, 1.0, 0.25);
-        assert_colour_rgb_hsl_match(0.5, 0.5, 0.0, 60.0, 1.0, 0.25);
-        assert_colour_rgb_hsl_match(0.0, 0.5, 0.0, 120.0, 1.0, 0.25);
-        assert_colour_rgb_hsl_match(0.5, 0.0, 0.5, 300.0, 1.0, 0.25);
-        assert_colour_rgb_hsl_match(0.0, 0.5, 0.5, 180.0, 1.0, 0.25);
-        assert_colour_rgb_hsl_match(0.0, 0.0, 0.5, 240.0, 1.0, 0.25);
+        test_rgb_hsluv_conversions("11ee55",
+                                   [0.0666666666666666657,0.933333333333333348,0.333333333333333315],
+                                   [131.587310643629934,98.941589727101146,82.8716000285422894]);
     }
 }
