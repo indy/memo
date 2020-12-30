@@ -1,8 +1,13 @@
 export const initialState = {
   user: undefined,
+  settings: {
+    // note: extra setting variables are declared in
+    // ColourCreator.js::augmentSettingsWithCssModifierParameters
+    hueOffset: 0,
+    hueDelta: 30
+  },
   activeTopBarMenuItem: '',
   categories: [],
-  triageCategory: undefined,
   listing: {
     notes: undefined,
     triaged: undefined,
@@ -17,6 +22,20 @@ export const initialState = {
 //
 export const reducer = (state, action) => {
   switch (action.type) {
+  case 'settings-colour-triple': // these triples are in HSLuv colour space
+    {
+      let newState = { ...state };
+      newState.settings[action.id] = [parseInt(action.value[0], 10),
+                                      parseInt(action.value[1], 10),
+                                      parseInt(action.value[2], 10)];
+      return newState;
+    }
+  case 'settings-colour-scalar':
+    {
+      let newState = { ...state };
+      newState.settings[action.id] = parseInt(action.value, 10);
+      return newState;
+    }
   case 'route-changed':
     {
       let activeTopBarMenuItem = '';
@@ -49,11 +68,6 @@ export const reducer = (state, action) => {
     return {
       ...state,
       categories: action.categories
-    };
-  case 'triage-category-set':
-    return {
-      ...state,
-      triageCategory: action.triageCategory
     };
   case 'listing-set':
     {

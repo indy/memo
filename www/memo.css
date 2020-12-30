@@ -8,185 +8,16 @@
 */
 
 :root {
-  /* clock12: hue 67.1 saturation: 60.2 lightness: 30 */
-  --fg-clock-12: #504529;
-  --fg-clock-01: #424929;
-  --fg-clock-02: #294e28;
-  --fg-clock-03: #2a4d40;
-  --fg-clock-04: #2b4c4a;
-  --fg-clock-05: #2d4b54;
-  --fg-clock-06: #2f4866;
-  --fg-clock-07: #543586;
-  --fg-clock-08: #69306a;
-  --fg-clock-09: #722d55;
-  --fg-clock-10: #7b2a35;
-  --fg-clock-11: #5f3f29;
-
-  /* clock12: hue 67.1 saturation: 60.2 lightness: 90 */
-  --bg-clock-12: #f4e0b2;
-  --bg-clock-01: #d7eb8e;
-  --bg-clock-02: #a7f5a5;
-  --bg-clock-03: #98f4d1;
-  --bg-clock-04: #96f2ed;
-  --bg-clock-05: #c6e7f3;
-  --bg-clock-06: #d9e3f3;
-  --bg-clock-07: #e5dff3;
-  --bg-clock-08: #f3daf3;
-  --bg-clock-09: #f4dce7;
-  --bg-clock-10: #f4ddde;
-  --bg-clock-11: #f4ded3;
-
-  /* clock12: hue 67.1 saturation: 60.2 lightness: 80 */
-  --bg-clock-12-hi: #dec47c;
-  --bg-clock-01-hi: #bdce7c;
-  --bg-clock-02-hi: #7edb7b;
-  --bg-clock-03-hi: #80d7b6;
-  --bg-clock-04-hi: #83d4d0;
-  --bg-clock-05-hi: #86d1e7;
-  --bg-clock-06-hi: #b2c7e9;
-  --bg-clock-07-hi: #ccc0e9;
-  --bg-clock-08-hi: #e8b6e9;
-  --bg-clock-09-hi: #eab8d0;
-  --bg-clock-10-hi: #eababe;
-  --bg-clock-11-hi: #ebbca3;
-
-  /* clock12: hue 67.1 saturation: 60.2 lightness: 70*/
-  --bg-clock-12-hi2: #c0a96a;
-  --bg-clock-01-hi2: #a3b26a;
-  --bg-clock-02-hi2: #6cbd6a;
-  --bg-clock-03-hi2: #6eb99d;
-  --bg-clock-04-hi2: #70b7b3;
-  --bg-clock-05-hi2: #73b4c8;
-  --bg-clock-06-hi2: #89adde;
-  --bg-clock-07-hi2: #b4a1de;
-  --bg-clock-08-hi2: #dd90de;
-  --bg-clock-09-hi2: #e193bb;
-  --bg-clock-10-hi2: #e2969d;
-  --bg-clock-11-hi2: #e29b6b;
-
-  --bg: #f5f2f0;
-  --fg: rgb(15, 12, 10);
-
-  --fg1: #666; /* linked decks (i.e. tags) */
-  --fg-inactive: #999;
-
-  --bg1: #eeeee8;
-  --bg2: #ede7e3;
-
-  --textarea-bg: #fffff8;
-  --textarea-fg: rgb(15, 12, 10);
-
-  /* clock12: hue 67, saturation: 70 lightness: 80 */
-  --save-on-bg: #6fdd6b;        /* clock02 */
-  --save-on-fg: var(--fg);
-
-  --bg-section-controls: #e2e2e2; /* hsluv: 60.2, 0, 90 */
-
-  --card-action-divider: rgba(160,160,160,0.2);
-  --card-shadow: #ddd;
-  --divider: #ccc;
-
-  /* clock12: hue 67, saturation: 100 lightness: 60 */
-  --hyperlink: #0095f0;         /* clock06 */
+  --mode: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* clock12: hue 67.1 saturation: 60.2 lightness: 50*/
-    --fg-clock-12: #867548;
-    --fg-clock-01: #717c48;
-    --fg-clock-02: #498348;
-    --fg-clock-03: #4b816d;
-    --fg-clock-04: #4c7f7d;
-    --fg-clock-05: #4e7d8b;
-    --fg-clock-06: #5279a8;
-    --fg-clock-07: #8764c6;
-    --fg-clock-08: #ad54ae;
-    --fg-clock-09: #bc508e;
-    --fg-clock-10: #ca4b5b;
-    --fg-clock-11: #9e6b49;
-
-    /* clock12: hue 67.1 saturation: 60.2 lightness: 15*/
-    --bg-clock-12: #2b2513;
-    --bg-clock-01: #232713;
-    --bg-clock-02: #142a13;
-    --bg-clock-03: #142921;
-    --bg-clock-04: #152928;
-    --bg-clock-05: #16282d;
-    --bg-clock-06: #172638;
-    --bg-clock-07: #2e1b4c;
-    --bg-clock-08: #3a183b;
-    --bg-clock-09: #40162e;
-    --bg-clock-10: #46141a;
-    --bg-clock-11: #352113;
-
-    /* clock12: hue 67.1 saturation: 60.2 lightness: 25*/
-    --bg-clock-12-hi: #433a21;
-    --bg-clock-01-hi: #383e21;
-    --bg-clock-02-hi: #224221;
-    --bg-clock-03-hi: #234135;
-    --bg-clock-04-hi: #24403e;
-    --bg-clock-05-hi: #253f46;
-    --bg-clock-06-hi: #273c56;
-    --bg-clock-07-hi: #472c72;
-    --bg-clock-08-hi: #592859;
-    --bg-clock-09-hi: #612548;
-    --bg-clock-10-hi: #69232c;
-    --bg-clock-11-hi: #513422;
-
-    /* clock12: hue 67.1 saturation: 60.2 lightness: 35*/
-    --bg-clock-12-hi2: #5d5130;
-    --bg-clock-01-hi2: #4e5530;
-    --bg-clock-02-hi2: #315b30;
-    --bg-clock-03-hi2: #32594b;
-    --bg-clock-04-hi2: #335856;
-    --bg-clock-05-hi2: #355761;
-    --bg-clock-06-hi2: #375476;
-    --bg-clock-07-hi2: #623e9b;
-    --bg-clock-08-hi2: #79397a;
-    --bg-clock-09-hi2: #843663;
-    --bg-clock-10-hi2: #8e323e;
-    --bg-clock-11-hi2: #6f4931;
-
-
-    --bg: #000;
-    --fg: #888;
-
-    --fg1: #999; /* linked decks (i.e. tags) */
-    --fg-inactive: var(--fg1);
-
-    --bg1: #171717;
-    --bg2: #12181C;
-
-    --textarea-bg: #12181C;
-    --textarea-fg: #a6a8aa;
-
-    /* clock12: hue 67, saturation: 70 lightness: 60 */
-    --save-on-bg: #4fa24c;        /* clock02 */
-    --save-on-fg: var(--bg1);
-
-    --bg-section-controls: #303030; /* hsluv: 60.2, 0, 20 */
-
-    --card-action-divider: rgba(10,10,10,0.2);
-    --card-shadow: #222;
-    --divider: #444;
-
-    /* clock12: hue 67, saturation: 80 lightness: 40 */
-    --hyperlink: #2e6193;         /* clock06 */
+    --mode: dark;
   }
 }
 
 :root {
-  --bg-notes: var(--bg-clock-06);
-  --bg-triaged: var(--bg-clock-12);
-  --bg-bin: var(--bg-clock-02);
-
-  --fg-notes: var(--fg-clock-06);
-  --fg-triaged: var(--fg-clock-12);
-  --fg-bin: var(--fg-clock-02);
-
-  --textarea-border: var(--textarea-bg);
-
   --body-width: 80%;
   --block-width: 55%;
   --block-width-indented: 50%;
@@ -563,6 +394,7 @@ p {
 #login-menuitem {
   float: right;
   clear:both;
+  padding-right: 2em;
 }
 
 section > form { width: var(--block-width); }
@@ -572,6 +404,16 @@ section > form { width: var(--block-width); }
   border-bottom-width: 0.1em;
   border-bottom-style: solid;
   border-color: var(--divider);
+}
+
+#top-bar-menu {
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  width: 100%;
+
+  padding-top: 1em;
+  background: var(--bg);
 }
 
 a.top-bar-menuitem {
@@ -608,6 +450,10 @@ hr {
   vertical-align: middle;
 }
 
+.section-controls-headroom {
+  padding-top: 2em !important;
+}
+
 .section-controls {
   background: var(--bg-section-controls);
   border-radius: var(--ui-element-border-radius);
@@ -617,9 +463,6 @@ hr {
   padding: 1em 2em;
 }
 
-.section-controls-additional-bodge {
-  padding-top: 0;
-}
 .triaged-note-create-button-bodge {
   margin-top: 1em !important;
 }
@@ -663,8 +506,11 @@ hr {
   border-radius: var(--ui-element-border-radius);
   display: inline-block;
   vertical-align: top;
-  max-height: 20rem;
   overflow: hidden;
+}
+
+.card-height-limited {
+  max-height: 20rem;
 }
 
 @media (max-width: 700px) {
@@ -711,7 +557,6 @@ h3 {
 }
 
 .card-action {
-  border-bottom: 1px solid var(--card-action-divider);
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
 }
@@ -722,6 +567,37 @@ h3 {
 
 .button-height-bodge {
   height: 2.44em;
+}
+
+.button-title-ellipses::after {
+  content: '\2026';
+}
+
+.triage-dropdown {
+  display:inline-block;
+}
+
+.triage-dropdown-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.triage-dropdown-item {
+  text-decoration: none;
+
+  /* copied from .button but with display:inline-block deleted */
+  padding:0.3em 1.2em;
+  margin:0 0.3em 0.3em 0;
+  border-radius: var(--ui-element-border-radius);
+  box-sizing: border-box;
+  text-decoration:none;
+  /* color: var(--fg); */
+  /* background-color:rgba(0, 0, 0, 0.15); */
+  text-align:center;
+  transition: all 0.2s;
+
+  border-width: 0px;
+  box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.05);
 }
 
 .button{

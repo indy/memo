@@ -19,6 +19,9 @@ MINIFY := $(shell command -v minify 2> /dev/null)
 # 	Build client wasm
 # 	$ make wasm
 #
+# 	Build client-colour wasm
+# 	$ make wasm-colour
+#
 #   DEPLOYING
 #
 # 	Upload release builds to server:
@@ -31,13 +34,17 @@ MINIFY := $(shell command -v minify 2> /dev/null)
 clean-dist:
 	rm -rf dist
 
-release: clean-dist client-dist server-dist systemd-dist wasm-yew-dist wasm-seed-dist
+release: clean-dist client-dist server-dist systemd-dist wasm-colour-dist wasm-yew-dist wasm-seed-dist
+
 
 upload: release
 	rsync -avzhe ssh dist/. indy@indy.io:/home/indy/work/memo
 
+
 WASM_SEED_FILES = $(call rwildcard,client_seed/src,*) client_seed/Cargo.toml
 WASM_YEW_FILES = $(call rwildcard,client_yew/src,*) client_yew/Cargo.toml
+WASM_COLOUR_FILES = $(call rwildcard,client-colour/src,*) client-colour/Cargo.toml
+
 CLIENT_FILES = $(call rwildcard,www,*)
 SERVER_FILES = $(call rwildcard,server/src,*) $(wildcard server/errors/*.html) server/Cargo.toml
 SYSTEMD_FILES = $(wildcard misc/systemd/*)
@@ -50,6 +57,7 @@ run:
 wasm-seed: www/client_seed_bg.wasm
 wasm-yew: www/client_yew_bg.wasm
 
+
 www/client_seed_bg.wasm: $(WASM_SEED_FILES)
 	cargo build --manifest-path client_seed/Cargo.toml --target wasm32-unknown-unknown
 	wasm-bindgen client_seed/target/wasm32-unknown-unknown/debug/client_seed.wasm --out-dir www --no-typescript --no-modules
@@ -60,6 +68,15 @@ www/client_yew_bg.wasm: $(WASM_YEW_FILES)
 
 wasm-seed-dist: dist/www/client_seed_bg.wasm
 wasm-yew-dist: dist/www/client_yew_bg.wasm
+
+wasm-colour: www/client_colour_bg.wasm
+
+www/client_colour_bg.wasm: $(WASM_COLOUR_FILES)
+	cargo build --manifest-path client-colour/Cargo.toml --target wasm32-unknown-unknown
+	wasm-bindgen client-colour/target/wasm32-unknown-unknown/debug/client_colour.wasm --out-dir www --no-typescript --no-modules
+
+wasm-colour-dist: dist/www/client_colour_bg.wasm
+
 client-dist: dist/www/index.html
 server-dist: dist/memo_server
 systemd-dist: dist/systemd/isg-memo.sh
@@ -73,6 +90,11 @@ dist/www/client_yew_bg.wasm: $(WASM_YEW_FILES)
 	mkdir -p $(@D)
 	cargo build --manifest-path client_yew/Cargo.toml --target wasm32-unknown-unknown --release
 	wasm-bindgen client_yew/target/wasm32-unknown-unknown/release/client_yew.wasm --out-dir dist/www --no-typescript --no-modules
+
+dist/www/client_colour_bg.wasm: $(WASM_COLOUR_FILES)
+	mkdir -p $(@D)
+	cargo build --manifest-path client-colour/Cargo.toml --target wasm32-unknown-unknown --release
+	wasm-bindgen client-colour/target/wasm32-unknown-unknown/release/client_colour.wasm --out-dir dist/www --no-typescript --no-modules
 
 dist/www/index.html: $(CLIENT_FILES)
 	mkdir -p $(@D)

@@ -45,6 +45,7 @@ function TriagedNotes() {
     });
 
     return html`<div>
+                  <div class="section-controls-headroom"></div>
                   <div class="section-controls">
                     <${NewCategoryForm }/>
                   </div>
@@ -178,7 +179,7 @@ function NoteListItem(note) {
   }
 
   return html`<${Card} note=${note} resource=${resource} pigment=${pigment}>
-                  <div class="card-action">
+                  <div class="card-action" style="border-bottom: 1px solid var(--bg-clock-${pigment.numString}-hi)">
                     <button class="${pigment.classHi} button button-height-bodge"
                             onClick=${ onUntriageClicked }>
                       Untriage

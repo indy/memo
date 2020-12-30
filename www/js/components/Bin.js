@@ -28,9 +28,10 @@ function Bin() {
 
   return html`
     <div>
-      <div class="section-controls">
+      <div class="section-controls-headroom"/>
+      <div class="darken-border">
         ${ listing.length == 0 && html`<h2>Bin is Empty</h2>`}
-        ${ listing.length > 0 && html`<h2 class="button" onClick=${ onDeleteClicked }>Really Delete All Notes in Bin</h2>`}
+        ${ listing.length > 0 && html`<h2 class="button" onClick=${ onDeleteClicked }>Permanently Delete</h2>`}
       </div>
       <div class="hr"/>
       <div class="card-holder">
@@ -66,7 +67,7 @@ function NoteListItem(note) {
   }
 
   return html`<${Card} note=${note} resource=${resource} pigment=${pigment}>
-                  <div class="card-action">
+                  <div class="card-action" style="border-bottom: 1px solid var(--bg-clock-${pigment.numString}-hi)">
                     <button class="${pigment.classHi} button" onClick=${ onUndeleteClicked }>Undelete</button>
                     <button class="${pigment.classHi} button button-delete" onClick=${ onDeleteClicked }>Really Delete</button>
                   </div>
