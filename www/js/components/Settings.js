@@ -51,7 +51,6 @@ function Settings() {
       <${ColourControl} onInput=${updateColourTriple} value=${settings.bg_section_controls} id='bg_section_controls'/>
       <${ColourControl} onInput=${updateColourTriple} value=${settings.card_shadow} id='card_shadow'/>
       <${ColourControl} onInput=${updateColourTriple} value=${settings.divider} id='divider'/>
-      <${ColourControl} onInput=${updateColourTriple} value=${settings.hyperlink} id='hyperlink'/>
       <hr/>
       <h2>Card colours</h2>
       <label for="hue-offset">Hue Offset:</label>

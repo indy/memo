@@ -543,8 +543,8 @@ hr {
   padding: 1em;
 }
 
-.in-note-link {
-  color: var(--hyperlink);
+a.in-note-link {
+  text-decoration: underline;
 }
 
 /* card title */
