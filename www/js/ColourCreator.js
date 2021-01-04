@@ -50,7 +50,6 @@ function augmentSettingsWithCssModifierParameters(settings) {
       bg_section_controls: [0, 0, 90],
       card_shadow: [0, 0, 83.5],
       divider: [0, 0, 77.7],
-      hyperlink: [247, 100, 60],
 
       saturation: 60.2,
       lightnessFg: 30.0,
@@ -76,8 +75,6 @@ function augmentSettingsWithCssModifierParameters(settings) {
       bg_section_controls: [0, 0, 20],
       card_shadow: [0, 0, 16],
       divider: [0, 0, 27.7],
-      hyperlink: [247, 80, 40],
-
 
       saturation: 70,
       lightnessFg: 60.0,
@@ -112,7 +109,6 @@ function declareCssVariables(settings, wasmInterface) {
   updateVariable('bg_section_controls');
   updateVariable('card_shadow');
   updateVariable('divider');
-  updateVariable('hyperlink');
 
   let hue, rgb, index;
   for(let i = 0; i < 12; i++) {

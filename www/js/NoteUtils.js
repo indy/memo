@@ -4,8 +4,8 @@ import { useStateValue } from '/js/StateProvider.js';
 import Net from '/js/Net.js';
 
 
-export function notePigment(note) {
-  const pigmentNum = (note.id % 12) + 1;
+export function notePigment(noteId) {
+  const pigmentNum = (noteId % 12) + 1;
   const pigmentNumString = pigmentNum < 10 ? `0${pigmentNum}` : `${pigmentNum}`;
   const pigmentClass = `pigment-clock-${pigmentNumString}`;
   const pigmentClassHi = `${pigmentClass}-hi`;
@@ -45,25 +45,26 @@ export function setListing(dispatch, resource, listing) {
 // but write an actual lexer+parser+compiler if other markup is required
 //
 export function parseNoteContent(note) {
-  return parseNoteText(note.content, "p");
+  return parseNoteText(note.content, "p", note.id);
 }
 
 export function parseNoteTitle(note) {
-  return parseNoteText(note.title, "h1");
+  return parseNoteText(note.title, "h1", note.id);
 }
 
 export function parseCardTitle(note) {
-  return parseNoteText(note.title, "h3");
+  return parseNoteText(note.title, "h3", note.id);
 }
 
-function parseNoteText(text, parentTag) {
+function parseNoteText(text, parentTag, noteId) {
   const lines = text.split("\n");
   const elems = [];
+  const pigment = notePigment(noteId);
 
   lines.forEach((line, i) => {
     splitLineByHyperlinks(line).forEach(seg => {
       if (isHyperlinkSegment(seg)) {
-        elems.push(h("a", { href: ensureLinkable(seg), class: "in-note-link" }, seg));
+        elems.push(h("a", { href: ensureLinkable(seg), class: `in-note-link ${pigment.class}` }, seg));
       } else {
         elems.push(seg);
       }

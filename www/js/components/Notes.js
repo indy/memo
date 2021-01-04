@@ -37,7 +37,7 @@ function NoteListItem(note, categories) {
   const [fullHeight, setFullHeight] = useState(false);
 
   const resource = 'notes';
-  const pigment = notePigment(note);
+  const pigment = notePigment(note.id);
 
   function onDeleteClicked(e) {
     e.preventDefault();

@@ -44,7 +44,7 @@ function NoteListItem(note) {
   const [state, dispatch] = useStateValue();
 
   const resource = 'bin';
-  const pigment = notePigment(note);
+  const pigment = notePigment(note.id);
 
   function onUndeleteClicked(e) {
     e.preventDefault();

@@ -156,7 +156,7 @@ function NoteListItem(note) {
   const [state, dispatch] = useStateValue();
 
   const resource = 'triaged';
-  const pigment = notePigment(note);
+  const pigment = notePigment(note.id);
 
   function onUntriageClicked(e) {
     e.preventDefault();
