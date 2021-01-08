@@ -1,14 +1,3 @@
-# Make doesn't come with a recursive wildcard function so we have to use this:
-#
-rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
-
-# check if minify is installed
-MINIFY := $(shell command -v minify 2> /dev/null)
-
-# note: usage of mkdir -p $(@D)
-# $(@D), means "the directory the current target resides in"
-# using it to make sure that a dist directory is created
-
 ########################################
 #
 #   BUILDING
@@ -31,6 +20,9 @@ MINIFY := $(shell command -v minify 2> /dev/null)
 
 .PHONY: run clean-dist
 
+run:
+	cargo run --manifest-path server/Cargo.toml
+
 release: clean-dist client-dist server-dist systemd-dist wasm-colour-dist wasm-yew-dist wasm-seed-dist
 
 clean-dist:
@@ -38,6 +30,25 @@ clean-dist:
 
 upload: release
 	rsync -avzhe ssh dist/. indy@indy.io:/home/indy/work/memo
+
+################################################################################
+# utils
+################################################################################
+
+# Make doesn't come with a recursive wildcard function so we have to use this:
+#
+rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+
+# check if minify is installed
+MINIFY := $(shell command -v minify 2> /dev/null)
+
+# note: usage of mkdir -p $(@D)
+# $(@D), means "the directory the current target resides in"
+# using it to make sure that a dist directory is created
+
+################################################################################
+# filesets
+################################################################################
 
 WASM_SEED_FILES = $(call rwildcard,client_seed/src,*) client_seed/Cargo.toml
 WASM_YEW_FILES = $(call rwildcard,client_yew/src,*) client_yew/Cargo.toml
@@ -47,9 +58,9 @@ CLIENT_FILES = $(call rwildcard,www,*)
 SERVER_FILES = $(call rwildcard,server/src,*) $(wildcard server/errors/*.html) server/Cargo.toml
 SYSTEMD_FILES = $(wildcard misc/systemd/*)
 
-# run the server
-run:
-	cargo run --manifest-path server/Cargo.toml
+################################################################################
+# convenient aliases for targets
+################################################################################
 
 wasm-colour: www/client_colour_bg.wasm
 wasm-seed: www/client_seed_bg.wasm
@@ -62,6 +73,10 @@ wasm-yew-dist: dist/www/client_yew_bg.wasm
 client-dist: dist/www/index.html
 server-dist: dist/memo_server
 systemd-dist: dist/systemd/isg-memo.sh
+
+################################################################################
+# targets
+################################################################################
 
 www/client_colour_bg.wasm: $(WASM_COLOUR_FILES)
 	cargo build --manifest-path client-colour/Cargo.toml --target wasm32-unknown-unknown
