@@ -21,7 +21,7 @@
 
 // NOTE: Makefile will alter these variables when building a release build
 var devMode = true;
-var CACHE_NAME = "memo-20201212";
+var CACHE_NAME = "memo-20201212h";
 
 var precacheConfig = [
   "/memo.css",
@@ -182,7 +182,16 @@ self.addEventListener("fetch", function (event) {
 
     // one of the urls to cache  but we're in devMode so fetch the resource from the network anyway
     if (devMode && isCached) {
-      return fetch(event.request);
+      var headers = new Headers();
+      headers.append('pragma', 'no-cache');
+      headers.append('cache-control', 'no-cache');
+
+      var init = {
+        method: event.request.method,
+        headers
+      };
+
+      return fetch(event.request, init);
     }
 
     if (!isCached && "navigate" === event.request.mode) {
