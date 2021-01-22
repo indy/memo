@@ -1,5 +1,6 @@
 [Unit]
 Description=Start memo.indy.io
+After=postgresql.service
 
 [Service]
 Type=simple
