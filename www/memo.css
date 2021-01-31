@@ -618,15 +618,12 @@ h3 {
 
 .save-button {
   margin-bottom: 1em;
-}
-
-.save-button:enabled {
   color: var(--save-on-fg);
   background: var(--save-on-bg);
 }
-.save-button:disabled {
-  color: var(--fg-inactive);
-  background: var(--bg1);
+
+.no-user-text {
+  color: var(--fg-inactive) !important;
 }
 
 .bg2 {

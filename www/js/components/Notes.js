@@ -140,7 +140,11 @@ function noteFromText(text) {
 
 function CreateNoteForm() {
   const [userText, setUserText] = useState('');
+  const [hasFocus, setHasFocus] = useState(false);
+
   const [state, dispatch] = useStateValue();
+
+  const typeHereMessage = "type note here...";
 
   function onSubmit(event){
     event.preventDefault();
@@ -153,7 +157,6 @@ function CreateNoteForm() {
           note
         });
       });
-
       setUserText('');
     }
   }
@@ -163,20 +166,26 @@ function CreateNoteForm() {
     setUserText(newUserText);
   };
 
-  const submitMessage = "Save";
-  const disabled = userText.trim().length === 0;
+  const hasUserContent = userText.trim().length > 0;
+  const usingTextArea = hasFocus || hasUserContent;
+
+  const textareaClass = usingTextArea ? "" : "no-user-text";
+  const textareaValue = usingTextArea ? userText : typeHereMessage;
 
   return html`<form class="add-note-form" onSubmit=${ onSubmit }>
-                <input class="button save-button"
-                       type="submit"
-                       value=${ submitMessage }
-                       disabled=${ disabled }/>
-                <br/>
                 <textarea id="content"
                           type="text"
                           name="content"
-                          value=${ userText }
+                          class=${ textareaClass }
+                          value=${ textareaValue }
+                          onFocus=${ () => setHasFocus(true) }
+                          onBlur=${ () => setHasFocus(false) }
                           onInput=${ handleChangeEvent }/>
+                <br/>
+                ${hasUserContent && html`<input class="button save-button"
+                       type="submit"
+                       value="Save"/>`}
+
               </form>`;
 }
 
