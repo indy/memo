@@ -622,6 +622,14 @@ h3 {
   background: var(--save-on-bg);
 }
 
+.bin-button {
+  float: right;
+}
+
+.button-container {
+  width: var(--block-width);
+}
+
 .no-user-text {
   color: var(--fg-inactive) !important;
 }

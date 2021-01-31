@@ -10,7 +10,8 @@ export default function BaseNote({ id, noteKind }) {
 
   const [localState, setLocalState] = useState({
     editing: false,
-    userText: undefined
+    userContent: undefined,
+    userTitle: undefined
   });
 
   ensureListingLoaded(noteKind);
@@ -28,11 +29,19 @@ export default function BaseNote({ id, noteKind }) {
     })
   }
 
-  function handleChangeEvent(event) {
+  function handleChangeTitle(event) {
     const newUserText = event.target.value;
     setLocalState({
       ...localState,
-      userText: newUserText
+      userTitle: newUserText
+    })
+  };
+
+  function handleChangeContent(event) {
+    const newUserText = event.target.value;
+    setLocalState({
+      ...localState,
+      userContent: newUserText
     })
   };
 
@@ -44,10 +53,21 @@ export default function BaseNote({ id, noteKind }) {
   const noteId = parseInt(id, 10);
   const note = getNoteById(noteId);
 
-  if (note.content && localState.userText === undefined) {
+  let shouldSetContent = false;
+  let shouldSetTitle = false;
+
+  if (note.content && localState.userContent === undefined) {
+    shouldSetContent = true;
+  }
+  if (note.title && localState.userTitle === undefined) {
+    shouldSetTitle = true;
+  }
+
+  if (shouldSetContent || shouldSetTitle) {
     setLocalState({
       ...localState,
-      userText: note.content
+      userTitle: shouldSetTitle ? note.title : localState.userTitle,
+      userContent: shouldSetContent ? note.content : localState.userContent
     });
   }
 
@@ -56,7 +76,8 @@ export default function BaseNote({ id, noteKind }) {
 
     let data = {
       ...note,
-      content: localState.userText
+      content: localState.userContent,
+      title: localState.userTitle
     };
     Net.put(`/api/notes/${note.id}`, data).then(newNote => {
       dispatch({
@@ -81,21 +102,25 @@ export default function BaseNote({ id, noteKind }) {
     });
   }
 
-
   let editButtonText = localState.editing ? "Cancel Editing" : "Edit";
 
   return html`
     <article>
-      ${ parseNoteTitle(note) }
-      ${!localState.editing && html`${ parseNoteContent(note) } `}
+      ${ !localState.editing && parseNoteTitle(note) }
+      ${ !localState.editing && parseNoteContent(note) }
       ${ localState.editing && html`
         <div class="edit">
-          <textarea type="text" value=${ localState.userText } onInput=${ handleChangeEvent }/>
+          <input type="text" value=${localState.userTitle} onInput=${ handleChangeTitle }/>
+          <br/><br/>
+          <textarea type="text" value=${ localState.userContent } onInput=${ handleChangeContent }/>
           <br/>
-          <button class="button" onClick=${ onSaveClicked }>Save</button>
         </div>
-      `}
-      <button class="button" onClick=${ onDeleteClicked }>${ svgBin(`--fg1`) }</button>
+    `}
+<div class="button-container">
+      ${ localState.editing && html`<button class="button save-button" onClick=${ onSaveClicked }>Save</button>`}
       <button class="button" onClick=${ onEditClicked }>${ editButtonText }</button>
+      <button class="button bin-button" onClick=${ onDeleteClicked }>${ svgBin(`--fg1`) }</button>
+</div>
     </article>`;
+
 }

@@ -98,6 +98,7 @@ export const reducer = (state, action) => {
           || findNote(listing.bin, action.note.id);
       if (note) {
         note.content = action.note.content;
+        note.title = action.note.title;
       }
 
       return updateStateWithListing(state, listing);
