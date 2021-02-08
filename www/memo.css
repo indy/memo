@@ -622,6 +622,11 @@ h3 {
   background: var(--save-on-bg);
 }
 
+.save-button:disabled {
+  color: var(--fg-inactive);
+  background: var(--bg1);
+}
+
 .bin-button {
   float: right;
 }

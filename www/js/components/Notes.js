@@ -146,7 +146,7 @@ function CreateNoteForm() {
 
   const typeHereMessage = "type note here...";
 
-  function onSubmit(event){
+  function onSubmit(event) {
     event.preventDefault();
 
     const protoNote = noteFromText(userText);
@@ -173,6 +173,11 @@ function CreateNoteForm() {
   const textareaValue = usingTextArea ? userText : typeHereMessage;
 
   return html`<form class="add-note-form" onSubmit=${ onSubmit }>
+                ${usingTextArea && html`<input class="button save-button"
+                                               type="submit"
+                                               disabled=${!hasUserContent}
+                                               value="Save"/>`}
+                <br/>
                 <textarea id="content"
                           type="text"
                           name="content"
@@ -181,11 +186,6 @@ function CreateNoteForm() {
                           onFocus=${ () => setHasFocus(true) }
                           onBlur=${ () => setHasFocus(false) }
                           onInput=${ handleChangeEvent }/>
-                <br/>
-                ${hasUserContent && html`<input class="button save-button"
-                       type="submit"
-                       value="Save"/>`}
-
               </form>`;
 }
 
