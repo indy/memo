@@ -1,7 +1,7 @@
 import { html, route, useState } from '/lib/preact/mod.js';
 
 import Net from '/js/Net.js';
-import { parseNoteContent, parseNoteTitle, ensureListingLoaded } from '/js/NoteUtils.js';
+import { notePigment, parseNoteContent, parseNoteTitle, ensureListingLoaded } from '/js/NoteUtils.js';
 import { useStateValue } from '/js/StateProvider.js';
 import { svgBin } from '/js/svgIcons.js';
 
@@ -104,8 +104,10 @@ export default function BaseNote({ id, noteKind }) {
 
   let editButtonText = localState.editing ? "Cancel Editing" : "Edit";
 
+  const pigment = notePigment(id);
+
   return html`
-    <article>
+    <article class="note ${pigment.class}">
       ${ !localState.editing && parseNoteTitle(note) }
       ${ !localState.editing && parseNoteContent(note) }
       ${ localState.editing && html`

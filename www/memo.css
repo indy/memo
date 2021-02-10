@@ -645,3 +645,9 @@ h3 {
 .bg2:hover {
   background: rgba(0, 0, 0, 0.1);
 }
+
+.note {
+  margin-top: 3rem;
+  padding: 2rem;
+  border-radius: var(--ui-element-border-radius);
+}
