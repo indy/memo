@@ -21,7 +21,7 @@
 
 // NOTE: Makefile will alter these variables when building a release build
 var devMode = true;
-var CACHE_NAME = "memo-20201212h";
+var CACHE_NAME = "memo-20201212i";
 
 var precacheConfig = [
   "/memo.css",
