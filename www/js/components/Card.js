@@ -7,7 +7,12 @@ export default function Card({ note, pigment, resource, fullHeight, children }) 
   function onCardClicked(e) {
     if (!clickedOnCardUI(e.target) && !clickedOnInCardHyperlink(e.target)) {
       e.preventDefault();
-      route(href);
+
+      let selection = document.getSelection();
+      selection += ""; // coerce into a string
+      if (selection.length === 0) {
+        route(href);
+      }
     }
   }
 
