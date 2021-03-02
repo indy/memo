@@ -651,3 +651,8 @@ h3 {
   padding: 2rem;
   border-radius: var(--ui-element-border-radius);
 }
+
+.category-num-notes {
+  float: right;
+  color: var(--fg-inactive);
+}

@@ -46,11 +46,11 @@ function TriagedNotes() {
 
     return html`<div>
                   <div class="section-controls-headroom"></div>
+                  <div>${ triagedSectionsHtml }</div>
+                  <div class="hr"/>
                   <div class="section-controls">
                     <${NewCategoryForm }/>
                   </div>
-                  <div class="hr"/>
-                  <div>${ triagedSectionsHtml }</div>
                   <div class="hr"/>
                   <div class="pad-left-1rem pad-top-1rem">${ deletableHtml }</div>
                 </div>`;
@@ -60,17 +60,18 @@ function TriagedNotes() {
 }
 
 function TriagedCategory({ categoryNotes, categoryTitle }) {
-  let [show, setShow] = useState(true);
+  let [show, setShow] = useState(false);
 
   function toggleShow() {
     setShow(!show);
   }
 
   const notesHtml = categoryNotes.map(n => NoteListItem(n));
+  const numNotes = html`<span class='category-num-notes'>${ categoryNotes.length }</span>`;
 
   if (show) {
     return html`<div>
-                  <h1 class="pad-left-1rem" onClick=${ toggleShow }>${ svgMinimise() }${ categoryTitle }</h1>
+                  <h1 class="pad-left-1rem" onClick=${ toggleShow }>${ svgMinimise() }${ categoryTitle } ${numNotes}</h1>
                   <div class="card-holder">
                     ${ notesHtml }
                   </div>
@@ -78,7 +79,7 @@ function TriagedCategory({ categoryNotes, categoryTitle }) {
 
   } else {
     return html`<div>
-                  <h1 class="pad-left-1rem" onClick=${ toggleShow }>${ svgExpand() }${ categoryTitle }</h1>
+                  <h1 class="pad-left-1rem" onClick=${ toggleShow }>${ svgExpand() }${ categoryTitle } ${ numNotes }</h1>
                 </div>`;
   }
 }
@@ -129,7 +130,7 @@ function NewCategoryForm() {
 
     Net.post(`/api/categories`, { title: localState.text }).then(latestCategories => {
       dispatch({
-        type: 'set-categories',
+        type: 'categories-set',
         categories: latestCategories
       });
       setLocalState({...localState, text: ''});
