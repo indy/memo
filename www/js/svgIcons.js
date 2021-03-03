@@ -5,7 +5,7 @@
 
 import { html } from '/lib/preact/mod.js';
 
-const svgColour = "#666";
+const svgColour = "#003541";
 
 export function svgBin(fillColour) {
   return html`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" height="24" width="24">

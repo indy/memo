@@ -58,23 +58,30 @@ function augmentSettingsWithCssModifierParameters(settings) {
       lightnessHi2: 70.0
     }
   } else {
+
+    let bgh = 220;
+    let bgs = 60;
+    let bgl = 40;
+
+
     s = {
       ...settings,
 
-      bg: [0, 0, 20],
-      fg: [0, 0, 53.6],
-      fg1: [0, 0, 60],
-      fg_inactive: [0, 0, 60],
-      bg1: [0, 0, 34],
-      bg2: [0, 0, 27],
+      bg: [bgh, bgs, bgl],
+      fg: [bgh, 100, 10],
+      fg1: [bgh, bgs + 40, 20],
+      fg_inactive: [bgh, bgs + 40, 20],
+      bg1: [bgh, bgs, bgl + 14],
+      bg2: [bgh, bgs, bgl + 7],
       textarea_bg: [0, 0, 12],
       textarea_fg: [236, 2.7, 69],
 
-      save_on_bg: [127, 70, 60],
-      save_on_fg: [0, 0, 34],
-      bg_section_controls: [0, 0, 20],
-      card_shadow: [0, 0, 16],
-      divider: [0, 0, 27.7],
+      save_on_fg: [220, 10, 80],
+      save_on_bg: [127, 90, 40],
+
+      bg_section_controls: [bgh, bgs, bgl + 20],
+      card_shadow: [bgh, bgs, bgl - 4],
+      divider: [bgh, bgs, bgl - 13],
 
       saturation: 70,
       lightnessFg: 60.0,
@@ -83,7 +90,6 @@ function augmentSettingsWithCssModifierParameters(settings) {
       lightnessHi2: 15.0
     }
   }
-
   return s;
 }
 

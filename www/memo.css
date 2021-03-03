@@ -321,10 +321,6 @@ textarea {
    ==========================================================================
 */
 
-#root {
-  padding: 1em;
-}
-
 a:link.pigment-inherit,
 a:visited.pigment-inherit {
   color: inherit;
@@ -425,7 +421,7 @@ a.top-bar-menuitem {
 
 a.top-bar-menuitem-active {
   text-decoration-line: underline;
-  text-decoration-thickness: 0.1rem;
+  text-decoration-thickness: 0.3rem;
   text-decoration-skip-ink: none;
   text-decoration-color: rgba(0, 0, 0, 0.3);
 }
@@ -603,7 +599,7 @@ h3 {
 .button{
   display:inline-block;
   padding:0.3em 1.2em;
-  margin:0 0.3em 0.3em 0;
+  margin:1.2em 0.3em 0.3em 0;
   border-radius: var(--ui-element-border-radius);
   box-sizing: border-box;
   text-decoration:none;
@@ -635,9 +631,9 @@ h3 {
   width: var(--block-width);
 }
 
-.no-user-text {
-  color: var(--fg-inactive) !important;
-}
+/* .no-user-text { */
+/*   color: var(--fg-inactive) !important; */
+/* } */
 
 .bg2 {
   background: var(--bg2);
@@ -654,5 +650,5 @@ h3 {
 
 .category-num-notes {
   float: right;
-  color: var(--fg-inactive);
+  color: var(--fg1);
 }
