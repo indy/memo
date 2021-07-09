@@ -12,7 +12,6 @@ $ make run
 
 ## Client
 ```sh
-$ make wasm
 $ make wasm-colour
 ```
 

@@ -108,8 +108,8 @@ dist/www/client_yew_bg.wasm: $(WASM_YEW_FILES)
 dist/www/index.html: $(CLIENT_FILES)
 	mkdir -p $(@D)
 	cp -r www dist/.
-	rm dist/www/client*.js
-	rm dist/www/client*.wasm
+	rm dist/www/client*.js || true
+	rm dist/www/client*.wasm || true
 ifdef MINIFY
 	minify -o dist/www/ --match=\.css www
 	minify -r -o dist/www/js --match=\.js www/js
