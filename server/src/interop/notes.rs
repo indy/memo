@@ -24,6 +24,7 @@ pub struct TriagedNote {
     pub content: String,
     pub triaged_at: chrono::DateTime<chrono::Utc>,
     pub category_id: Key,
+    pub pinned: bool,
 }
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
@@ -31,10 +32,12 @@ pub struct Note {
     pub id: Key,
     pub title: String,
     pub content: String,
+    pub pinned: bool,
 }
 
 #[derive(Debug, serde::Deserialize)]
 pub struct ProtoNote {
     pub title: String,
     pub content: String,
+    pub pinned: bool,
 }

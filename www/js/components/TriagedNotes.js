@@ -1,8 +1,8 @@
 import { html, useState } from '/lib/preact/mod.js';
 
 import Net from '/js/Net.js';
-import { ensureListingLoaded, notePigment } from '/js/NoteUtils.js';
-import { svgBin, svgExpand, svgMinimise } from '/js/svgIcons.js';
+import { ensureListingLoaded, notePigment, pinnedNotesOnTop } from '/js/NoteUtils.js';
+import { svgBin, svgExpand, svgMinimise, svgPinned, svgUnpinned } from '/js/svgIcons.js';
 import { useStateValue } from '/js/StateProvider.js';
 
 import BaseNote from '/js/components/BaseNote.js';
@@ -19,7 +19,8 @@ function TriagedNotes() {
 
     // place triaged notes in their categories
     const partitionByCategoryId = state.categories.reduce((acc, category) => {
-      acc[category.id] = state.listing.triaged.filter(n => n.category_id === category.id);
+      let list = state.listing.triaged.filter(n => n.category_id === category.id);
+      acc[category.id] = pinnedNotesOnTop(list);
       return acc;
     }, {});
 
@@ -159,6 +160,21 @@ function NoteListItem(note) {
   const resource = 'triaged';
   const pigment = notePigment(note.id);
 
+  function onPinnedClicked(e) {
+    e.preventDefault();
+
+    let data = {
+      ...note,
+      pinned: !note.pinned
+    };
+    Net.put(`/api/notes/${note.id}`, data).then(n => {
+      dispatch({
+        type: 'note-pinstate-updated',
+        note: n
+      });
+    });
+  }
+
   function onUntriageClicked(e) {
     e.preventDefault();
     Net.post(`/api/triaged/${ note.id }/untriage`, {}).then(n => {
@@ -181,6 +197,7 @@ function NoteListItem(note) {
 
   return html`<${Card} note=${note} resource=${resource} pigment=${pigment}>
                   <div class="card-action" style="border-bottom: 1px solid var(--bg-clock-${pigment.numString}-hi)">
+<button class="${pigment.classHi} button-pin" onClick=${ onPinnedClicked }>${ note.pinned ? svgPinned(`--fg-clock-${pigment.numString}`) : svgUnpinned(`--fg-clock-${pigment.numString}`) }</button>
                     <button class="${pigment.classHi} button button-height-bodge"
                             onClick=${ onUntriageClicked }>
                       Untriage

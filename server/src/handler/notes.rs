@@ -44,6 +44,7 @@ pub async fn bookmark(
     let mut proto_note = interop::ProtoNote {
         title: now.format("%F %T").to_string(),
         content: "".to_string(),
+        pinned: false,
     };
 
     // iterate over multipart stream

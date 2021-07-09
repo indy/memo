@@ -1,8 +1,8 @@
 import { html, useState } from '/lib/preact/mod.js';
 
 import Net from '/js/Net.js';
-import { notePigment, ensureListingLoaded } from '/js/NoteUtils.js';
-import { svgBin } from '/js/svgIcons.js';
+import { ensureListingLoaded, notePigment, pinnedNotesOnTop } from '/js/NoteUtils.js';
+import { svgBin, svgPinned, svgUnpinned } from '/js/svgIcons.js';
 import { useStateValue } from '/js/StateProvider.js';
 
 import BaseNote from '/js/components/BaseNote.js';
@@ -14,7 +14,7 @@ function Notes() {
   ensureListingLoaded('notes');
 
   const notes = state.listing.notes;
-  const listing = notes ? notes.map(n => NoteListItem(n, state.categories)) : [];
+  const listing = notes ? pinnedNotesOnTop(notes).map(n => NoteListItem(n, state.categories)) : [];
 
   const hasCategories = state.categories.length > 0;
   const categoryOptions = state.categories.map(c => html`<option value="${c.title}">${c.title}</option>`);
@@ -39,6 +39,21 @@ function NoteListItem(note, categories) {
   const resource = 'notes';
   const pigment = notePigment(note.id);
 
+  function onPinnedClicked(e) {
+    e.preventDefault();
+
+    let data = {
+      ...note,
+      pinned: !note.pinned
+    };
+    Net.put(`/api/notes/${note.id}`, data).then(n => {
+      dispatch({
+        type: 'note-pinstate-updated',
+        note: n
+      });
+    });
+  }
+
   function onDeleteClicked(e) {
     e.preventDefault();
     Net.post(`/api/notes/${ note.id }/bin`, {}).then(n => {
@@ -61,11 +76,13 @@ function NoteListItem(note, categories) {
 
   return html`<${Card} note=${note} resource=${resource} pigment=${pigment} fullHeight=${fullHeight}>
                   <div class="card-action" style="border-bottom: 1px solid var(--bg-clock-${pigment.numString}-hi)">
+<button class="${pigment.classHi} button-pin" onClick=${ onPinnedClicked }>${ note.pinned ? svgPinned(`--fg-clock-${pigment.numString}`) : svgUnpinned(`--fg-clock-${pigment.numString}`) }</button>
                     <${TriageDropDown} noteId=${note.id}
                                        categories=${categories}
                                        pigment=${pigment}
                                        cardFullHeightFn=${setFullHeight}
                                        onSelectCallback=${onTriageCategorySelected}/>
+
                     <button class="${pigment.classHi} button button-delete" onClick=${ onDeleteClicked }>${ svgBin(`--fg-clock-${pigment.numString}`) }</button>
                   </div>
               </${Card}>`;

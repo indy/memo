@@ -31,6 +31,8 @@ CREATE TABLE IF NOT EXISTS notes (
     title TEXT NOT NULL,
     content TEXT NOT NULL,
 
+    pinned BOOLEAN NOT NULL DEFAULT false,
+
     triaged_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ
 );

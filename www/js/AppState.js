@@ -1,3 +1,5 @@
+import { pinnedNotesOnTop } from '/js/NoteUtils.js';
+
 export const initialState = {
   user: undefined,
   settings: {
@@ -89,6 +91,30 @@ export const reducer = (state, action) => {
 
       return updateStateWithListing(state, listing);
     }
+  case 'note-pinstate-updated':
+    {
+      let listing = getListingFromState(state);
+      let note = findNote(listing.notes, action.note.id);
+
+      if (note) {
+        note.pinned = action.note.pinned;
+        listing.notes = pinnedNotesOnTop(listing.notes);
+      } else {
+        note = findNote(listing.triaged, action.note.id);
+        if (note) {
+          note.pinned = action.note.pinned;
+          listing.triaged = pinnedNotesOnTop(listing.triaged);
+        } else {
+          findNote(listing.bin, action.note.id);
+          if (note) {
+            note.pinned = action.note.pinned;
+            listing.bin = pinnedNotesOnTop(listing.bin);
+          }
+        }
+      }
+
+      return updateStateWithListing(state, listing);
+    }
   case 'note-content-updated':
     {
       let listing = getListingFromState(state);
@@ -99,6 +125,7 @@ export const reducer = (state, action) => {
       if (note) {
         note.content = action.note.content;
         note.title = action.note.title;
+        note.pinned = action.note.pinned;
       }
 
       return updateStateWithListing(state, listing);
