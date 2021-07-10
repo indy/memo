@@ -173,7 +173,7 @@ function SampleCard({ pigment }) {
   return html`<div class="card pigment-clock-${pigment} darken-border">
                 <div class="card-body">
                   <div class="card-action" style="border-bottom: 1px solid var(--bg-clock-${pigment}-hi)">
-                    <button class="pigment-clock-${pigment}-hi button button-height-bodge">Sample Button</button>
+                    <button class="pigment-clock-${pigment}-hi button">Sample Button</button>
                   </div>
                   <h3>Sample Card</h3>
                   <p>Sample Text</p>

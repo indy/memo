@@ -75,15 +75,15 @@ function NoteListItem(note, categories) {
   }
 
   return html`<${Card} note=${note} resource=${resource} pigment=${pigment} fullHeight=${fullHeight}>
-                  <div class="card-action" style="border-bottom: 1px solid var(--bg-clock-${pigment.numString}-hi)">
-<button class="${pigment.classHi} button-pin" onClick=${ onPinnedClicked }>${ note.pinned ? svgPinned(`--fg-clock-${pigment.numString}`) : svgUnpinned(`--fg-clock-${pigment.numString}`) }</button>
+                  <div class="card-action card-action-row" style="border-bottom: 1px solid var(--bg-clock-${pigment.numString}-hi)">
+<button class="${pigment.classHi} button card-action-cell" onClick=${ onPinnedClicked }>${ note.pinned ? svgPinned(`--fg-clock-${pigment.numString}`) : svgUnpinned(`--fg-clock-${pigment.numString}`) }</button>
                     <${TriageDropDown} noteId=${note.id}
                                        categories=${categories}
                                        pigment=${pigment}
                                        cardFullHeightFn=${setFullHeight}
                                        onSelectCallback=${onTriageCategorySelected}/>
 
-                    <button class="${pigment.classHi} button button-delete" onClick=${ onDeleteClicked }>${ svgBin(`--fg-clock-${pigment.numString}`) }</button>
+                    <button class="${pigment.classHi} button card-action-cell" onClick=${ onDeleteClicked }>${ svgBin(`--fg-clock-${pigment.numString}`) }</button>
                   </div>
               </${Card}>`;
 }
@@ -111,7 +111,7 @@ function TriageDropDown({ noteId, categories, pigment, cardFullHeightFn, onSelec
   }
 
   function buildTriageButton() {
-    return html`<button class="${pigment.classHi} button button-height-bodge"
+    return html`<button class="${pigment.classHi} button button-triage"
                         onClick=${ onToggleShowList }>
                   <span class="button-title-ellipses">Triage</span>
                 </button>`;
@@ -123,7 +123,7 @@ function TriageDropDown({ noteId, categories, pigment, cardFullHeightFn, onSelec
                                                      ${c.title}
                                                    </li>`);
     return html`<div>
-                  <button class="${pigment.classHi} button button-height-bodge"
+                  <button class="${pigment.classHi} button"
                           onClick=${ onToggleShowList }>
                     Cancel
                   </button>
@@ -133,7 +133,7 @@ function TriageDropDown({ noteId, categories, pigment, cardFullHeightFn, onSelec
                 </div>`;
   }
 
-  return html`<div class="triage-dropdown">
+  return html`<div class="triage-dropdown card-action-cell">
                 ${ !showList && buildTriageButton()}
                 ${ showList && buildTriageList()}
               </div>`;
@@ -151,7 +151,8 @@ function noteFromText(text) {
 
   return {
     title,
-    content
+    content,
+    pinned: false
   }
 }
 
