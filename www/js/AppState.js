@@ -1,5 +1,3 @@
-import { pinnedNotesOnTop } from '/js/NoteUtils.js';
-
 export const initialState = {
   user: undefined,
   settings: {
@@ -98,17 +96,14 @@ export const reducer = (state, action) => {
 
       if (note) {
         note.pinned = action.note.pinned;
-        listing.notes = pinnedNotesOnTop(listing.notes);
       } else {
         note = findNote(listing.triaged, action.note.id);
         if (note) {
           note.pinned = action.note.pinned;
-          listing.triaged = pinnedNotesOnTop(listing.triaged);
         } else {
           findNote(listing.bin, action.note.id);
           if (note) {
             note.pinned = action.note.pinned;
-            listing.bin = pinnedNotesOnTop(listing.bin);
           }
         }
       }

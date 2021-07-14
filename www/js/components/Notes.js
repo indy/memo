@@ -1,7 +1,7 @@
 import { html, useState } from '/lib/preact/mod.js';
 
 import Net from '/js/Net.js';
-import { ensureListingLoaded, notePigment, pinnedNotesOnTop } from '/js/NoteUtils.js';
+import { ensureListingLoaded, notePigment, partitionPinnedNotes } from '/js/NoteUtils.js';
 import { svgBin, svgPinned, svgUnpinned } from '/js/svgIcons.js';
 import { useStateValue } from '/js/StateProvider.js';
 
@@ -14,7 +14,10 @@ function Notes() {
   ensureListingLoaded('notes');
 
   const notes = state.listing.notes;
-  const listing = notes ? pinnedNotesOnTop(notes).map(n => NoteListItem(n, state.categories)) : [];
+
+  const [pin, unpin] = notes ? partitionPinnedNotes(notes) : [[], []];
+  const pinnedListing = pin.map(n => NoteListItem(n, state.categories));
+  const unpinnedListing = unpin.map(n => NoteListItem(n, state.categories));
 
   const hasCategories = state.categories.length > 0;
   const categoryOptions = state.categories.map(c => html`<option value="${c.title}">${c.title}</option>`);
@@ -26,8 +29,16 @@ function Notes() {
         <${CreateNoteForm}/>
       </div>
       <div class="hr"/>
+      ${ pinnedListing.length > 0 && html`
+        <div class="card-holder">
+          ${ pinnedListing }
+        </div>
+     `}
+      ${ pinnedListing.length > 0 && html`
+        <div class="hr"/>
+     `}
       <div class="card-holder">
-        ${ listing }
+        ${ unpinnedListing }
       </div>
     </div>`;
 }

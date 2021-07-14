@@ -1,7 +1,7 @@
 import { html, useState } from '/lib/preact/mod.js';
 
 import Net from '/js/Net.js';
-import { ensureListingLoaded, notePigment, pinnedNotesOnTop } from '/js/NoteUtils.js';
+import { ensureListingLoaded, notePigment, partitionPinnedNotes } from '/js/NoteUtils.js';
 import { svgBin, svgExpand, svgMinimise, svgPinned, svgUnpinned } from '/js/svgIcons.js';
 import { useStateValue } from '/js/StateProvider.js';
 
@@ -19,8 +19,7 @@ function TriagedNotes() {
 
     // place triaged notes in their categories
     const partitionByCategoryId = state.categories.reduce((acc, category) => {
-      let list = state.listing.triaged.filter(n => n.category_id === category.id);
-      acc[category.id] = pinnedNotesOnTop(list);
+      acc[category.id] = state.listing.triaged.filter(n => n.category_id === category.id);
       return acc;
     }, {});
 
@@ -67,17 +66,27 @@ function TriagedCategory({ categoryNotes, categoryTitle }) {
     setShow(!show);
   }
 
-  const notesHtml = categoryNotes.map(n => NoteListItem(n));
+  const [pin, unpin] = partitionPinnedNotes(categoryNotes);
+  const pinnedListing = pin.map(n => NoteListItem(n));
+  const unpinnedListing = unpin.map(n => NoteListItem(n));
+
   const numNotes = html`<span class='category-num-notes'>${ categoryNotes.length }</span>`;
 
   if (show) {
     return html`<div>
                   <h1 class="pad-left-1rem" onClick=${ toggleShow }>${ svgMinimise() }${ categoryTitle } ${numNotes}</h1>
+                  ${ pinnedListing.length > 0 && html`
+                    <div class="card-holder">
+                      ${ pinnedListing }
+                    </div>
+                 `}
+                  ${ pinnedListing.length > 0 && html`
+                    <div class="hr"/>
+                 `}
                   <div class="card-holder">
-                    ${ notesHtml }
+                    ${ unpinnedListing }
                   </div>
                 </div>`;
-
   } else {
     return html`<div>
                   <h1 class="pad-left-1rem" onClick=${ toggleShow }>${ svgExpand() }${ categoryTitle } ${ numNotes }</h1>

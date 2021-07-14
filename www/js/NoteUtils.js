@@ -3,7 +3,7 @@ import { h, useEffect } from '/lib/preact/mod.js';
 import { useStateValue } from '/js/StateProvider.js';
 import Net from '/js/Net.js';
 
-export function pinnedNotesOnTop(list) {
+export function partitionPinnedNotes(list) {
   let pinned = [];
   let unpinned = [];
 
@@ -18,7 +18,7 @@ export function pinnedNotesOnTop(list) {
   pinned.sort((a, b) => b.id - a.id);
   unpinned.sort((a, b) => b.id - a.id);
 
-  return pinned.concat(unpinned);
+  return [pinned, unpinned];
 }
 
 export function notePigment(noteId) {
