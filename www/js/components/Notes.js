@@ -30,12 +30,9 @@ function Notes() {
       </div>
       <div class="hr"/>
       ${ pinnedListing.length > 0 && html`
-        <div class="card-holder">
+        <div class="card-holder-pinned">
           ${ pinnedListing }
         </div>
-     `}
-      ${ pinnedListing.length > 0 && html`
-        <div class="hr"/>
      `}
       <div class="card-holder">
         ${ unpinnedListing }

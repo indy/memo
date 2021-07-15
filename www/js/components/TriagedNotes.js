@@ -76,12 +76,9 @@ function TriagedCategory({ categoryNotes, categoryTitle }) {
     return html`<div>
                   <h1 class="pad-left-1rem" onClick=${ toggleShow }>${ svgMinimise() }${ categoryTitle } ${numNotes}</h1>
                   ${ pinnedListing.length > 0 && html`
-                    <div class="card-holder">
+                    <div class="card-holder-pinned">
                       ${ pinnedListing }
                     </div>
-                 `}
-                  ${ pinnedListing.length > 0 && html`
-                    <div class="hr"/>
                  `}
                   <div class="card-holder">
                     ${ unpinnedListing }

@@ -492,6 +492,14 @@ hr {
 }
 
 .card-holder {
+  padding: 0 1rem 1rem 1rem;
+}
+
+.card-holder-pinned {
+  background: var(--bg2);
+  border-radius: var(--ui-element-border-radius);
+  margin-top: 1rem;
+  padding: 0 1rem 1rem 1rem;
 }
 
 .card {
