@@ -31,7 +31,7 @@ function Bin() {
       <div class="section-controls-headroom"/>
       <div class="darken-border">
         ${ listing.length == 0 && html`<h2>Bin is Empty</h2>`}
-        ${ listing.length > 0 && html`<h2 class="button" onClick=${ onDeleteClicked }>Permanently Delete</h2>`}
+        ${ listing.length > 0 && html`<h2 class="button button-delete" onClick=${ onDeleteClicked }>Permanently Delete</h2>`}
       </div>
       <div class="hr"/>
       <div class="card-holder">

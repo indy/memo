@@ -502,6 +502,14 @@ hr {
   padding: 0 1rem 1rem 1rem;
 }
 
+
+.form-holder {
+  background: var(--bg-section-controls);
+  border-radius: var(--ui-element-border-radius);
+  margin-top: 1rem;
+  padding: 0 1rem 1rem 1rem;
+}
+
 .card {
   font-family: Tahoma, Geneva, sans-serif;
   width: 20em;
@@ -516,31 +524,6 @@ hr {
 .card-height-limited {
   max-height: 20rem;
 }
-
-@media (max-width: 700px) {
-  a.top-bar-menuitem {
-    margin-left: 0;
-  }
-
-  #login-menuitem {
-    margin-bottom: 1em;
-  }
-
-  form label {
-    margin-left: 0;
-  }
-
-  .section-controls {
-    width: 83%;
-    margin: 1.3em 0 0.8em 0;
-  }
-
-  .card {
-    width: 100%;
-    margin: 1.3em 0 0 0;
-  }
-}
-
 
 .card-body {
   overflow: hidden;
@@ -641,6 +624,12 @@ h3 {
   box-shadow: 0px 2px 2px 1px rgba(0,0,0,0.05);
 }
 
+.button-delete {
+  margin-top: 1rem;
+  margin-left: 2rem;
+  background: rgba(250,40,50,1);
+}
+
 .save-button {
   margin-bottom: 1em;
   color: var(--save-on-fg);
@@ -680,4 +669,37 @@ h3 {
 .category-num-notes {
   float: right;
   color: var(--fg1);
+}
+
+@media (max-width: 700px) {
+
+  .button-delete {
+    margin-top: 4rem;
+  }
+
+  a.top-bar-menuitem {
+    margin-left: 0;
+  }
+
+  #login-menuitem {
+    margin-bottom: 1em;
+  }
+
+  form label {
+    margin-left: 0;
+  }
+
+  .section-controls {
+    width: 83%;
+    margin: 1.3em 0 0.8em 0;
+  }
+
+  .card {
+    width: 100%;
+    margin: 1.3em 0 0 0;
+  }
+
+  .form-holder {
+    margin-top: 3rem;
+  }
 }

@@ -25,10 +25,7 @@ function Notes() {
   return html`
     <div>
       <div class="section-controls-headroom"></div>
-      <div class="section-controls darken-border">
-        <${CreateNoteForm}/>
-      </div>
-      <div class="hr"/>
+      <${CreateNoteForm}/>
       ${ pinnedListing.length > 0 && html`
         <div class="card-holder-pinned">
           ${ pinnedListing }
@@ -197,21 +194,23 @@ function CreateNoteForm() {
   const textareaClass = usingTextArea ? "" : "no-user-text";
   const textareaValue = usingTextArea ? userText : typeHereMessage;
 
-  return html`<form class="add-note-form" onSubmit=${ onSubmit }>
-                ${usingTextArea && html`<input class="button save-button"
-                                               type="submit"
-                                               disabled=${!hasUserContent}
-                                               value="Save"/>`}
-                <br/>
-                <textarea id="content"
-                          type="text"
-                          name="content"
-                          class=${ textareaClass }
-                          value=${ textareaValue }
-                          onFocus=${ () => setHasFocus(true) }
-                          onBlur=${ () => setHasFocus(false) }
-                          onInput=${ handleChangeEvent }/>
-              </form>`;
+  return html`<div class="form-holder">
+                <form class="add-note-form" onSubmit=${ onSubmit }>
+                  ${usingTextArea && html`<input class="button save-button"
+                                                 type="submit"
+                                                 disabled=${!hasUserContent}
+                                                 value="Save"/>`}
+                  <br/>
+                  <textarea id="content"
+                            type="text"
+                            name="content"
+                            class=${ textareaClass }
+                            value=${ textareaValue }
+                            onFocus=${ () => setHasFocus(true) }
+                            onBlur=${ () => setHasFocus(false) }
+                            onInput=${ handleChangeEvent }/>
+                </form>
+              </div>`;
 }
 
 function Note({ id }) {
