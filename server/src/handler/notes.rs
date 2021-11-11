@@ -31,6 +31,19 @@ use futures::{StreamExt, TryStreamExt};
 #[allow(unused_imports)]
 use tracing::info;
 
+
+fn sanitize_content(content: &str) -> String {
+    // for some stupid reason sharing a link from Twitter adds either ?s=09 or &s=09 to the end of a url
+    //
+    if let Some(s) = content.strip_suffix("?s=09") {
+        s.to_string()
+    } else if let Some(s) = content.strip_suffix("&s=09") {
+        s.to_string()
+    } else {
+        content.to_string()
+    }
+}
+
 pub async fn bookmark(
     mut payload: Multipart,
     db_pool: Data<Pool>,
@@ -59,7 +72,7 @@ pub async fn bookmark(
                     proto_note.title = value.to_string();
                 }
                 if name == "content" {
-                    proto_note.content = value.to_string();
+                    proto_note.content = sanitize_content(value);
                 }
             }
         }
