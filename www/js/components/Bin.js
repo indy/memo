@@ -67,10 +67,8 @@ function NoteListItem(note) {
   }
 
   return html`<${Card} note=${note} resource=${resource} pigment=${pigment}>
-                  <div class="card-action card-action-row" style="border-bottom: 1px solid var(--bg-clock-${pigment.numString}-hi)">
-                    <button class="${pigment.classHi} button card-action-cell" onClick=${ onUndeleteClicked }>Undelete</button>
-                    <button class="${pigment.classHi} button card-action-cell" onClick=${ onDeleteClicked }>Really Delete</button>
-                  </div>
+                  <button class="${pigment.classHi} button card-action-cell" onClick=${ onUndeleteClicked }>Undelete</button>
+                  <button class="${pigment.classHi} button card-action-cell" onClick=${ onDeleteClicked }>Really Delete</button>
               </${Card}>`;
 }
 

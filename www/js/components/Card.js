@@ -25,7 +25,16 @@ export default function Card({ note, pigment, resource, fullHeight, children }) 
 
   return html`<div class=${classes} onClick=${ onCardClicked }>
                 <div class="card-body">
-                  ${ children }
+                  <div class="card-action" style="border-bottom: 1px solid var(--bg-clock-${pigment.numString}-hi)">
+                    <div class="card-action-row">
+                      ${ children }
+                    </div>
+                    <div class="card-action-row-reverse">
+                      <div class="card-age" style="color: var(--bg-clock-${pigment.numString}-hi2);">
+                        ${ note.age }
+                      </div>
+                    </div>
+                  </div>
                   ${ parseCardTitle(note)}
                   ${ parseNoteContent(note) }
                 </div>

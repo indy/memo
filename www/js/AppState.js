@@ -1,3 +1,5 @@
+import { plural } from "/js/JsUtils.js";
+
 export const initialState = {
   user: undefined,
   settings: {
@@ -72,8 +74,7 @@ export const reducer = (state, action) => {
   case 'listing-set':
     {
       let listing = getListingFromState(state);
-
-      listing[action.resource] = action.listing;
+      listing[action.resource] = action.listing.map(calculateAge);
 
       return updateStateWithListing(state, listing);
     }
@@ -224,4 +225,45 @@ function updateStateWithListing(state, listing) {
   };
 
   return newState;
+}
+
+function calculateAge(note) {
+  let created_at = new Date(Date.parse(note.created_at));
+  let today = new Date();
+  let delta = today - created_at;
+
+  note.age = humanReadableAge(delta);
+
+  return note;
+}
+
+
+function humanReadableAge(deltaMS) {
+
+  let minutes = deltaMS / (1000 * 60);
+  if (minutes < 60.0) {
+    if (minutes < 1.0) {
+      return `Just created`;
+    } else {
+      return plural(parseInt(minutes, 10), "minute", "s");
+    }
+  }
+
+  let hours = deltaMS / (1000 * 60 * 60);
+  if (hours < 24.0) {
+    return plural(parseInt(hours, 10), "hour", "s");
+  }
+
+  let days = deltaMS / (1000 * 60 * 60 * 24);
+  if (days < 31.0) {
+    return plural(parseInt(days, 10), "day", "s");
+  }
+
+  let months = deltaMS / (1000 * 60 * 60 * 24 * 30);
+  if (months < 12) {
+    return plural(parseInt(months, 10), "month", "s");
+  }
+
+  let years = deltaMS / (1000 * 60 * 60 * 24 * 365.25);
+  return plural(parseInt(years, 10), "year", "s");
 }

@@ -80,15 +80,13 @@ function NoteListItem(note, categories) {
   }
 
   return html`<${Card} note=${note} resource=${resource} pigment=${pigment} fullHeight=${fullHeight}>
-                  <div class="card-action card-action-row" style="border-bottom: 1px solid var(--bg-clock-${pigment.numString}-hi)">
-                    <${TriageDropDown} noteId=${note.id}
-                                       categories=${categories}
-                                       pigment=${pigment}
-                                       cardFullHeightFn=${setFullHeight}
-                                       onSelectCallback=${onTriageCategorySelected}/>
-                   <button class="${pigment.classHi} button card-action-cell" onClick=${ onPinnedClicked }>${ note.pinned ? svgPinned(`--fg-clock-${pigment.numString}`) : svgUnpinned(`--fg-clock-${pigment.numString}`) }</button>
-                    <button class="${pigment.classHi} button card-action-cell" onClick=${ onDeleteClicked }>${ svgBin(`--fg-clock-${pigment.numString}`) }</button>
-                  </div>
+                  <${TriageDropDown} noteId=${note.id}
+                                     categories=${categories}
+                                     pigment=${pigment}
+                                     cardFullHeightFn=${setFullHeight}
+                                     onSelectCallback=${onTriageCategorySelected}/>
+                  <button class="${pigment.classHi} button card-action-cell" onClick=${ onPinnedClicked }>${ note.pinned ? svgPinned(`--fg-clock-${pigment.numString}`) : svgUnpinned(`--fg-clock-${pigment.numString}`) }</button>
+                  <button class="${pigment.classHi} button card-action-cell" onClick=${ onDeleteClicked }>${ svgBin(`--fg-clock-${pigment.numString}`) }</button>
               </${Card}>`;
 }
 

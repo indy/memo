@@ -33,6 +33,7 @@ struct Note {
     id: Key,
     title: String,
     content: String,
+    created_at: chrono::DateTime<chrono::Utc>,
     triaged_at: Option<chrono::DateTime<chrono::Utc>>,
     category_id: Option<Key>,
     pinned: bool,
@@ -53,6 +54,7 @@ impl From<Note> for interop::Note {
             title: n.title,
             content: n.content,
             pinned: n.pinned,
+            created_at: n.created_at
         }
     }
 }
@@ -66,6 +68,7 @@ impl From<Note> for interop::TriagedNote {
             triaged_at: n.triaged_at.expect("triaged_at is required"),
             category_id: n.category_id.expect("category_id is required"),
             pinned: n.pinned,
+            created_at: n.created_at
         }
     }
 }
@@ -93,7 +96,8 @@ pub(crate) async fn all_non_triaged(db_pool: &Pool, user_id: Key) -> Result<Vec<
                 n.content,
                 n.triaged_at,
                 n.category_id,
-                n.pinned
+                n.pinned,
+                n.created_at
          FROM   notes n
          WHERE  n.user_id = $1 and n.triaged_at is null and n.deleted_at is null
          ORDER BY n.id desc",
@@ -110,7 +114,8 @@ pub(crate) async fn all_binned(db_pool: &Pool, user_id: Key) -> Result<Vec<inter
                 n.content,
                 n.triaged_at,
                 n.category_id,
-                n.pinned
+                n.pinned.
+                n.created_at
          FROM   notes n
          WHERE  n.user_id = $1 and n.deleted_at is not null
          ORDER BY n.deleted_at desc",
@@ -127,7 +132,8 @@ pub(crate) async fn triaged_all(db_pool: &Pool, user_id: Key) -> Result<Vec<inte
                 n.content,
                 n.triaged_at,
                 n.category_id,
-                n.pinned
+                n.pinned,
+                n.created_at
          FROM   notes n
          WHERE  n.user_id = $1 and n.triaged_at is not null and n.deleted_at is null
          ORDER BY n.id desc",
@@ -146,7 +152,8 @@ pub(crate) async fn get(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<in
                 n.content,
                 n.triaged_at,
                 n.category_id,
-                n.pinned
+                n.pinned,
+                n.created_at
          FROM notes n
          WHERE n.id = $2 AND n.user_id = $1",
         &[&user_id, &note_id],
@@ -166,7 +173,8 @@ pub(crate) async fn triaged_get(
                 n.content,
                 n.triaged_at,
                 n.category_id,
-                n.pinned
+                n.pinned,
+                n.created_at
         FROM notes n
         WHERE n.id = $2 AND n.user_id = $1",
         &[&user_id, &note_id],

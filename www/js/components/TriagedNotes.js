@@ -202,19 +202,17 @@ function NoteListItem(note) {
   }
 
   return html`<${Card} note=${note} resource=${resource} pigment=${pigment}>
-                  <div class="card-action card-action-row" style="border-bottom: 1px solid var(--bg-clock-${pigment.numString}-hi)">
-                    <button class="${pigment.classHi} button card-action-cell"
-                            onClick=${ onUntriageClicked }>
-                      Untriage
-                    </button>
-                    <button class="${pigment.classHi} button card-action-cell" onClick=${ onPinnedClicked }>
-                      ${ note.pinned ? svgPinned(`--fg-clock-${pigment.numString}`) : svgUnpinned(`--fg-clock-${pigment.numString}`) }
-                    </button>
-                    <button class="${pigment.classHi} button card-action-cell"
-                            onClick=${ onDeleteClicked }>
-                      ${ svgBin(`--fg-clock-${pigment.numString}`) }
-                    </button>
-                  </div>
+                  <button class="${pigment.classHi} button card-action-cell"
+                          onClick=${ onUntriageClicked }>
+                    Untriage
+                  </button>
+                  <button class="${pigment.classHi} button card-action-cell" onClick=${ onPinnedClicked }>
+                    ${ note.pinned ? svgPinned(`--fg-clock-${pigment.numString}`) : svgUnpinned(`--fg-clock-${pigment.numString}`) }
+                  </button>
+                  <button class="${pigment.classHi} button card-action-cell"
+                          onClick=${ onDeleteClicked }>
+                    ${ svgBin(`--fg-clock-${pigment.numString}`) }
+                  </button>
               </${Card}>`;
 }
 
