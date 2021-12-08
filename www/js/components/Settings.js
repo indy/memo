@@ -2,6 +2,7 @@ import { html, useState } from '/lib/preact/mod.js';
 import { useStateValue } from '/js/StateProvider.js';
 import { declareCssVariables } from '/js/ColourCreator.js';
 import { useWasmInterface } from '/js/WasmInterfaceProvider.js';
+import { cssColourHi } from '/js/AppUtils.js';
 
 import { Logout } from '/js/components/Login.js';
 
@@ -172,7 +173,7 @@ function ColourControl({ onInput, value, id }) {
 function SampleCard({ pigment }) {
   return html`<div class="card pigment-clock-${pigment} darken-border">
                 <div class="card-body">
-                  <div class="card-action" style="border-bottom: 1px solid var(--bg-clock-${pigment}-hi)">
+                  <div class="card-action" style="border-bottom: 1px solid ${cssColourHi(pigment)};">
                     <button class="pigment-clock-${pigment}-hi button">Sample Button</button>
                   </div>
                   <h3>Sample Card</h3>

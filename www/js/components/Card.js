@@ -1,8 +1,13 @@
-import { html, route } from '/lib/preact/mod.js';
+import { html, route, useState } from '/lib/preact/mod.js';
 import { parseNoteContent, parseCardTitle } from '/js/NoteUtils.js';
+import { cssColourHi, cssColourHi2 } from '/js/AppUtils.js';
 
-export default function Card({ note, pigment, resource, fullHeight, children }) {
+export default function Card({ note, pigment, resource, fullHeight, children, cardClass, editing, onFinishedEditing }) {
   const href = `/${resource}/${note.id}`;
+  const [localState, setLocalState] = useState({
+    userContent: undefined,
+    userTitle: undefined
+  });
 
   function onCardClicked(e) {
     if (!clickedOnCardUI(e.target) && !clickedOnInCardHyperlink(e.target)) {
@@ -10,13 +15,53 @@ export default function Card({ note, pigment, resource, fullHeight, children }) 
 
       let selection = document.getSelection();
       selection += ""; // coerce into a string
-      if (selection.length === 0) {
+      if (selection.length === 0 && resource !== 'bin') {
         route(href);
       }
     }
   }
 
-  let classes = `card ${pigment.class} darken-border`;
+  let shouldSetContent = false;
+  let shouldSetTitle = false;
+
+  if (note.content && localState.userContent === undefined) {
+    shouldSetContent = true;
+  }
+  if (note.title && localState.userTitle === undefined) {
+    shouldSetTitle = true;
+  }
+
+  if (shouldSetContent || shouldSetTitle) {
+    setLocalState({
+      ...localState,
+      userTitle: shouldSetTitle ? note.title : localState.userTitle,
+      userContent: shouldSetContent ? note.content : localState.userContent
+    });
+  }
+
+  function handleChangeTitle(event) {
+    const newUserText = event.target.value;
+    setLocalState({
+      ...localState,
+      userTitle: newUserText
+    })
+  };
+
+  function handleChangeContent(event) {
+    const newUserText = event.target.value;
+    setLocalState({
+      ...localState,
+      userContent: newUserText
+    })
+  };
+
+  function onSaveClicked(e) {
+    e.preventDefault();
+    onFinishedEditing(localState.userTitle, localState.userContent);
+  }
+
+  let classes = cardClass ? cardClass + ' ' : 'card ';
+  classes += `card-common ${pigment.class} darken-border`;
 
   fullHeight = !!fullHeight;
   if (!fullHeight) {
@@ -25,18 +70,29 @@ export default function Card({ note, pigment, resource, fullHeight, children }) 
 
   return html`<div class=${classes} onClick=${ onCardClicked }>
                 <div class="card-body">
-                  <div class="card-action" style="border-bottom: 1px solid var(--bg-clock-${pigment.numString}-hi)">
+                  <div class="card-action" style="border-bottom: 1px solid ${cssColourHi(pigment.numString)};">
                     <div class="card-action-row">
                       ${ children }
                     </div>
                     <div class="card-action-row-reverse">
-                      <div class="card-age" style="color: var(--bg-clock-${pigment.numString}-hi2);">
+                      <div class="card-age" style="color: ${cssColourHi2(pigment.numString)};">
                         ${ note.age }
                       </div>
                     </div>
                   </div>
-                  ${ parseCardTitle(note)}
-                  ${ parseNoteContent(note) }
+                  ${ !editing && parseCardTitle(note)}
+                  ${ !editing && parseNoteContent(note) }
+
+                  ${ editing && html`
+                    <div class="edit">
+                      <input type="text" value=${localState.userTitle} onInput=${ handleChangeTitle }/>
+                      <br/><br/>
+                      <textarea type="text" value=${ localState.userContent } onInput=${ handleChangeContent }/>
+                      <br/>
+                      <button class="${pigment.classHi} button card-action-cell" onClick=${ onSaveClicked }>Save</button>
+
+                    </div>`}
+
                 </div>
               </div>`;
 

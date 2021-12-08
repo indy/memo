@@ -1,18 +1,16 @@
 import { html, route, useState } from '/lib/preact/mod.js';
 
 import Net from '/js/Net.js';
-import { notePigment, parseNoteContent, parseNoteTitle, ensureListingLoaded } from '/js/NoteUtils.js';
+import { parseNoteContent, parseNoteTitle, ensureListingLoaded, notePigment, partitionPinnedNotes } from '/js/NoteUtils.js';
+import { svgBin, svgPinned, svgUnpinned } from '/js/svgIcons.js';
 import { useStateValue } from '/js/StateProvider.js';
-import { svgBin } from '/js/svgIcons.js';
+
+import Card from '/js/components/Card.js';
+import { TriageDropDown } from '/js/components/TriageDropDown.js';
 
 export default function BaseNote({ id, noteKind }) {
   const [state, dispatch] = useStateValue();
-
-  const [localState, setLocalState] = useState({
-    editing: false,
-    userContent: undefined,
-    userTitle: undefined
-  });
+  const [editing, setEditing] = useState(false);
 
   ensureListingLoaded(noteKind);
 
@@ -22,74 +20,20 @@ export default function BaseNote({ id, noteKind }) {
 
   function onEditClicked(e) {
     e.preventDefault();
-
-    setLocalState({
-      ...localState,
-      editing: !localState.editing
-    })
+    setEditing(!editing);
   }
 
-  function handleChangeTitle(event) {
-    const newUserText = event.target.value;
-    setLocalState({
-      ...localState,
-      userTitle: newUserText
-    })
-  };
-
-  function handleChangeContent(event) {
-    const newUserText = event.target.value;
-    setLocalState({
-      ...localState,
-      userContent: newUserText
-    })
-  };
-
-
   function getNoteById(id) {
-    return state.listing[noteKind].find(n => n.id === id);
+    let res = state.listing[noteKind].find(n => n.id === id);
+    if (!res) {
+      // isg hack: when triaging a note it may move from noteKind 'notes' to noteKind 'triaged', so look there
+      res = state.listing.triaged.find(n => n.id === id);
+    }
+    return res;
   }
 
   const noteId = parseInt(id, 10);
   const note = getNoteById(noteId);
-
-  let shouldSetContent = false;
-  let shouldSetTitle = false;
-
-  if (note.content && localState.userContent === undefined) {
-    shouldSetContent = true;
-  }
-  if (note.title && localState.userTitle === undefined) {
-    shouldSetTitle = true;
-  }
-
-  if (shouldSetContent || shouldSetTitle) {
-    setLocalState({
-      ...localState,
-      userTitle: shouldSetTitle ? note.title : localState.userTitle,
-      userContent: shouldSetContent ? note.content : localState.userContent
-    });
-  }
-
-  function onSaveClicked(e) {
-    e.preventDefault();
-
-    let data = {
-      ...note,
-      content: localState.userContent,
-      title: localState.userTitle
-    };
-    Net.put(`/api/notes/${note.id}`, data).then(newNote => {
-      dispatch({
-        type: 'note-content-updated',
-        note: newNote
-      });
-      setLocalState({
-        ...localState,
-        editing: false
-      });
-    });
-  }
 
   function onDeleteClicked(e) {
     e.preventDefault();
@@ -98,31 +42,72 @@ export default function BaseNote({ id, noteKind }) {
         type: 'note-binned',
         note
       });
-      route('/');
+      if (noteKind === 'triaged') {
+        route('/triaged');
+      } else {
+        route('/');
+      }
+
     });
   }
 
-  let editButtonText = localState.editing ? "Cancel Editing" : "Edit";
+  let editButtonText = editing ? "Cancel Editing" : "Edit";
 
   const pigment = notePigment(id);
 
-  return html`
-    <article class="note ${pigment.class}">
-      ${ !localState.editing && parseNoteTitle(note) }
-      ${ !localState.editing && parseNoteContent(note) }
-      ${ localState.editing && html`
-        <div class="edit">
-          <input type="text" value=${localState.userTitle} onInput=${ handleChangeTitle }/>
-          <br/><br/>
-          <textarea type="text" value=${ localState.userContent } onInput=${ handleChangeContent }/>
-          <br/>
-        </div>
-    `}
-<div class="button-container">
-      ${ localState.editing && html`<button class="button save-button" onClick=${ onSaveClicked }>Save</button>`}
-      <button class="button" onClick=${ onEditClicked }>${ editButtonText }</button>
-      <button class="button bin-button" onClick=${ onDeleteClicked }>${ svgBin(`--fg1`) }</button>
-</div>
-    </article>`;
+  const [fullHeight, setFullHeight] = useState(true);
+
+  function onTriageCategorySelected(noteId, category) {
+    Net.post(`/api/notes/${ noteId }/triage`, category).then(triagedNote => {
+      dispatch({
+        type: 'note-triaged',
+        note: triagedNote
+      });
+    });
+  }
+
+  function onPinnedClicked(e) {
+    e.preventDefault();
+
+    let data = {
+      ...note,
+      pinned: !note.pinned
+    };
+    Net.put(`/api/notes/${note.id}`, data).then(n => {
+      dispatch({
+        type: 'note-pinstate-updated',
+        note: n
+      });
+    });
+  }
+
+  function onFinishedEditing(updatedTitle, updatedContent) {
+    let data = {
+      ...note,
+      content: updatedContent,
+      title: updatedTitle
+    };
+    Net.put(`/api/notes/${note.id}`, data).then(newNote => {
+      dispatch({
+        type: 'note-content-updated',
+        note: newNote
+      });
+      setEditing(false);
+    });
+  }
+
+  const resource = noteKind;
+  const categories = state.categories;
+
+  return html`<${Card} onFinishedEditing=${ onFinishedEditing } editing=${editing} note=${note} resource=${resource} pigment=${pigment} fullHeight=${fullHeight} cardClass="wider-card">
+                  <button class="${pigment.classHi} button card-action-cell" onClick=${ onEditClicked }>${ editButtonText }</button>
+                  <${TriageDropDown} noteId=${note.id}
+                                     categories=${categories}
+                                     pigment=${pigment}
+                                     cardFullHeightFn=${setFullHeight}
+                                     onSelectCallback=${onTriageCategorySelected}/>
+                  <button class="${pigment.classHi} button card-action-cell" onClick=${ onPinnedClicked }>${ note.pinned ? svgPinned(`--fg-clock-${pigment.numString}`) : svgUnpinned(`--fg-clock-${pigment.numString}`) }</button>
+                  <button class="${pigment.classHi} button card-action-cell" onClick=${ onDeleteClicked }>${ svgBin(`--fg-clock-${pigment.numString}`) }</button>
+              </${Card}>`;
 
 }

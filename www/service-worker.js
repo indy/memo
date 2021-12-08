@@ -29,6 +29,7 @@ var precacheConfig = [
 
   "/js/App.js",
   "/js/AppState.js",
+  "/js/AppUtils.js",
   "/js/ColourCreator.js",
   "/js/JsUtils.js",
   "/js/Net.js",
@@ -42,6 +43,7 @@ var precacheConfig = [
   "/js/components/Login.js",
   "/js/components/Notes.js",
   "/js/components/Settings.js",
+  "/js/components/TriageDropDown.js",
   "/js/components/TriagedNotes.js",
 
   "/apple-touch-icon.png",

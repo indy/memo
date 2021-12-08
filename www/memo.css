@@ -181,7 +181,7 @@ form label {
 }
 
 textarea {
-  width: var(--block-width);
+  width: 100%;
 }
 
 .edit textarea {
@@ -510,15 +510,23 @@ hr {
   padding: 0 1rem 1rem 1rem;
 }
 
-.card {
+.card-common {
   font-family: Tahoma, Geneva, sans-serif;
-  width: 20em;
-  margin: 1em;
   box-shadow: 0px 2px 2px 1px var(--card-shadow);
   border-radius: var(--ui-element-border-radius);
   display: inline-block;
   vertical-align: top;
   overflow: hidden;
+}
+
+.card {
+  width: 20em;
+  margin: 1em;
+}
+
+.wider-card {
+  width: 60%;
+  margin: 4em;
 }
 
 .card-height-limited {
@@ -640,23 +648,8 @@ h3 {
   background: rgba(250,40,50,1);
 }
 
-.save-button {
-  margin-bottom: 1em;
-  color: var(--save-on-fg);
-  background: var(--save-on-bg);
-}
-
-.save-button:disabled {
-  color: var(--fg-inactive);
-  background: var(--bg1);
-}
-
 .bin-button {
   float: right;
-}
-
-.button-container {
-  width: var(--block-width);
 }
 
 /* .no-user-text { */

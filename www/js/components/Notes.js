@@ -7,6 +7,7 @@ import { useStateValue } from '/js/StateProvider.js';
 
 import BaseNote from '/js/components/BaseNote.js';
 import Card from '/js/components/Card.js';
+import { TriageDropDown } from '/js/components/TriageDropDown.js';
 
 function Notes() {
   const [state, dispatch] = useStateValue();
@@ -90,56 +91,7 @@ function NoteListItem(note, categories) {
               </${Card}>`;
 }
 
-function TriageDropDown({ noteId, categories, pigment, cardFullHeightFn, onSelectCallback }) {
-  const [showList, setShowList] = useState(false);
 
-  function onToggleShowList(e) {
-    e.preventDefault();
-    cardFullHeightFn(!showList);
-    setShowList(!showList);
-  }
-
-  function onTriageDropDownSelect(e) {
-    e.preventDefault();
-
-    const value = e.target.textContent;
-    const cat = categories.find(c => c.title === value);
-
-    setShowList(!showList);
-
-    if (cat) {
-      onSelectCallback(noteId, cat);
-    }
-  }
-
-  function buildTriageButton() {
-    return html`<button class="${pigment.classHi} button button-triage"
-                        onClick=${ onToggleShowList }>
-                  <span class="button-title-ellipses">Triage</span>
-                </button>`;
-  }
-
-  function buildTriageList() {
-    let categoryOptions = categories.map(c => html`<li class="triage-dropdown-item  ${pigment.classHi}"
-                                                       onClick=${ onTriageDropDownSelect }>
-                                                     ${c.title}
-                                                   </li>`);
-    return html`<div>
-                  <button class="${pigment.classHi} button"
-                          onClick=${ onToggleShowList }>
-                    Cancel
-                  </button>
-                  <ul class="triage-dropdown-list">
-                    ${categoryOptions}
-                  </ul>
-                </div>`;
-  }
-
-  return html`<div class="triage-dropdown card-action-cell">
-                ${ !showList && buildTriageButton()}
-                ${ showList && buildTriageList()}
-              </div>`;
-}
 
 function noteFromText(text) {
   const lines = text.split("\n");
