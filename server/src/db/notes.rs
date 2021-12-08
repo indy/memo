@@ -114,7 +114,7 @@ pub(crate) async fn all_binned(db_pool: &Pool, user_id: Key) -> Result<Vec<inter
                 n.content,
                 n.triaged_at,
                 n.category_id,
-                n.pinned.
+                n.pinned,
                 n.created_at
          FROM   notes n
          WHERE  n.user_id = $1 and n.deleted_at is not null
