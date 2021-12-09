@@ -1,16 +1,13 @@
 import { html, route, Link, useState } from '/lib/preact/mod.js';
 
 import Net from '/js/Net.js';
-import { notePigment, ensureListingLoaded } from '/js/NoteUtils.js';
+import { notePigment } from '/js/NoteUtils.js';
 import { useStateValue } from '/js/StateProvider.js';
 
-import BaseNote from '/js/components/BaseNote.js';
 import Card from '/js/components/Card.js';
 
 function Bin() {
   const [state, dispatch] = useStateValue();
-
-  ensureListingLoaded('bin');
 
   const notes = state.listing.bin;
   const listing = notes ? notes.map(n => NoteListItem(n)) : [];
@@ -73,7 +70,28 @@ function NoteListItem(note) {
 }
 
 function BinnedNote({ id }) {
-  return html`<${BaseNote} id=${id} noteKind='bin'/>`;
+  const noteKind = 'bin';
+
+  const [state, dispatch] = useStateValue();
+  const editing = false;
+  const [fullHeight, setFullHeight] = useState(true);
+
+  if (!state.listing[noteKind]) {
+    // isg todo: fix this
+    return html`<div></div>`;
+  }
+
+  const noteId = parseInt(id, 10);
+  const note = getNoteById(state, noteKind, noteId);
+  const pigment = notePigment(id);
+
+  return html`<${Card} editing=${editing}
+                       note=${note}
+                       resource=${noteKind}
+                       pigment=${pigment}
+                       fullHeight=${fullHeight}
+                       cardClass="wider-card">
+              </${Card}>`;
 }
 
 export { Bin, BinnedNote };

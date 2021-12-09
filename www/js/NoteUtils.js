@@ -3,6 +3,33 @@ import { h, useEffect } from '/lib/preact/mod.js';
 import { useStateValue } from '/js/StateProvider.js';
 import Net from '/js/Net.js';
 
+
+export function finishedEditingCallback(dispatch, note, setEditing) {
+  return function(updatedTitle, updatedContent) {
+    let data = {
+      ...note,
+      content: updatedContent,
+      title: updatedTitle
+    };
+    Net.put(`/api/notes/${note.id}`, data).then(newNote => {
+      dispatch({
+        type: 'note-content-updated',
+        note: newNote
+      });
+      setEditing(false);
+    });
+  }
+}
+
+export function getNoteById(state, noteKind, id) {
+  let res = state.listing[noteKind].find(n => n.id === id);
+  if (!res) {
+    // isg hack: when triaging a note it may move from noteKind 'notes' to noteKind 'triaged', so look there
+    res = state.listing.triaged.find(n => n.id === id);
+  }
+  return res;
+}
+
 export function partitionPinnedNotes(list) {
   let pinned = [];
   let unpinned = [];
@@ -33,16 +60,6 @@ export function notePigment(noteId) {
     class: pigmentClass,
     classHi: pigmentClassHi
   }
-}
-
-export function ensureListingLoaded(resource, url) {
-  const [state, dispatch] = useStateValue();
-
-  useEffect(() => {
-    if(!state.listing[resource]) {
-      fetchListing(dispatch, resource, url);
-    }
-  }, []);
 }
 
 export async function fetchListing(dispatch, resource, url) {

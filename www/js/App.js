@@ -12,6 +12,19 @@ import { Note, Notes } from '/js/components/Notes.js';
 import { Login, Logout } from '/js/components/Login.js';
 import { Settings } from '/js/components/Settings.js';
 
+
+
+async function fetchListing(state, resource) {
+  let listing = await Net.get(`/api/${resource}`);
+  state = reducer(state, {
+    type: 'listing-set',
+    resource,
+    listing
+  });
+
+  return state;
+}
+
 export async function buildInitialState() {
   let state = initialState;
 
@@ -36,6 +49,13 @@ export async function buildInitialState() {
       });
 
       console.log('user is logged in');
+
+      // load in all of the listings at startup
+      //
+      state = await fetchListing(state, "notes");
+      state = await fetchListing(state, "triaged");
+      state = await fetchListing(state, "bin");
+
       return state;
     } else {
       console.log('no user is logged in');

@@ -1,10 +1,17 @@
 import { html, useState } from '/lib/preact/mod.js';
-import { ensureListingLoaded } from '/js/NoteUtils.js';
+import Net from '/js/Net.js';
 
-function TriageDropDown({ noteId, categories, pigment, cardFullHeightFn, onSelectCallback }) {
+function TriageDropDown({ dispatch, noteId, categories, pigment, cardFullHeightFn }) {
   const [showList, setShowList] = useState(false);
 
-  ensureListingLoaded('triaged');
+  function onTriageCategorySelected(category) {
+    Net.post(`/api/notes/${ noteId }/triage`, category).then(triagedNote => {
+      dispatch({
+        type: 'note-triaged',
+        note: triagedNote
+      });
+    });
+  }
 
   function onToggleShowList(e) {
     e.preventDefault();
@@ -16,12 +23,12 @@ function TriageDropDown({ noteId, categories, pigment, cardFullHeightFn, onSelec
     e.preventDefault();
 
     const value = e.target.textContent;
-    const cat = categories.find(c => c.title === value);
+    const category = categories.find(c => c.title === value);
 
     setShowList(!showList);
 
-    if (cat) {
-      onSelectCallback(noteId, cat);
+    if (category) {
+      onTriageCategorySelected(category);
     }
   }
 

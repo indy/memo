@@ -1,18 +1,16 @@
 import { html, useState } from '/lib/preact/mod.js';
 
 import Net from '/js/Net.js';
-import { ensureListingLoaded, notePigment, partitionPinnedNotes } from '/js/NoteUtils.js';
+import { finishedEditingCallback, getNoteById, notePigment, partitionPinnedNotes } from '/js/NoteUtils.js';
 import { svgBin, svgPinned, svgUnpinned } from '/js/svgIcons.js';
 import { useStateValue } from '/js/StateProvider.js';
 
-import BaseNote from '/js/components/BaseNote.js';
 import Card from '/js/components/Card.js';
+import { ButtonDelete, ButtonEdit, ButtonPinned } from '/js/components/CardButtons.js';
 import { TriageDropDown } from '/js/components/TriageDropDown.js';
 
 function Notes() {
   const [state, dispatch] = useStateValue();
-
-  ensureListingLoaded('notes');
 
   const notes = state.listing.notes;
 
@@ -45,53 +43,19 @@ function NoteListItem(note, categories) {
   const resource = 'notes';
   const pigment = notePigment(note.id);
 
-  function onPinnedClicked(e) {
-    e.preventDefault();
-
-    let data = {
-      ...note,
-      pinned: !note.pinned
-    };
-    Net.put(`/api/notes/${note.id}`, data).then(n => {
-      dispatch({
-        type: 'note-pinstate-updated',
-        note: n
-      });
-    });
-  }
-
-  function onDeleteClicked(e) {
-    e.preventDefault();
-    Net.post(`/api/notes/${ note.id }/bin`, {}).then(n => {
-      dispatch({
-        type: 'note-binned',
-        note
-      });
-    });
-  }
-
-  function onTriageCategorySelected(noteId, category) {
-    // console.log(noteId);
-    Net.post(`/api/notes/${ noteId }/triage`, category).then(triagedNote => {
-      dispatch({
-        type: 'note-triaged',
-        note: triagedNote
-      });
-    });
-  }
-
-  return html`<${Card} note=${note} resource=${resource} pigment=${pigment} fullHeight=${fullHeight}>
+  return html`<${Card} note=${note}
+                       resource=${resource}
+                       pigment=${pigment}
+                       fullHeight=${fullHeight}>
                   <${TriageDropDown} noteId=${note.id}
                                      categories=${categories}
                                      pigment=${pigment}
-                                     cardFullHeightFn=${setFullHeight}
-                                     onSelectCallback=${onTriageCategorySelected}/>
-                  <button class="${pigment.classHi} button card-action-cell" onClick=${ onPinnedClicked }>${ note.pinned ? svgPinned(`--fg-clock-${pigment.numString}`) : svgUnpinned(`--fg-clock-${pigment.numString}`) }</button>
-                  <button class="${pigment.classHi} button card-action-cell" onClick=${ onDeleteClicked }>${ svgBin(`--fg-clock-${pigment.numString}`) }</button>
+                                     dispatch=${dispatch}
+                                     cardFullHeightFn=${setFullHeight}/>
+                  <${ButtonPinned} note=${ note } pigment=${ pigment } dispatch=${dispatch} />
+                  <${ButtonDelete} note=${ note } pigment=${ pigment } dispatch=${dispatch} noteKind=${ resource } />
               </${Card}>`;
 }
-
-
 
 function noteFromText(text) {
   const lines = text.split("\n");
@@ -164,7 +128,36 @@ function CreateNoteForm() {
 }
 
 function Note({ id }) {
-  return html`<${BaseNote} id=${id} noteKind='notes'/>`;
+  const noteKind = 'notes';
+
+  const [state, dispatch] = useStateValue();
+  const [editing, setEditing] = useState(false);
+  const [fullHeight, setFullHeight] = useState(true);
+
+  if (!state.listing[noteKind]) {
+    // isg todo: fix this
+    return html`<div></div>`;
+  }
+
+  const noteId = parseInt(id, 10);
+  const note = getNoteById(state, noteKind, noteId);
+  const pigment = notePigment(id);
+
+  return html`<${Card} onFinishedEditing=${ finishedEditingCallback(dispatch, note, setEditing) }
+                       editing=${editing}
+                       note=${note}
+                       resource=${noteKind}
+                       pigment=${pigment}
+                       fullHeight=${fullHeight}
+                       cardClass="wider-card">
+                  <${ButtonEdit} pigment=${ pigment } editing=${ editing } callback=${ setEditing }/>
+                  <${TriageDropDown} noteId=${note.id}
+                                     categories=${state.categories}
+                                     pigment=${pigment}
+                                     cardFullHeightFn=${setFullHeight}/>
+                  <${ButtonPinned} note=${ note } pigment=${ pigment } dispatch=${dispatch} />
+                  <${ButtonDelete} note=${ note } pigment=${ pigment } dispatch=${dispatch} noteKind=${ noteKind } />
+              </${Card}>`;
 }
 
 export { Notes, Note };
