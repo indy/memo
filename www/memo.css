@@ -512,7 +512,6 @@ hr {
 
 .card-common {
   font-family: Tahoma, Geneva, sans-serif;
-  box-shadow: 0px 2px 2px 1px var(--card-shadow);
   border-radius: var(--ui-element-border-radius);
   display: inline-block;
   vertical-align: top;

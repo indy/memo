@@ -48,7 +48,6 @@ function augmentSettingsWithCssModifierParameters(settings) {
       save_on_bg: [127, 70, 80],
       save_on_fg: [53.2, 17.4, 3.4],
       bg_section_controls: [0, 0, 90],
-      card_shadow: [0, 0, 83.5],
       divider: [0, 0, 77.7],
 
       saturation: 60.2,
@@ -80,7 +79,6 @@ function augmentSettingsWithCssModifierParameters(settings) {
       save_on_bg: [127, 90, 40],
 
       bg_section_controls: [bgh, bgs, bgl + 20],
-      card_shadow: [bgh, bgs, bgl - 4],
       divider: [bgh, bgs, bgl - 13],
 
       saturation: 70,
@@ -113,7 +111,6 @@ function declareCssVariables(settings, wasmInterface) {
   updateVariable('save_on_bg');
   updateVariable('save_on_fg');
   updateVariable('bg_section_controls');
-  updateVariable('card_shadow');
   updateVariable('divider');
 
   let hue, rgb, index;

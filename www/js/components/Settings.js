@@ -5,6 +5,8 @@ import { useWasmInterface } from '/js/WasmInterfaceProvider.js';
 import { cssColourHi } from '/js/AppUtils.js';
 
 import { Logout } from '/js/components/Login.js';
+import Card from '/js/components/Card.js';
+import { ButtonEdit } from '/js/components/CardButtons.js';
 
 function Settings() {
   const [state, dispatch] = useStateValue();
@@ -50,7 +52,6 @@ function Settings() {
       <${ColourControl} onInput=${updateColourTriple} value=${settings.save_on_bg} id='save_on_bg'/>
       <${ColourControl} onInput=${updateColourTriple} value=${settings.save_on_fg} id='save_on_fg'/>
       <${ColourControl} onInput=${updateColourTriple} value=${settings.bg_section_controls} id='bg_section_controls'/>
-      <${ColourControl} onInput=${updateColourTriple} value=${settings.card_shadow} id='card_shadow'/>
       <${ColourControl} onInput=${updateColourTriple} value=${settings.divider} id='divider'/>
       <hr/>
       <h2>Card colours</h2>
@@ -115,6 +116,7 @@ function Settings() {
              max="100"
              onInput=${ (e) => updateColourScalar(e, 'lightnessHi2') }/>
       <hr/>
+<div class="card-holder">
       <${SampleCard} pigment="12"/>
       <${SampleCard} pigment="01"/>
       <${SampleCard} pigment="02"/>
@@ -127,6 +129,7 @@ function Settings() {
       <${SampleCard} pigment="09"/>
       <${SampleCard} pigment="10"/>
       <${SampleCard} pigment="11"/>
+</div>
     </div>`;
 }
 
@@ -171,15 +174,24 @@ function ColourControl({ onInput, value, id }) {
 }
 
 function SampleCard({ pigment }) {
-  return html`<div class="card pigment-clock-${pigment} darken-border">
-                <div class="card-body">
-                  <div class="card-action" style="border-bottom: 1px solid ${cssColourHi(pigment)};">
-                    <button class="pigment-clock-${pigment}-hi button">Sample Button</button>
-                  </div>
-                  <h3>Sample Card</h3>
-                  <p>Sample Text</p>
-                </div>
-              </div>`;
+  const note = {
+    title: "test title",
+    content: "test content",
+    age: "test age"
+  };
+
+  const pig = {
+    numString: pigment,
+    class: `pigment-clock-${pigment}`,
+    classHi: `pigment-clock-${pigment}-hi`
+  };
+  const editing = false;
+  function callback() {
+  }
+
+  return html`<${Card} note=${note} pigment=${pig} editing=${editing}>
+                <${ButtonEdit} pigment=${pig} editing=${editing} callback=${callback}/>
+              </${Card}>`;
 }
 
 export { Settings };

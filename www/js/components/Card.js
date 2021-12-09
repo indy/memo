@@ -1,6 +1,6 @@
 import { html, route, useState } from '/lib/preact/mod.js';
 import { parseNoteContent, parseCardTitle } from '/js/NoteUtils.js';
-import { cssColourHi, cssColourHi2 } from '/js/AppUtils.js';
+import { cssColour, cssColourHi, cssColourHi2 } from '/js/AppUtils.js';
 
 export default function Card({ note, pigment, resource, fullHeight, children, cardClass, editing, onFinishedEditing }) {
   const href = `/${resource}/${note.id}`;
@@ -68,7 +68,7 @@ export default function Card({ note, pigment, resource, fullHeight, children, ca
     classes += ' card-height-limited';
   }
 
-  return html`<div class=${classes} onClick=${ onCardClicked }>
+  return html`<div style="box-shadow: 0px 2px 25px 4px ${cssColour(pigment.numString)};" class=${classes} onClick=${ onCardClicked }>
                 <div class="card-body">
                   <div class="card-action" style="border-bottom: 1px solid ${cssColourHi(pigment.numString)};">
                     <div class="card-action-row">
