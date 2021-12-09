@@ -85,9 +85,9 @@ export default function Card({ note, pigment, resource, fullHeight, children, ca
 
                   ${ editing && html`
                     <div class="edit">
-                      <input type="text" value=${localState.userTitle} onInput=${ handleChangeTitle }/>
+                      <input class="full-width" type="text" value=${localState.userTitle} onInput=${ handleChangeTitle }/>
                       <br/><br/>
-                      <textarea type="text" value=${ localState.userContent } onInput=${ handleChangeContent }/>
+                      <textarea class="full-width" type="text" value=${ localState.userContent } onInput=${ handleChangeContent }/>
                       <br/>
                       <button class="${pigment.classHi} button card-action-cell" onClick=${ onSaveClicked }>Save</button>
 
