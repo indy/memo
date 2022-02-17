@@ -1,78 +1,89 @@
 import { html, route, useState } from '/lib/preact/mod.js';
+
 import { useStateValue } from '/js/StateProvider.js';
 
 import Net from '/js/Net.js';
 
 function Login() {
-  const [appState, dispatch] = useStateValue();
+    const [appState, dispatch] = useStateValue();
 
-  if (appState.user) {
-    route('/', true);
-  };
+    if (appState.user) {
+        route('/', true);
+    };
 
-  const [state, setState] = useState({
-    'login-email': '',
-    'login-password': '',
-    'register-username': '',
-    'register-magic-word': '',
-    'register-email': '',
-    'register-password': '',
-    'register-password2': ''
-  });
-
-  const handleChangeEvent = (event) => {
-    const target = event.target;
-    const name = target.name;
-    const value = target.value;
-
-    const newState = { ...state };
-    newState[name] = value;
-    setState(newState);
-  };
-
-  function loginCallback(user) {
-    dispatch({
-      type: 'user-set',
-      user
+    const [state, setState] = useState({
+        'login-email': '',
+        'login-password': '',
+        'register-username': '',
+        'register-magic-word': '',
+        'register-email': '',
+        'register-password': '',
+        'register-password2': ''
     });
-    // once the state has a user, the Login page will redirect to '/'
-  }
 
-  function handleLoginSubmit(event) {
-    event.preventDefault();
+    const handleChangeEvent = (event) => {
+        const target = event.target;
+        const name = target.name;
+        const value = target.value;
 
-    Net.post('api/auth', {
-      email: state['login-email'],
-      password: state['login-password']
-    }).then(user => {
-      loginCallback(user);
-    });
-  };
+        const newState = { ...state };
+        newState[name] = value;
+        setState(newState);
+    };
 
-  function okToSendRegistration() {
-    return state['register-username'].length > 0 &&
-      state['register-email'].length > 0 &&
-      state['register-magic-word'].length > 0 &&
-      state['register-password'].length > 0 &&
-      state['register-password'] === state['register-password-2'];
-  }
+    async function loginCallback(user) {
+        let categories = await Net.get("/api/categories");
+        let notes = await Net.get(`/api/notes`);
+        let triaged = await Net.get(`/api/triaged`);
+        let bin = await Net.get(`/api/bin`);
 
-  function handleRegisterSubmit(event) {
-    if (okToSendRegistration()) {
-      Net.post('api/users', {
-        username: state['register-username'],
-        email: state['register-email'],
-        password: state['register-password'],
-        magic_word: state['register-magic-word']
-      }).then(user => {
-        loginCallback(user);
-      });
+        dispatch({
+            type: 'user-login',
+            user,
+            categories,
+            notes,
+            triaged,
+            bin
+        });
+
+        // once the state has a user, the Login page will redirect to '/'
     }
 
-    event.preventDefault();
-  };
+    function handleLoginSubmit(event) {
+        event.preventDefault();
 
-  return html`
+        Net.post('api/auth', {
+            email: state['login-email'],
+            password: state['login-password']
+        }).then(user => {
+            loginCallback(user);
+        });
+    };
+
+    function okToSendRegistration() {
+        return state['register-username'].length > 0 &&
+            state['register-email'].length > 0 &&
+            state['register-magic-word'].length > 0 &&
+            state['register-password'].length > 0 &&
+            state['register-password'] === state['register-password-2'];
+    }
+
+    function handleRegisterSubmit(event) {
+        if (okToSendRegistration()) {
+            Net.post('api/users', {
+                username: state['register-username'],
+                email: state['register-email'],
+                password: state['register-password'],
+                magic_word: state['register-magic-word']
+            }).then(user => {
+                loginCallback(user);
+            });
+        }
+
+        event.preventDefault();
+    };
+
+    return html`
     <section>
       <h1>Login</h1>
       <form onSubmit=${ handleLoginSubmit }>
@@ -128,23 +139,20 @@ function Login() {
 }
 
 function Logout() {
-  const [state, dispatch] = useStateValue();
+    const [state, dispatch] = useStateValue();
 
-  // actix session.purge should be fixed in master:
-  // - https://github.com/actix/actix-extras/issues/87
+    // actix session.purge should be fixed in master:
+    // - https://github.com/actix/actix-extras/issues/87
 
-  const handleLogout = (event) => {
-    Net.delete('api/auth', {}).then(() => {
-      dispatch({
-        type: 'user-set',
-        user: undefined
-      });
-      route('/login', true);
-    });
-    event.preventDefault();
-  };
+    const handleLogout = (event) => {
+        Net.delete('api/auth', {}).then(() => {
+            dispatch({ type: 'user-logout' });
+            route('/login', true);
+        });
+        event.preventDefault();
+    };
 
-  return html`
+    return html`
     <section>
       <form onSubmit=${ handleLogout }>
         <input type="submit" value="Logout"/>

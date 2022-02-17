@@ -62,19 +62,6 @@ export function notePigment(noteId) {
   }
 }
 
-export async function fetchListing(dispatch, resource, url) {
-  const listing = await Net.get(url || `/api/${resource}`);
-  setListing(dispatch, resource, listing);
-}
-
-export function setListing(dispatch, resource, listing) {
-  dispatch({
-    type: 'listing-set',
-    resource,
-    listing
-  });
-}
-
 // simple parsing for urls and newlines only. A stupid regexp approach will do here,
 // but write an actual lexer+parser+compiler if other markup is required
 //

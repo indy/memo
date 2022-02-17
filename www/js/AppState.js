@@ -54,11 +54,27 @@ export const reducer = (state, action) => {
         activeTopBarMenuItem
       };
     }
-  case 'user-set':
-    return {
-      ...state,
-      user: action.user
-    };
+  case 'user-login': {
+
+      let newState = { ...state };
+      let listing = newState.listing;
+
+      newState.user = action.user;
+
+      newState.categories = action.categories;
+
+      newState.listing['notes'] = action.notes.map(calculateAge);
+      newState.listing['triaged'] = action.triaged.map(calculateAge);
+      newState.listing['bin'] = action.bin.map(calculateAge);
+
+      return newState;
+  }
+  case 'user-logout': {
+      return {
+          ...state,
+          user: undefined
+      }
+  }
   case 'category-deleted':
     {
       return {
@@ -71,13 +87,6 @@ export const reducer = (state, action) => {
       ...state,
       categories: action.categories
     };
-  case 'listing-set':
-    {
-      let listing = getListingFromState(state);
-      listing[action.resource] = action.listing.map(calculateAge);
-
-      return updateStateWithListing(state, listing);
-    }
   case 'listing-note-appended':
     {
       let listing = getListingFromState(state);

@@ -2,6 +2,7 @@ import { initialState, reducer } from '/js/AppState.js';
 import { html, Router, Route, Link, route } from '/lib/preact/mod.js';
 
 import Net from '/js/Net.js';
+
 import { WasmInterfaceProvider }        from '/js/WasmInterfaceProvider.js';
 import { useStateValue, StateProvider } from '/js/StateProvider.js';
 import { augmentSettingsWithCssModifierParameters } from '/js/ColourCreator.js';
@@ -13,62 +14,48 @@ import { Login, Logout } from '/js/components/Login.js';
 import { Settings } from '/js/components/Settings.js';
 
 
-
-async function fetchListing(state, resource) {
-  let listing = await Net.get(`/api/${resource}`);
-  state = reducer(state, {
-    type: 'listing-set',
-    resource,
-    listing
-  });
-
-  return state;
-}
-
 export async function buildInitialState() {
-  let state = initialState;
+    let state = initialState;
 
-  state.settings = augmentSettingsWithCssModifierParameters(state.settings);
+    state.settings = augmentSettingsWithCssModifierParameters(state.settings);
 
-  try {
-    // logged in
-    let user = await Net.get("/api/users");
+    try {
+        // logged in
+        let user = await Net.get("/api/users");
 
-    if (user) {
-      // update initial state with user
-      //
-      state = reducer(state, {
-        type: 'user-set',
-        user
-      });
+        if (user) {
+            // update initial state with user
+            //
 
-      let categories = await Net.get("/api/categories");
-      state = reducer(state, {
-        type: 'categories-set',
-        categories
-      });
+            let categories = await Net.get("/api/categories");
+            let notes = await Net.get(`/api/notes`);
+            let triaged = await Net.get(`/api/triaged`);
+            let bin = await Net.get(`/api/bin`);
 
-      console.log('user is logged in');
+            state = reducer(state, {
+                type: 'user-login',
+                user,
+                categories,
+                notes,
+                triaged,
+                bin
+            });
 
-      // load in all of the listings at startup
-      //
-      state = await fetchListing(state, "notes");
-      state = await fetchListing(state, "triaged");
-      state = await fetchListing(state, "bin");
+            console.log('user is logged in');
 
-      return state;
-    } else {
-      console.log('no user is logged in');
-      return state;
+            return state;
+        } else {
+            console.log('no user is logged in');
+            return state;
+        }
+    } catch(err) {
+        console.log('no user is logged in');
+        return state;
     }
-  } catch(err) {
-    console.log('no user is logged in');
-    return state;
-  }
 }
 
 export function App(state, wasmInterface) {
-  return html`
+    return html`
     <${WasmInterfaceProvider} wasmInterface=${wasmInterface}>
       <${StateProvider} initialState=${state} reducer=${reducer}>
         <${AppUI}/>
@@ -78,41 +65,41 @@ export function App(state, wasmInterface) {
 }
 
 function TopBarMenu(props) {
-  const [state] = useStateValue();
+    const [state] = useStateValue();
 
-  function loggedStatus() {
-    let status = '';
+    function loggedStatus() {
+        let status = '';
 
-    let user = state.user;
-    if (user) {
-      status += user.username;
-      if (user.admin) {
-        status += ` (${user.admin.db_name})`;
-      }
-    } else {
-      status = 'Login';
+        let user = state.user;
+        if (user) {
+            status += user.username;
+            if (user.admin) {
+                status += ` (${user.admin.db_name})`;
+            }
+        } else {
+            status = 'Login';
+        }
+
+        return status;
     }
 
-    return status;
-  }
+    function loggedLink() {
+        return state.user ? "/settings" : "/login";
+    }
 
-  function loggedLink() {
-    return state.user ? "/settings" : "/login";
-  }
+    let notesExtraClass='';
+    let triagedExtraClass='';
+    let binExtraClass='';
 
-  let notesExtraClass='';
-  let triagedExtraClass='';
-  let binExtraClass='';
+    if (state.activeTopBarMenuItem === 'notes') {
+        notesExtraClass = 'top-bar-menuitem-active';
+    } else if (state.activeTopBarMenuItem === 'triaged') {
+        triagedExtraClass = 'top-bar-menuitem-active';
+    } else if (state.activeTopBarMenuItem === 'bin') {
+        binExtraClass = 'top-bar-menuitem-active';
+    }
 
-  if (state.activeTopBarMenuItem === 'notes') {
-    notesExtraClass = 'top-bar-menuitem-active';
-  } else if (state.activeTopBarMenuItem === 'triaged') {
-    triagedExtraClass = 'top-bar-menuitem-active';
-  } else if (state.activeTopBarMenuItem === 'bin') {
-    binExtraClass = 'top-bar-menuitem-active';
-  }
-
-  return html`
+    return html`
     <div id='top-bar-menu' class="hr">
       <${Link} href=${ loggedLink() } id="login-menuitem" class="pigment-inherit">${ loggedStatus() }</${Link}>
       <${Link} class='top-bar-menuitem pigment-notes ${notesExtraClass}' href=${'/'}>Notes</${Link}>
@@ -123,23 +110,23 @@ function TopBarMenu(props) {
 }
 
 function AppUI(props) {
-  const [state, dispatch] = useStateValue();
+    const [state, dispatch] = useStateValue();
 
-  function handleRoute(e) {
-    dispatch({
-      type: 'route-changed',
-      url: e.url
-    });
-    if (e.url !== '/login') {
-      // all other pages require the user to be logged in
-      if (!state.user) {
-        console.log("redirecting to /login because user is not logged in");
-        route('/login', true);
-      }
+    function handleRoute(e) {
+        dispatch({
+            type: 'route-changed',
+            url: e.url
+        });
+        if (e.url !== '/login') {
+            // all other pages require the user to be logged in
+            if (!state.user) {
+                console.log("redirecting to /login because user is not logged in");
+                route('/login', true);
+            }
+        }
     }
-  }
 
-  return html`
+    return html`
     <div id='memo-app'>
       <${TopBarMenu}/>
       <div id="app-content">
