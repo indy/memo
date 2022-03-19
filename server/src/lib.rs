@@ -27,7 +27,7 @@ pub use crate::error::{Error, Result};
 use actix_files as fs;
 use actix_session::CookieSession;
 use actix_web::cookie::SameSite;
-use actix_web::middleware::errhandlers::ErrorHandlers;
+use actix_web::middleware::ErrorHandlers;
 use actix_web::{http, web, App, HttpServer};
 use dotenv;
 use std::env;
@@ -108,11 +108,11 @@ pub async fn start_server() -> Result<()> {
             .handler(http::StatusCode::NOT_FOUND, api::not_found);
 
         App::new()
-            .data(pool.clone())
-            .data(ServerConfig {
+            .app_data(web::Data::new(pool.clone()))
+            .app_data(web::Data::new(ServerConfig {
                 registration_magic_word: registration_magic_word.clone(),
-            })
-            .data(web::JsonConfig::default().limit(1024 * 1024))
+            }))
+            .app_data(web::JsonConfig::default().limit(1024 * 1024))
             .wrap(session_store)
             .wrap(error_handlers)
             .service(api::public_api("/api"))

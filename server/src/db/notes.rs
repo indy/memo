@@ -54,7 +54,7 @@ impl From<Note> for interop::Note {
             title: n.title,
             content: n.content,
             pinned: n.pinned,
-            created_at: n.created_at
+            created_at: n.created_at,
         }
     }
 }
@@ -68,7 +68,7 @@ impl From<Note> for interop::TriagedNote {
             triaged_at: n.triaged_at.expect("triaged_at is required"),
             category_id: n.category_id.expect("category_id is required"),
             pinned: n.pinned,
-            created_at: n.created_at
+            created_at: n.created_at,
         }
     }
 }
@@ -83,7 +83,7 @@ pub(crate) async fn create(
         "INSERT INTO notes(user_id, title, content)
          VALUES ($1, $2, $3)
          RETURNING $table_fields",
-        &[&user_id, &note.title, &note.content]
+        &[&user_id, &note.title, &note.content],
     )
     .await
 }
@@ -101,7 +101,7 @@ pub(crate) async fn all_non_triaged(db_pool: &Pool, user_id: Key) -> Result<Vec<
          FROM   notes n
          WHERE  n.user_id = $1 and n.triaged_at is null and n.deleted_at is null
          ORDER BY n.id desc",
-        &[&user_id]
+        &[&user_id],
     )
     .await
 }

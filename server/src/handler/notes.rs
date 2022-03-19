@@ -31,7 +31,6 @@ use futures::{StreamExt, TryStreamExt};
 #[allow(unused_imports)]
 use tracing::info;
 
-
 fn sanitize_content(content: &str) -> String {
     // for some stupid reason sharing a link from Twitter adds either ?s=09 or &s=09 to the end of a url
     //
@@ -62,18 +61,17 @@ pub async fn bookmark(
 
     // iterate over multipart stream
     while let Ok(Some(mut field)) = payload.try_next().await {
-        let content_type = field.content_disposition().unwrap();
-        if let Some(name) = content_type.get_name() {
-            while let Some(chunk) = field.next().await {
-                let data = chunk.unwrap();
-                let value = std::str::from_utf8(&data).unwrap();
+        while let Some(chunk) = field.next().await {
+            let data = chunk.unwrap();
+            let value = std::str::from_utf8(&data).unwrap();
 
-                if name == "title" {
-                    proto_note.title = value.to_string();
-                }
-                if name == "content" {
-                    proto_note.content = sanitize_content(value);
-                }
+            let name = field.content_disposition().get_name().unwrap();
+
+            if name == "title" {
+                proto_note.title = value.to_string();
+            }
+            if name == "content" {
+                proto_note.content = sanitize_content(value);
             }
         }
     }
@@ -85,7 +83,7 @@ pub async fn bookmark(
 
 fn redirect_to(location: &str) -> HttpResponse {
     HttpResponse::Found()
-        .header(http::header::LOCATION, location)
+        .append_header((http::header::LOCATION, location))
         .finish()
 }
 
