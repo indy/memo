@@ -28,7 +28,7 @@ pub enum Error {
     TokioPostgres(tokio_postgres::error::Error),
     TokioPostgresMapper(tokio_pg_mapper::Error),
     DeadPool(deadpool_postgres::PoolError),
-    DeadPoolConfig(deadpool_postgres::config::ConfigError),
+    DeadPoolCreatePool(deadpool_postgres::CreatePoolError),
     Actix(actix_web::Error),
     IO(std::io::Error),
     Var(std::env::VarError),

@@ -29,6 +29,7 @@ use actix_session::CookieSession;
 use actix_web::cookie::SameSite;
 use actix_web::middleware::ErrorHandlers;
 use actix_web::{http, web, App, HttpServer};
+use deadpool_postgres::{Pool, Runtime};
 use dotenv;
 use std::env;
 use tokio_postgres::NoTls;
@@ -85,7 +86,7 @@ pub async fn start_server() -> Result<()> {
 
     let session_signing_key = env::var("SESSION_SIGNING_KEY")?;
 
-    let pool: deadpool_postgres::Pool = cfg.create_pool(NoTls)?;
+    let pool: Pool = cfg.create_pool(Some(Runtime::Tokio1), NoTls)?;
 
     // crash on startup if no database connection can be established
     let _ = pool.get().await?;
