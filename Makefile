@@ -8,8 +8,8 @@
 # 	Build release versions in staging directory
 # 	$ make staging
 #
-# 	(only run this on Peru)
-# 	$ make peru-publish
+# 	Copy staging directory onto peru
+# 	$ make upload
 #
 ########################################
 
@@ -50,10 +50,8 @@ server-release: $(SERVER_FOLDER)/target/release/$(SERVER_BINARY)
 
 staging: clean-staging staging/www/index.html staging/$(SERVER_BINARY) staging/systemd/isg-memo.sh staging/www/$(CLIENT_WASM_BG)
 
-# only run this on the server
-peru-publish: staging
-	mkdir -p ~/work/memo
-	rsync -avzh staging/. ~/work/memo
+upload: staging
+	rsync -avzhe ssh staging/. indy@indy.io:/home/indy/work/memo
 
 clean-staging:
 	rm -rf staging
