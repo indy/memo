@@ -321,6 +321,10 @@ textarea {
    ==========================================================================
 */
 
+.svg-fill-colour {
+  fill: var(--fg);
+}
+
 a:link.pigment-inherit,
 a:visited.pigment-inherit {
   color: inherit;
