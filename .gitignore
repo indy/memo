@@ -1,5 +1,5 @@
 .env
-dist
+staging
 
 www/client_yew_bg.wasm
 www/client_yew.js
