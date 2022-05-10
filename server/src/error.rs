@@ -43,6 +43,9 @@ pub enum Error {
     InvalidKind,
     InvalidResource,
     RadixConversion,
+    Sqlite(rusqlite::Error),
+    SqliteMigration(rusqlite_migration::Error),
+    SqlitePool(r2d2::Error),
     Other,
 }
 

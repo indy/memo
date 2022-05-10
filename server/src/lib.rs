@@ -37,6 +37,8 @@ use tracing::Level;
 use tracing::{error, info};
 use tracing_subscriber::FmtSubscriber;
 
+use r2d2_sqlite::SqliteConnectionManager;
+
 const SIGNING_KEY_SIZE: usize = 32;
 
 pub struct ServerConfig {
@@ -76,6 +78,12 @@ pub async fn start_server() -> Result<()> {
     let postgres_password = env_var_string("POSTGRES_PASSWORD")?;
     let cookie_secure = env_var_bool("COOKIE_OVER_HTTPS_ONLY")?;
 
+    let sqlite_db = env_var_string("SQLITE_DB")?;
+    db::sqlite_migrations::migration_check(&sqlite_db)?;
+
+    let sqlite_manager = SqliteConnectionManager::file(&sqlite_db);
+    let sqlite_pool = r2d2::Pool::new(sqlite_manager)?;
+
     let cfg = deadpool_postgres::Config {
         user: Some(String::from(&postgres_user)),
         password: Some(String::from(&postgres_password)),
@@ -90,6 +98,8 @@ pub async fn start_server() -> Result<()> {
 
     // crash on startup if no database connection can be established
     let _ = pool.get().await?;
+
+    // db::sqlite_migrations::migrate_from_postgres(sqlite_pool.clone(), pool.clone()).await?;
 
     let server = HttpServer::new(move || {
         let mut signing_key: &mut [u8] = &mut [0; SIGNING_KEY_SIZE];

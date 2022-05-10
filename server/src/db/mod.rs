@@ -18,4 +18,6 @@
 pub mod categories;
 pub mod notes;
 mod pg;
+pub mod sqlite;
+pub mod sqlite_migrations;
 pub mod users;

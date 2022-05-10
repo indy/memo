@@ -169,3 +169,34 @@ where
 
     Ok(vec)
 }
+
+pub async fn many<S>(
+    db_pool: &Pool,
+    sql_query: &str,
+    sql_params: &[&(dyn tokio_postgres::types::ToSql + std::marker::Sync)],
+) -> Result<Vec<S>>
+where
+    S: FromTokioPostgresRow,
+{
+    let client: Client = db_pool.get().await.map_err(Error::DeadPool)?;
+
+    let _stmt = sql_query;
+    let _stmt = _stmt.replace("$table_fields", &S::sql_table_fields());
+    let stmt = match client.prepare(&_stmt).await {
+        Ok(stmt) => stmt,
+        Err(e) => {
+            error!("{}", e);
+            error!("QUERY: {}", &sql_query);
+            return Err(Error::from(e));
+        }
+    };
+
+    let vec = client
+        .query(&stmt, sql_params)
+        .await?
+        .iter()
+        .map(|row| S::from_row_ref(row).unwrap())
+        .collect::<Vec<S>>();
+
+    Ok(vec)
+}
