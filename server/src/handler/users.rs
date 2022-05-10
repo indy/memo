@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+use crate::db::sqlite::SqlitePool;
 use crate::db::users as db;
 use crate::error::{Error, Result};
 use crate::interop::users as interop;
 use crate::session;
 use actix_web::web::{Data, Json};
 use actix_web::HttpResponse;
-use deadpool_postgres::Pool;
 use rand::{thread_rng, RngCore};
 use std::env;
 
@@ -30,13 +30,13 @@ use tracing::info;
 
 pub async fn login(
     login: Json<interop::LoginCredentials>,
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
     info!("login");
     let login = login.into_inner();
 
-    let (id, password, mut user) = db::login(&db_pool, &login).await?;
+    let (id, password, mut user) = db::login(&db_pool, &login)?;
 
     // compare hashed password of matched_user with the given LoginCredentials
     let is_valid_password = verify_encoded(&password, login.password.as_bytes())?;
@@ -60,7 +60,10 @@ pub async fn login(
     }
 }
 
-pub async fn logout(_db_pool: Data<Pool>, session: actix_session::Session) -> Result<HttpResponse> {
+pub async fn logout(
+    _db_pool: Data<SqlitePool>,
+    session: actix_session::Session,
+) -> Result<HttpResponse> {
     info!("logout");
     session.purge();
 
@@ -76,13 +79,13 @@ fn verify_encoded(encoded: &str, pwd: &[u8]) -> Result<bool> {
 
 pub async fn create_user(
     registration: Json<interop::Registration>,
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     session: actix_session::Session,
 ) -> ::std::result::Result<HttpResponse, actix_web::Error> {
     let registration = registration.into_inner();
     let hash = hash_password(&registration.password)?;
 
-    let (id, user) = db::create(&db_pool, &registration, &hash).await?;
+    let (id, user) = db::create(&db_pool, &registration, &hash)?;
 
     // save id to the session
     session::save_user_id(&session, id)?;
@@ -92,20 +95,13 @@ pub async fn create_user(
 }
 
 pub async fn get_user(
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
     info!("get_user");
 
     if let Ok(user_id) = session::user_id(&session) {
-        let mut user = db::get(&db_pool, user_id).await?;
-
-        if user_id == 1 {
-            user.admin = Some(interop::Admin {
-                db_name: env::var("POSTGRES_DB")?,
-            })
-        }
-
+        let user = db::get(&db_pool, user_id)?;
         Ok(HttpResponse::Ok().json(user))
     } else {
         Ok(HttpResponse::Ok().json(()))

@@ -17,6 +17,8 @@
 
 use crate::error::Result;
 use rusqlite::{Row, ToSql};
+#[allow(unused_imports)]
+use tracing::info;
 
 pub type SqlitePool = r2d2::Pool<r2d2_sqlite::SqliteConnectionManager>;
 
@@ -41,24 +43,6 @@ pub(crate) fn one<T>(
         Ok(res)
     } else {
         Err(crate::Error::NotFound)
-    }
-}
-
-pub(crate) fn one_maybe<T>(
-    db_pool: &SqlitePool,
-    sql: &str,
-    params: &[&dyn ToSql],
-    from_row: fn(&Row) -> Result<T>,
-) -> Result<Option<T>> {
-    let conn = db_pool.get()?;
-    let mut stmt = conn.prepare(sql)?;
-    let mut rows = stmt.query(params)?;
-
-    if let Some(row) = rows.next()? {
-        let res: T = from_row(row)?;
-        Ok(Some(res))
-    } else {
-        Ok(None)
     }
 }
 

@@ -25,10 +25,6 @@ pub enum Error {
     NotFound,
     TooManyFound,
     ThreadpoolBlocking(actix_threadpool::BlockingError<std::io::Error>),
-    TokioPostgres(tokio_postgres::error::Error),
-    TokioPostgresMapper(tokio_pg_mapper::Error),
-    DeadPool(deadpool_postgres::PoolError),
-    DeadPoolCreatePool(deadpool_postgres::CreatePoolError),
     Actix(actix_web::Error),
     IO(std::io::Error),
     Var(std::env::VarError),
@@ -53,7 +49,6 @@ impl ResponseError for Error {
     fn error_response(&self) -> HttpResponse {
         match *self {
             Error::NotFound => HttpResponse::NotFound().finish(),
-            Error::DeadPool(ref err) => HttpResponse::InternalServerError().body(err.to_string()),
             _ => HttpResponse::InternalServerError().finish(),
         }
     }

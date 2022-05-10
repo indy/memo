@@ -29,10 +29,8 @@ use actix_session::CookieSession;
 use actix_web::cookie::SameSite;
 use actix_web::middleware::ErrorHandlers;
 use actix_web::{http, web, App, HttpServer};
-use deadpool_postgres::{Pool, Runtime};
 use dotenv;
 use std::env;
-use tokio_postgres::NoTls;
 use tracing::Level;
 use tracing::{error, info};
 use tracing_subscriber::FmtSubscriber;
@@ -72,10 +70,6 @@ pub async fn start_server() -> Result<()> {
     let port = env_var_string("PORT")?;
     let www_path = env_var_string("WWW_PATH")?;
     let registration_magic_word = env_var_string("REGISTRATION_MAGIC_WORD")?;
-    let postgres_db = env_var_string("POSTGRES_DB")?;
-    let postgres_host = env_var_string("POSTGRES_HOST")?;
-    let postgres_user = env_var_string("POSTGRES_USER")?;
-    let postgres_password = env_var_string("POSTGRES_PASSWORD")?;
     let cookie_secure = env_var_bool("COOKIE_OVER_HTTPS_ONLY")?;
 
     let sqlite_db = env_var_string("SQLITE_DB")?;
@@ -84,22 +78,7 @@ pub async fn start_server() -> Result<()> {
     let sqlite_manager = SqliteConnectionManager::file(&sqlite_db);
     let sqlite_pool = r2d2::Pool::new(sqlite_manager)?;
 
-    let cfg = deadpool_postgres::Config {
-        user: Some(String::from(&postgres_user)),
-        password: Some(String::from(&postgres_password)),
-        dbname: Some(String::from(&postgres_db)),
-        host: Some(String::from(&postgres_host)),
-        ..Default::default()
-    };
-
     let session_signing_key = env::var("SESSION_SIGNING_KEY")?;
-
-    let pool: Pool = cfg.create_pool(Some(Runtime::Tokio1), NoTls)?;
-
-    // crash on startup if no database connection can be established
-    let _ = pool.get().await?;
-
-    // db::sqlite_migrations::migrate_from_postgres(sqlite_pool.clone(), pool.clone()).await?;
 
     let server = HttpServer::new(move || {
         let mut signing_key: &mut [u8] = &mut [0; SIGNING_KEY_SIZE];
@@ -119,7 +98,7 @@ pub async fn start_server() -> Result<()> {
             .handler(http::StatusCode::NOT_FOUND, api::not_found);
 
         App::new()
-            .app_data(web::Data::new(pool.clone()))
+            .app_data(web::Data::new(sqlite_pool.clone()))
             .app_data(web::Data::new(ServerConfig {
                 registration_magic_word: registration_magic_word.clone(),
             }))
@@ -166,26 +145,26 @@ fn read_signing_key(signing_key: &mut [u8], session_signing_key: &str) {
 
 fn ascii_hex_digit_to_dec(ascii_hex: u8) -> u8 {
     //
-    // |-------+-----+-----|
-    // | ascii | hex | dec |
-    // |-------+-----+-----|
-    // |     0 |  48 |   0 |
-    // |     1 |  49 |   1 |
-    // |     2 |  50 |   2 |
-    // |     3 |  51 |   3 |
-    // |     4 |  52 |   4 |
-    // |     5 |  53 |   5 |
-    // |     6 |  54 |   6 |
-    // |     7 |  55 |   7 |
-    // |     8 |  56 |   8 |
-    // |     9 |  57 |   9 |
-    // |     a |  97 |  10 |
-    // |     b |  98 |  11 |
-    // |     c |  99 |  12 |
-    // |     d | 100 |  13 |
-    // |     e | 101 |  14 |
-    // |     f | 102 |  15 |
-    // |-------+-----+-----|
+    // |-----+-------+-----|
+    // | hex | ascii | dec |
+    // |-----+-------+-----|
+    // |   0 |    48 |   0 |
+    // |   1 |    49 |   1 |
+    // |   2 |    50 |   2 |
+    // |   3 |    51 |   3 |
+    // |   4 |    52 |   4 |
+    // |   5 |    53 |   5 |
+    // |   6 |    54 |   6 |
+    // |   7 |    55 |   7 |
+    // |   8 |    56 |   8 |
+    // |   9 |    57 |   9 |
+    // |   a |    97 |  10 |
+    // |   b |    98 |  11 |
+    // |   c |    99 |  12 |
+    // |   d |   100 |  13 |
+    // |   e |   101 |  14 |
+    // |   f |   102 |  15 |
+    // |-----+-------+-----|
     //
     if ascii_hex >= 48 && ascii_hex <= 57 {
         ascii_hex - 48

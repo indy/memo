@@ -15,259 +15,233 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use super::pg;
+use crate::db::sqlite::{many, one, zero, SqlitePool};
 use crate::error::Result;
 use crate::interop::categories as interop_categories;
 use crate::interop::notes as interop;
 use crate::interop::Key;
-use deadpool_postgres::Pool;
-use serde::{Deserialize, Serialize};
-use tokio_pg_mapper_derive::PostgresMapper;
+
+use rusqlite::{params, Row};
 
 #[allow(unused_imports)]
 use tracing::info;
 
-#[derive(Debug, Deserialize, PostgresMapper, Serialize)]
-#[pg_mapper(table = "notes")]
-struct Note {
-    id: Key,
-    title: String,
-    content: String,
-    created_at: chrono::DateTime<chrono::Utc>,
-    triaged_at: Option<chrono::DateTime<chrono::Utc>>,
-    category_id: Option<Key>,
-    pinned: bool,
+fn from_row(row: &Row) -> Result<interop::Note> {
+    Ok(interop::Note {
+        id: row.get(0)?,
+        title: row.get(1)?,
+        content: row.get(2)?,
+        pinned: row.get(3)?,
+        created_at: row.get(4)?,
+    })
 }
 
-//  pub created_at: chrono::DateTime<chrono::Utc>,
-
-#[derive(Debug, Deserialize, PostgresMapper, Serialize)]
-#[pg_mapper(table = "notes")]
-pub struct NoteId {
-    pub id: Key,
+fn triaged_from_row(row: &Row) -> Result<interop::TriagedNote> {
+    Ok(interop::TriagedNote {
+        id: row.get(0)?,
+        title: row.get(1)?,
+        content: row.get(2)?,
+        triaged_at: row.get(3)?,
+        category_id: row.get(4)?,
+        pinned: row.get(5)?,
+        created_at: row.get(6)?,
+    })
 }
 
-impl From<Note> for interop::Note {
-    fn from(n: Note) -> interop::Note {
-        interop::Note {
-            id: n.id,
-            title: n.title,
-            content: n.content,
-            pinned: n.pinned,
-            created_at: n.created_at,
-        }
-    }
-}
-
-impl From<Note> for interop::TriagedNote {
-    fn from(n: Note) -> interop::TriagedNote {
-        interop::TriagedNote {
-            id: n.id,
-            title: n.title,
-            content: n.content,
-            triaged_at: n.triaged_at.expect("triaged_at is required"),
-            category_id: n.category_id.expect("category_id is required"),
-            pinned: n.pinned,
-            created_at: n.created_at,
-        }
-    }
-}
-
-pub(crate) async fn create(
-    db_pool: &Pool,
+pub(crate) fn create(
+    db_pool: &SqlitePool,
     user_id: Key,
     note: &interop::ProtoNote,
 ) -> Result<interop::Note> {
-    pg::one_from::<Note, interop::Note>(
+    zero(
         db_pool,
-        "INSERT INTO notes(user_id, title, content)
-         VALUES ($1, $2, $3)
-         RETURNING $table_fields",
-        &[&user_id, &note.title, &note.content],
+        r#"
+               insert into notes (user_id, title, content)
+               values(?1, ?2, ?3)
+            "#,
+        params![user_id, &note.title, &note.content],
+    )?;
+
+    one::<interop::Note>(
+        db_pool,
+        r#"
+               select id, title, content, pinned, created_at
+               from notes
+               where user_id = ?1 and content = ?2
+            "#,
+        params![user_id, &note.content],
+        from_row,
     )
-    .await
 }
 
-pub(crate) async fn all_non_triaged(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::Note>> {
-    pg::many_from::<Note, interop::Note>(
+pub(crate) fn all_non_triaged(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<interop::Note>> {
+    many::<interop::Note>(
         db_pool,
-        "SELECT n.id,
-                n.title,
-                n.content,
-                n.triaged_at,
-                n.category_id,
-                n.pinned,
-                n.created_at
-         FROM   notes n
-         WHERE  n.user_id = $1 and n.triaged_at is null and n.deleted_at is null
-         ORDER BY n.id desc",
-        &[&user_id],
+        "SELECT id,
+                title,
+                content,
+                pinned,
+                created_at
+         FROM   notes
+         WHERE  user_id = ?1 and triaged_at is null and deleted_at is null
+         ORDER BY id DESC",
+        params![user_id],
+        from_row,
     )
-    .await
 }
 
-pub(crate) async fn all_binned(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::Note>> {
-    pg::many_from::<Note, interop::Note>(
+pub(crate) fn all_binned(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<interop::Note>> {
+    many::<interop::Note>(
         db_pool,
-        "SELECT n.id,
-                n.title,
-                n.content,
-                n.triaged_at,
-                n.category_id,
-                n.pinned,
-                n.created_at
-         FROM   notes n
-         WHERE  n.user_id = $1 and n.deleted_at is not null
-         ORDER BY n.deleted_at desc",
-        &[&user_id],
+        "SELECT id,
+                title,
+                content,
+                pinned,
+                created_at
+         FROM   notes
+         WHERE  user_id = ?1 and deleted_at is not null
+         ORDER BY deleted_at DESC",
+        params![&user_id],
+        from_row,
     )
-    .await
 }
 
-pub(crate) async fn triaged_all(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::TriagedNote>> {
-    pg::many_from::<Note, interop::TriagedNote>(
+pub(crate) fn triaged_all(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<interop::TriagedNote>> {
+    many::<interop::TriagedNote>(
         db_pool,
-        "SELECT n.id,
-                n.title,
-                n.content,
-                n.triaged_at,
-                n.category_id,
-                n.pinned,
-                n.created_at
-         FROM   notes n
-         WHERE  n.user_id = $1 and n.triaged_at is not null and n.deleted_at is null
-         ORDER BY n.id desc",
-        &[&user_id],
+        "SELECT id,
+                title,
+                content,
+                triaged_at,
+                category_id,
+                pinned,
+                created_at
+         FROM   notes
+         WHERE  user_id = ?1 and triaged_at is not null and deleted_at is null
+         ORDER BY id desc",
+        params![&user_id],
+        triaged_from_row,
     )
-    .await
 }
 
 /// note: get and triaged_get are the same query
 
-pub(crate) async fn get(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<interop::Note> {
-    pg::one_from::<Note, interop::Note>(
+pub(crate) fn get(db_pool: &SqlitePool, user_id: Key, note_id: Key) -> Result<interop::Note> {
+    one::<interop::Note>(
         db_pool,
-        "SELECT n.id,
-                n.title,
-                n.content,
-                n.triaged_at,
-                n.category_id,
-                n.pinned,
-                n.created_at
-         FROM notes n
-         WHERE n.id = $2 AND n.user_id = $1",
-        &[&user_id, &note_id],
+        "SELECT id,
+                title,
+                content,
+                pinned,
+                created_at
+         FROM notes
+         WHERE id = ?2 AND user_id = ?1",
+        params![&user_id, &note_id],
+        from_row,
     )
-    .await
 }
 
-pub(crate) async fn triaged_get(
-    db_pool: &Pool,
+pub(crate) fn triaged_get(
+    db_pool: &SqlitePool,
     user_id: Key,
     note_id: Key,
 ) -> Result<interop::TriagedNote> {
-    pg::one_from::<Note, interop::TriagedNote>(
+    one::<interop::TriagedNote>(
         db_pool,
-        "SELECT n.id,
-                n.title,
-                n.content,
-                n.triaged_at,
-                n.category_id,
-                n.pinned,
-                n.created_at
-        FROM notes n
-        WHERE n.id = $2 AND n.user_id = $1",
-        &[&user_id, &note_id],
+        "SELECT id,
+                title,
+                content,
+                triaged_at,
+                category_id,
+                pinned,
+                created_at
+        FROM notes
+        WHERE id = ?2 AND user_id = ?1",
+        params![&user_id, &note_id],
+        triaged_from_row,
     )
-    .await
 }
 
-pub(crate) async fn triage(
-    db_pool: &Pool,
+pub(crate) fn triage(
+    db_pool: &SqlitePool,
     user_id: Key,
     note_id: Key,
     category: interop_categories::Category,
 ) -> Result<interop::TriagedNote> {
-    pg::one_from::<Note, interop::TriagedNote>(
+    zero(
         db_pool,
-        "UPDATE notes
-         SET triaged_at = now(), category_id = $3
-         WHERE id = $2 and user_id = $1
-         RETURNING $table_fields",
-        &[&user_id, &note_id, &category.id],
-    )
-    .await
+        r#"UPDATE notes
+         SET triaged_at = datetime(), category_id = ?3
+         WHERE id = ?2 and user_id = ?1"#,
+        params![&user_id, &note_id, &category.id],
+    )?;
+    triaged_get(db_pool, user_id, note_id)
 }
 
-pub(crate) async fn untriage(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<interop::Note> {
-    pg::one_from::<Note, interop::Note>(
+pub(crate) fn untriage(db_pool: &SqlitePool, user_id: Key, note_id: Key) -> Result<interop::Note> {
+    zero(
         db_pool,
         "UPDATE notes
          SET triaged_at = null, category_id = null
-         WHERE id = $2 and user_id = $1
-         RETURNING $table_fields",
-        &[&user_id, &note_id],
-    )
-    .await
+         WHERE id = ?2 and user_id = ?1",
+        params![&user_id, &note_id],
+    )?;
+    get(db_pool, user_id, note_id)
 }
 
-pub(crate) async fn bin(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<interop::Note> {
-    pg::one_from::<Note, interop::Note>(
+pub(crate) fn bin(db_pool: &SqlitePool, user_id: Key, note_id: Key) -> Result<interop::Note> {
+    zero(
         db_pool,
-        "UPDATE notes
-         SET deleted_at = now()
-         WHERE id = $2 and user_id = $1
-         RETURNING $table_fields",
-        &[&user_id, &note_id],
-    )
-    .await
+        r#"UPDATE notes
+         SET deleted_at = datetime()
+         WHERE id = ?2 and user_id = ?1"#,
+        params![&user_id, &note_id],
+    )?;
+    get(db_pool, user_id, note_id)
 }
 
-pub(crate) async fn edit(
-    db_pool: &Pool,
+pub(crate) fn edit(
+    db_pool: &SqlitePool,
     user_id: Key,
     note: &interop::ProtoNote,
     note_id: Key,
 ) -> Result<interop::Note> {
-    pg::one_from::<Note, interop::Note>(
+    zero(
         db_pool,
         "UPDATE notes
-         SET title = $3, content = $4, pinned = $5
-         WHERE id = $2 and user_id = $1
-         RETURNING $table_fields",
-        &[&user_id, &note_id, &note.title, &note.content, &note.pinned],
-    )
-    .await
+         SET title = ?3, content = ?4, pinned = ?5
+         WHERE id = ?2 and user_id = ?1",
+        params![&user_id, &note_id, &note.title, &note.content, &note.pinned],
+    )?;
+    get(db_pool, user_id, note_id)
 }
 
-pub(crate) async fn unbin(db_pool: &Pool, user_id: Key, note_id: Key) -> Result<interop::Note> {
-    pg::one_from::<Note, interop::Note>(
+pub(crate) fn unbin(db_pool: &SqlitePool, user_id: Key, note_id: Key) -> Result<interop::Note> {
+    zero(
         db_pool,
         "UPDATE notes
          SET deleted_at = null
-         WHERE id = $2 and user_id = $1
-         RETURNING $table_fields",
+         WHERE id = ?2 and user_id = ?1",
         &[&user_id, &note_id],
-    )
-    .await
+    )?;
+
+    get(db_pool, user_id, note_id)
 }
 
-pub(crate) async fn delete(db_pool: &Pool, user_id: Key, id: Key) -> Result<()> {
-    pg::zero_from(
+pub(crate) fn delete(db_pool: &SqlitePool, user_id: Key, id: Key) -> Result<()> {
+    zero(
         db_pool,
         "DELETE FROM notes
-         WHERE id = $2 AND user_id = $1",
-        &[&user_id, &id],
+         WHERE id = ?2 AND user_id = ?1",
+        params![&user_id, &id],
     )
-    .await
 }
 
-pub(crate) async fn delete_all(db_pool: &Pool, user_id: Key) -> Result<()> {
-    pg::zero_from(
+pub(crate) fn delete_all(db_pool: &SqlitePool, user_id: Key) -> Result<()> {
+    zero(
         db_pool,
         "DELETE FROM notes
-         WHERE user_id = $1 AND deleted_at is not null",
-        &[&user_id],
+         WHERE user_id = ?1 AND deleted_at is not null",
+        params![&user_id],
     )
-    .await
 }

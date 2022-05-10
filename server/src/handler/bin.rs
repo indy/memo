@@ -16,41 +16,44 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use crate::db::notes as db;
+use crate::db::sqlite::SqlitePool;
 use crate::error::Result;
 use crate::interop::IdParam;
 use crate::session;
 use actix_web::web::{Data, Path};
 use actix_web::HttpResponse;
-use deadpool_postgres::Pool;
 
 #[allow(unused_imports)]
 use tracing::info;
 
-pub async fn get_all(db_pool: Data<Pool>, session: actix_session::Session) -> Result<HttpResponse> {
+pub async fn get_all(
+    db_pool: Data<SqlitePool>,
+    session: actix_session::Session,
+) -> Result<HttpResponse> {
     info!("get_all");
 
     let user_id = session::user_id(&session)?;
 
-    let notes = db::all_binned(&db_pool, user_id).await?;
+    let notes = db::all_binned(&db_pool, user_id)?;
 
     Ok(HttpResponse::Ok().json(notes))
 }
 
 pub async fn delete_all(
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
     info!("delete_all");
 
     let user_id = session::user_id(&session)?;
 
-    db::delete_all(&db_pool, user_id).await?;
+    db::delete_all(&db_pool, user_id)?;
 
     Ok(HttpResponse::Ok().json(true))
 }
 
 pub async fn get(
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
@@ -59,13 +62,13 @@ pub async fn get(
     let user_id = session::user_id(&session)?;
     let note_id = params.id;
 
-    let note = db::get(&db_pool, user_id, note_id).await?;
+    let note = db::get(&db_pool, user_id, note_id)?;
 
     Ok(HttpResponse::Ok().json(note))
 }
 
 pub async fn unbin(
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
@@ -74,13 +77,13 @@ pub async fn unbin(
     let user_id = session::user_id(&session)?;
     let note_id = params.id;
 
-    let note = db::unbin(&db_pool, user_id, note_id).await?;
+    let note = db::unbin(&db_pool, user_id, note_id)?;
 
     Ok(HttpResponse::Ok().json(note))
 }
 
 pub async fn delete(
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
@@ -88,7 +91,7 @@ pub async fn delete(
 
     let user_id = session::user_id(&session)?;
 
-    db::delete(&db_pool, user_id, params.id).await?;
+    db::delete(&db_pool, user_id, params.id)?;
 
     Ok(HttpResponse::Ok().json(true))
 }

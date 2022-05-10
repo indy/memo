@@ -15,10 +15,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use crate::db::pg;
-use crate::db::sqlite::{zero, SqlitePool};
 use crate::error::Result;
-use rusqlite::{params, Connection, Row};
+use rusqlite::Connection;
 use rusqlite_migration::{Migrations, M};
 
 /*
@@ -122,6 +120,10 @@ CREATE TABLE IF NOT EXISTS notes (
     Ok(())
 }
 
+/*
+use rusqlite::{params, Row};
+use crate::db::sqlite::{zero, SqlitePool};
+use crate::db::pg;
 use crate::interop::Key;
 use chrono::{Datelike, Timelike};
 use serde::{Deserialize, Serialize};
@@ -278,3 +280,4 @@ fn as_maybe_naive_datetime(
         None
     }
 }
+*/

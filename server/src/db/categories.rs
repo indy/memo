@@ -15,103 +15,96 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use super::pg;
+use crate::db::sqlite::{many, one, zero, SqlitePool};
 use crate::error::Result;
 use crate::interop::categories as interop;
 use crate::interop::Key;
-use deadpool_postgres::Pool;
-use serde::{Deserialize, Serialize};
-use tokio_pg_mapper_derive::PostgresMapper;
+use rusqlite::{params, Row};
 
-#[derive(Deserialize, PostgresMapper, Serialize)]
-#[pg_mapper(table = "categories")]
-struct Category {
-    id: Key,
-    title: String,
-}
-
-impl From<Category> for interop::Category {
-    fn from(category: Category) -> interop::Category {
-        interop::Category {
-            id: category.id,
-            title: category.title,
-        }
-    }
+fn from_row(row: &Row) -> Result<interop::Category> {
+    Ok(interop::Category {
+        id: row.get(0)?,
+        title: row.get(1)?,
+    })
 }
 
 // note: this returns an array of all the user's categories rather
 // than the standard REST thing of the newly created category only
 // (client requires a list of all the categories for the UI)
 //
-pub(crate) async fn create(
-    db_pool: &Pool,
+pub(crate) fn create(
+    db_pool: &SqlitePool,
     user_id: Key,
     category: &interop::ProtoCategory,
 ) -> Result<Vec<interop::Category>> {
-    pg::one_from::<Category, interop::Category>(
+    zero(
         db_pool,
-        "INSERT INTO categories(user_id, title)
-         VALUES ($1, $2)
-         RETURNING $table_fields",
-        &[&user_id, &category.title],
-    )
-    .await?;
+        r#"
+               insert into categories (user_id, title)
+               values(?1, ?2)
+            "#,
+        params![user_id, category.title],
+    )?;
 
-    all(db_pool, user_id).await
+    all(db_pool, user_id)
 }
 
-pub(crate) async fn all(db_pool: &Pool, user_id: Key) -> Result<Vec<interop::Category>> {
-    pg::many_from::<Category, interop::Category>(
+pub(crate) fn all(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<interop::Category>> {
+    many::<interop::Category>(
         db_pool,
-        "SELECT c.id,
-                c.title
-         FROM   categories c
-         WHERE  c.user_id = $1
-         ORDER BY c.title asc",
-        &[&user_id],
+        r#"
+           SELECT id, title
+           FROM categories
+           WHERE user_id = ?1
+           ORDER BY title COLLATE NOCASE ASC
+        "#,
+        params![user_id],
+        from_row,
     )
-    .await
 }
 
-pub(crate) async fn get(
-    db_pool: &Pool,
+pub(crate) fn get(
+    db_pool: &SqlitePool,
     user_id: Key,
     category_id: Key,
 ) -> Result<interop::Category> {
-    pg::one_from::<Category, interop::Category>(
+    one::<interop::Category>(
         db_pool,
-        "SELECT c.id,
-                c.title
-         FROM categories c
-         WHERE c.user_id = $1 AND c.id = $2",
-        &[&user_id, &category_id],
+        r#"
+           select id, title
+           from categories
+           where user_id = ?1 and id = ?2
+        "#,
+        params![user_id, category_id],
+        from_row,
     )
-    .await
 }
 
-pub(crate) async fn edit(
-    db_pool: &Pool,
+pub(crate) fn edit(
+    db_pool: &SqlitePool,
     user_id: Key,
     category: &interop::ProtoCategory,
     category_id: Key,
 ) -> Result<interop::Category> {
-    pg::one_from::<Category, interop::Category>(
+    zero(
         db_pool,
-        "UPDATE categories
-         SET title = $3
-         WHERE id = $2 and user_id = $1
-         RETURNING $table_fields",
-        &[&user_id, &category_id, &category.title],
-    )
-    .await
+        r#"
+           update categories
+           set title = ?1 where user_id = ?2 and id = ?3
+        "#,
+        params![category.title, user_id, category_id],
+    )?;
+    get(db_pool, user_id, category_id)
 }
 
-pub(crate) async fn delete(db_pool: &Pool, user_id: Key, id: Key) -> Result<()> {
-    pg::zero_from(
+pub(crate) fn delete(db_pool: &SqlitePool, user_id: Key, id: Key) -> Result<()> {
+    zero(
         db_pool,
-        "DELETE FROM categories
-         WHERE user_id = $1 AND id = $2",
-        &[&user_id, &id],
+        r#"
+           delete
+           from categories
+           where user_id = ?1 and id = ?2
+        "#,
+        params![user_id, id],
     )
-    .await
 }

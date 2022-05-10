@@ -16,28 +16,31 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use crate::db::notes as db;
+use crate::db::sqlite::SqlitePool;
 use crate::error::Result;
 use crate::interop::IdParam;
 use crate::session;
 use actix_web::web::{Data, Path};
 use actix_web::HttpResponse;
-use deadpool_postgres::Pool;
 
 #[allow(unused_imports)]
 use tracing::info;
 
-pub async fn get_all(db_pool: Data<Pool>, session: actix_session::Session) -> Result<HttpResponse> {
+pub async fn get_all(
+    db_pool: Data<SqlitePool>,
+    session: actix_session::Session,
+) -> Result<HttpResponse> {
     info!("get_all");
 
     let user_id = session::user_id(&session)?;
 
-    let triaged_notes = db::triaged_all(&db_pool, user_id).await?;
+    let triaged_notes = db::triaged_all(&db_pool, user_id)?;
 
     Ok(HttpResponse::Ok().json(triaged_notes))
 }
 
 pub async fn get(
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
@@ -46,13 +49,13 @@ pub async fn get(
     let user_id = session::user_id(&session)?;
     let note_id = params.id;
 
-    let triaged_note = db::triaged_get(&db_pool, user_id, note_id).await?;
+    let triaged_note = db::triaged_get(&db_pool, user_id, note_id)?;
 
     Ok(HttpResponse::Ok().json(triaged_note))
 }
 
 pub async fn untriage(
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
@@ -61,13 +64,13 @@ pub async fn untriage(
     let user_id = session::user_id(&session)?;
     let note_id = params.id;
 
-    let untriaged_note = db::untriage(&db_pool, user_id, note_id).await?;
+    let untriaged_note = db::untriage(&db_pool, user_id, note_id)?;
 
     Ok(HttpResponse::Ok().json(untriaged_note))
 }
 
 pub async fn bin(
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
@@ -76,7 +79,7 @@ pub async fn bin(
     let user_id = session::user_id(&session)?;
     let note_id = params.id;
 
-    let binned_note = db::bin(&db_pool, user_id, note_id).await?;
+    let binned_note = db::bin(&db_pool, user_id, note_id)?;
 
     Ok(HttpResponse::Ok().json(binned_note))
 }

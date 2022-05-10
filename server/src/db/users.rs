@@ -15,75 +15,104 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use super::pg;
+use crate::db::sqlite::{one, zero, SqlitePool};
 use crate::error::Result;
 use crate::interop::users as interop;
 use crate::interop::Key;
-use deadpool_postgres::Pool;
-use serde::{Deserialize, Serialize};
-use tokio_pg_mapper_derive::PostgresMapper;
+use rusqlite::{params, Row};
+use tracing::info;
 
-#[derive(Deserialize, PostgresMapper, Serialize)]
-#[pg_mapper(table = "users")]
-struct User {
-    id: Key,
-    email: String,
-    username: String,
-    password: String,
-}
-
-impl From<User> for interop::User {
-    fn from(user: User) -> interop::User {
-        interop::User {
-            username: user.username,
-            email: user.email,
-            admin: None,
-        }
-    }
-}
-
-pub(crate) async fn login(
-    db_pool: &Pool,
+pub(crate) fn login(
+    db_pool: &SqlitePool,
     login_credentials: &interop::LoginCredentials,
 ) -> Result<(Key, String, interop::User)> {
-    let db_user = pg::one_non_transactional::<User>(
+    fn from_row(row: &Row) -> Result<(Key, String, interop::User)> {
+        let id: Key = row.get(0)?;
+        let password: String = row.get(3)?;
+
+        Ok((
+            id,
+            password.to_string(),
+            interop::User {
+                username: row.get(2)?,
+                email: row.get(1)?,
+                admin: None,
+            },
+        ))
+    }
+
+    one::<(Key, String, interop::User)>(
         db_pool,
-        "SELECT $table_fields
-         FROM users
-         WHERE email = $1",
-        &[&login_credentials.email],
+        r#"
+           select id, email, username, password
+           from users
+           where email = ?1
+        "#,
+        params![login_credentials.email],
+        from_row,
     )
-    .await?;
-
-    let password = String::from(&db_user.password);
-
-    Ok((db_user.id, password, interop::User::from(db_user)))
 }
 
-pub(crate) async fn create(
-    db_pool: &Pool,
+pub(crate) fn create(
+    db_pool: &SqlitePool,
     registration: &interop::Registration,
     hash: &str,
 ) -> Result<(Key, interop::User)> {
-    let db_user = pg::one_non_transactional::<User>(
-        db_pool,
-        "INSERT INTO users ( username, email, password )
-         VALUES ( $1, $2, $3 )
-         RETURNING $table_fields",
-        &[&registration.username, &registration.email, &hash],
-    )
-    .await?;
+    info!("create");
 
-    Ok((db_user.id, interop::User::from(db_user)))
+    // stupid 2 statements: create, then check for update.
+    // later versions of sqlite3 (after 2021-03) have a 'returning' keyword
+    //
+    zero(
+        db_pool,
+        r#"
+           insert into users (email, username, password)
+           values(?1, ?2, ?3)
+        "#,
+        params![registration.email, registration.username, hash],
+    )?;
+
+    fn from_row(row: &Row) -> Result<(Key, interop::User)> {
+        let id: Key = row.get(0)?;
+
+        Ok((
+            id,
+            interop::User {
+                username: row.get(2)?,
+                email: row.get(1)?,
+                admin: None,
+            },
+        ))
+    }
+    one::<(Key, interop::User)>(
+        db_pool,
+        r#"
+           select id, email, username
+           from users
+           where email = ?1 and password = ?2
+        "#,
+        params![registration.email, hash],
+        from_row,
+    )
 }
 
-pub(crate) async fn get(db_pool: &Pool, user_id: Key) -> Result<interop::User> {
-    pg::one_from::<User, interop::User>(
+pub(crate) fn get(db_pool: &SqlitePool, user_id: Key) -> Result<interop::User> {
+    fn from_row(row: &Row) -> Result<interop::User> {
+        Ok(interop::User {
+            username: row.get(1)?,
+            email: row.get(0)?,
+            admin: None,
+        })
+    }
+
+    one::<interop::User>(
         db_pool,
-        "SELECT $table_fields
-         FROM users
-         WHERE id = $1",
-        &[&user_id],
+        r#"
+           select email, username
+           from users
+           where id = ?1
+        "#,
+        params![user_id],
+        from_row,
     )
-    .await
 }

@@ -16,6 +16,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use crate::db::notes as db;
+use crate::db::sqlite::SqlitePool;
 use crate::error::Result;
 use crate::interop::categories as interop_categories;
 use crate::interop::notes as interop;
@@ -25,7 +26,6 @@ use actix_multipart::Multipart;
 use actix_web::web::{Data, Json, Path};
 use actix_web::{http, HttpResponse};
 use chrono::{DateTime, Utc};
-use deadpool_postgres::Pool;
 use futures::{StreamExt, TryStreamExt};
 
 #[allow(unused_imports)]
@@ -45,7 +45,7 @@ fn sanitize_content(content: &str) -> String {
 
 pub async fn bookmark(
     mut payload: Multipart,
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
     info!("bookmark");
@@ -76,7 +76,7 @@ pub async fn bookmark(
         }
     }
 
-    let _note = db::create(&db_pool, user_id, &proto_note).await?;
+    let _note = db::create(&db_pool, user_id, &proto_note)?;
 
     Ok(redirect_to("/"))
 }
@@ -89,7 +89,7 @@ fn redirect_to(location: &str) -> HttpResponse {
 
 pub async fn create(
     note: Json<interop::ProtoNote>,
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
     info!("create");
@@ -99,24 +99,27 @@ pub async fn create(
 
     info!("{:?}", &note);
 
-    let note = db::create(&db_pool, user_id, &note).await?;
+    let note = db::create(&db_pool, user_id, &note)?;
 
     Ok(HttpResponse::Ok().json(note))
 }
 
-pub async fn get_all(db_pool: Data<Pool>, session: actix_session::Session) -> Result<HttpResponse> {
+pub async fn get_all(
+    db_pool: Data<SqlitePool>,
+    session: actix_session::Session,
+) -> Result<HttpResponse> {
     info!("get_all");
 
     let user_id = session::user_id(&session)?;
 
-    let notes = db::all_non_triaged(&db_pool, user_id).await?;
+    let notes = db::all_non_triaged(&db_pool, user_id)?;
 
     Ok(HttpResponse::Ok().json(notes))
 }
 
 pub async fn triage(
     category: Json<interop_categories::Category>,
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
@@ -126,13 +129,13 @@ pub async fn triage(
     let note_id = params.id;
     let category = category.into_inner();
 
-    let triaged_note = db::triage(&db_pool, user_id, note_id, category).await?;
+    let triaged_note = db::triage(&db_pool, user_id, note_id, category)?;
 
     Ok(HttpResponse::Ok().json(triaged_note))
 }
 
 pub async fn bin(
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
@@ -141,13 +144,13 @@ pub async fn bin(
     let user_id = session::user_id(&session)?;
     let note_id = params.id;
 
-    let binned_note = db::bin(&db_pool, user_id, note_id).await?;
+    let binned_note = db::bin(&db_pool, user_id, note_id)?;
 
     Ok(HttpResponse::Ok().json(binned_note))
 }
 
 pub async fn get(
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
@@ -156,14 +159,14 @@ pub async fn get(
     let user_id = session::user_id(&session)?;
     let note_id = params.id;
 
-    let note = db::get(&db_pool, user_id, note_id).await?;
+    let note = db::get(&db_pool, user_id, note_id)?;
 
     Ok(HttpResponse::Ok().json(note))
 }
 
 pub async fn edit(
     note: Json<interop::ProtoNote>,
-    db_pool: Data<Pool>,
+    db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
 ) -> Result<HttpResponse> {
@@ -173,7 +176,7 @@ pub async fn edit(
     let note_id = params.id;
     let note = note.into_inner();
 
-    let note = db::edit(&db_pool, user_id, &note, note_id).await?;
+    let note = db::edit(&db_pool, user_id, &note, note_id)?;
 
     Ok(HttpResponse::Ok().json(note))
 }
