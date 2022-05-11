@@ -37,8 +37,9 @@ pub(crate) fn create(
     user_id: Key,
     category: &interop::ProtoCategory,
 ) -> Result<Vec<interop::Category>> {
+    let conn = db_pool.get()?;
     zero(
-        db_pool,
+        &conn,
         r#"
                insert into categories (user_id, title)
                values(?1, ?2)
@@ -50,8 +51,9 @@ pub(crate) fn create(
 }
 
 pub(crate) fn all(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<interop::Category>> {
+    let conn = db_pool.get()?;
     many::<interop::Category>(
-        db_pool,
+        &conn,
         r#"
            SELECT id, title
            FROM categories
@@ -68,8 +70,9 @@ pub(crate) fn get(
     user_id: Key,
     category_id: Key,
 ) -> Result<interop::Category> {
+    let conn = db_pool.get()?;
     one::<interop::Category>(
-        db_pool,
+        &conn,
         r#"
            select id, title
            from categories
@@ -86,8 +89,9 @@ pub(crate) fn edit(
     category: &interop::ProtoCategory,
     category_id: Key,
 ) -> Result<interop::Category> {
+    let conn = db_pool.get()?;
     zero(
-        db_pool,
+        &conn,
         r#"
            update categories
            set title = ?1 where user_id = ?2 and id = ?3
@@ -98,8 +102,9 @@ pub(crate) fn edit(
 }
 
 pub(crate) fn delete(db_pool: &SqlitePool, user_id: Key, id: Key) -> Result<()> {
+    let conn = db_pool.get()?;
     zero(
-        db_pool,
+        &conn,
         r#"
            delete
            from categories

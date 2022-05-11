@@ -16,25 +16,23 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use crate::error::Result;
-use rusqlite::{Row, ToSql};
+use rusqlite::{Connection, Row, ToSql};
 #[allow(unused_imports)]
 use tracing::info;
 
 pub type SqlitePool = r2d2::Pool<r2d2_sqlite::SqliteConnectionManager>;
 
-pub(crate) fn zero(db_pool: &SqlitePool, sql: &str, params: &[&dyn ToSql]) -> Result<()> {
-    let conn = db_pool.get()?;
+pub(crate) fn zero(conn: &Connection, sql: &str, params: &[&dyn ToSql]) -> Result<()> {
     conn.execute(sql, params)?;
     Ok(())
 }
 
 pub(crate) fn one<T>(
-    db_pool: &SqlitePool,
+    conn: &Connection,
     sql: &str,
     params: &[&dyn ToSql],
     from_row: fn(&Row) -> Result<T>,
 ) -> Result<T> {
-    let conn = db_pool.get()?;
     let mut stmt = conn.prepare(sql)?;
     let mut rows = stmt.query(params)?;
 
@@ -47,12 +45,11 @@ pub(crate) fn one<T>(
 }
 
 pub(crate) fn many<T>(
-    db_pool: &SqlitePool,
+    conn: &Connection,
     sql: &str,
     params: &[&dyn ToSql],
     from_row: fn(&Row) -> Result<T>,
 ) -> Result<Vec<T>> {
-    let conn = db_pool.get()?;
     let mut stmt = conn.prepare(sql)?;
     let mut rows = stmt.query(params)?;
 

@@ -53,30 +53,34 @@ pub(crate) fn create(
     user_id: Key,
     note: &interop::ProtoNote,
 ) -> Result<interop::Note> {
+    let conn = db_pool.get()?;
+
     zero(
-        db_pool,
+        &conn,
         r#"
-               insert into notes (user_id, title, content)
-               values(?1, ?2, ?3)
-            "#,
+           insert into notes (user_id, title, content)
+           values(?1, ?2, ?3)
+        "#,
         params![user_id, &note.title, &note.content],
     )?;
 
     one::<interop::Note>(
-        db_pool,
+        &conn,
         r#"
-               select id, title, content, pinned, created_at
-               from notes
-               where user_id = ?1 and content = ?2
-            "#,
+           select id, title, content, pinned, created_at
+           from notes
+           where user_id = ?1 and content = ?2
+        "#,
         params![user_id, &note.content],
         from_row,
     )
 }
 
 pub(crate) fn all_non_triaged(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<interop::Note>> {
+    let conn = db_pool.get()?;
+
     many::<interop::Note>(
-        db_pool,
+        &conn,
         "SELECT id,
                 title,
                 content,
@@ -91,8 +95,10 @@ pub(crate) fn all_non_triaged(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<
 }
 
 pub(crate) fn all_binned(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<interop::Note>> {
+    let conn = db_pool.get()?;
+
     many::<interop::Note>(
-        db_pool,
+        &conn,
         "SELECT id,
                 title,
                 content,
@@ -107,8 +113,10 @@ pub(crate) fn all_binned(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<inter
 }
 
 pub(crate) fn triaged_all(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<interop::TriagedNote>> {
+    let conn = db_pool.get()?;
+
     many::<interop::TriagedNote>(
-        db_pool,
+        &conn,
         "SELECT id,
                 title,
                 content,
@@ -127,8 +135,10 @@ pub(crate) fn triaged_all(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<inte
 /// note: get and triaged_get are the same query
 
 pub(crate) fn get(db_pool: &SqlitePool, user_id: Key, note_id: Key) -> Result<interop::Note> {
+    let conn = db_pool.get()?;
+
     one::<interop::Note>(
-        db_pool,
+        &conn,
         "SELECT id,
                 title,
                 content,
@@ -146,8 +156,10 @@ pub(crate) fn triaged_get(
     user_id: Key,
     note_id: Key,
 ) -> Result<interop::TriagedNote> {
+    let conn = db_pool.get()?;
+
     one::<interop::TriagedNote>(
-        db_pool,
+        &conn,
         "SELECT id,
                 title,
                 content,
@@ -168,19 +180,43 @@ pub(crate) fn triage(
     note_id: Key,
     category: interop_categories::Category,
 ) -> Result<interop::TriagedNote> {
+    // paranoid wrap in a transaction because if there's anything wrong with
+    // the UPDATE it might succeed and the subsequent SELECT may end up failing
+
+    let mut conn = db_pool.get()?;
+    let tx = conn.transaction()?;
+
     zero(
-        db_pool,
+        &tx,
         r#"UPDATE notes
          SET triaged_at = datetime(), category_id = ?3
          WHERE id = ?2 and user_id = ?1"#,
         params![&user_id, &note_id, &category.id],
     )?;
-    triaged_get(db_pool, user_id, note_id)
+    let res = one::<interop::TriagedNote>(
+        &tx,
+        "SELECT id,
+                title,
+                content,
+                triaged_at,
+                category_id,
+                pinned,
+                created_at
+        FROM notes
+        WHERE id = ?2 AND user_id = ?1",
+        params![&user_id, &note_id],
+        triaged_from_row,
+    )?;
+
+    tx.commit()?;
+
+    Ok(res)
 }
 
 pub(crate) fn untriage(db_pool: &SqlitePool, user_id: Key, note_id: Key) -> Result<interop::Note> {
+    let conn = db_pool.get()?;
     zero(
-        db_pool,
+        &conn,
         "UPDATE notes
          SET triaged_at = null, category_id = null
          WHERE id = ?2 and user_id = ?1",
@@ -190,8 +226,9 @@ pub(crate) fn untriage(db_pool: &SqlitePool, user_id: Key, note_id: Key) -> Resu
 }
 
 pub(crate) fn bin(db_pool: &SqlitePool, user_id: Key, note_id: Key) -> Result<interop::Note> {
+    let conn = db_pool.get()?;
     zero(
-        db_pool,
+        &conn,
         r#"UPDATE notes
          SET deleted_at = datetime()
          WHERE id = ?2 and user_id = ?1"#,
@@ -206,8 +243,9 @@ pub(crate) fn edit(
     note: &interop::ProtoNote,
     note_id: Key,
 ) -> Result<interop::Note> {
+    let conn = db_pool.get()?;
     zero(
-        db_pool,
+        &conn,
         "UPDATE notes
          SET title = ?3, content = ?4, pinned = ?5
          WHERE id = ?2 and user_id = ?1",
@@ -217,8 +255,9 @@ pub(crate) fn edit(
 }
 
 pub(crate) fn unbin(db_pool: &SqlitePool, user_id: Key, note_id: Key) -> Result<interop::Note> {
+    let conn = db_pool.get()?;
     zero(
-        db_pool,
+        &conn,
         "UPDATE notes
          SET deleted_at = null
          WHERE id = ?2 and user_id = ?1",
@@ -229,8 +268,9 @@ pub(crate) fn unbin(db_pool: &SqlitePool, user_id: Key, note_id: Key) -> Result<
 }
 
 pub(crate) fn delete(db_pool: &SqlitePool, user_id: Key, id: Key) -> Result<()> {
+    let conn = db_pool.get()?;
     zero(
-        db_pool,
+        &conn,
         "DELETE FROM notes
          WHERE id = ?2 AND user_id = ?1",
         params![&user_id, &id],
@@ -238,8 +278,9 @@ pub(crate) fn delete(db_pool: &SqlitePool, user_id: Key, id: Key) -> Result<()> 
 }
 
 pub(crate) fn delete_all(db_pool: &SqlitePool, user_id: Key) -> Result<()> {
+    let conn = db_pool.get()?;
     zero(
-        db_pool,
+        &conn,
         "DELETE FROM notes
          WHERE user_id = ?1 AND deleted_at is not null",
         params![&user_id],

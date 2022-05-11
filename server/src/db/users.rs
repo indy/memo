@@ -41,8 +41,9 @@ pub(crate) fn login(
         ))
     }
 
+    let conn = db_pool.get()?;
     one::<(Key, String, interop::User)>(
-        db_pool,
+        &conn,
         r#"
            select id, email, username, password
            from users
@@ -60,11 +61,13 @@ pub(crate) fn create(
 ) -> Result<(Key, interop::User)> {
     info!("create");
 
+    let conn = db_pool.get()?;
+
     // stupid 2 statements: create, then check for update.
     // later versions of sqlite3 (after 2021-03) have a 'returning' keyword
     //
     zero(
-        db_pool,
+        &conn,
         r#"
            insert into users (email, username, password)
            values(?1, ?2, ?3)
@@ -85,7 +88,7 @@ pub(crate) fn create(
         ))
     }
     one::<(Key, interop::User)>(
-        db_pool,
+        &conn,
         r#"
            select id, email, username
            from users
@@ -105,8 +108,9 @@ pub(crate) fn get(db_pool: &SqlitePool, user_id: Key) -> Result<interop::User> {
         })
     }
 
+    let conn = db_pool.get()?;
     one::<interop::User>(
-        db_pool,
+        &conn,
         r#"
            select email, username
            from users
