@@ -23,7 +23,6 @@ use crate::session;
 use actix_web::web::{Data, Json};
 use actix_web::HttpResponse;
 use rand::{thread_rng, RngCore};
-use std::env;
 
 #[allow(unused_imports)]
 use tracing::info;
@@ -36,19 +35,13 @@ pub async fn login(
     info!("login");
     let login = login.into_inner();
 
-    let (id, password, mut user) = db::login(&db_pool, &login)?;
+    let (id, password, user) = db::login(&db_pool, &login)?;
 
     // compare hashed password of matched_user with the given LoginCredentials
     let is_valid_password = verify_encoded(&password, login.password.as_bytes())?;
     if is_valid_password {
         // save id to the session
         session::save_user_id(&session, id)?;
-
-        if id == 1 {
-            user.admin = Some(interop::Admin {
-                db_name: env::var("POSTGRES_DB")?,
-            })
-        }
 
         info!("login accepted!!");
         // send response
