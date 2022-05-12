@@ -25,6 +25,7 @@ use actix_files::NamedFile;
 use actix_web::dev;
 use actix_web::middleware::ErrorHandlerResponse;
 use actix_web::web::{delete, get, post, put, scope};
+use std::env;
 use tracing::warn;
 
 pub fn public_api(mount_point: &str) -> actix_web::Scope {
@@ -82,7 +83,8 @@ pub fn public_api(mount_point: &str) -> actix_web::Scope {
 
 pub fn bad_request<B>(res: dev::ServiceResponse<B>) -> actix_web::Result<ErrorHandlerResponse<B>> {
     warn!("bad request: {:?} {:?}", &res.status(), &res.request());
-    let new_resp = NamedFile::open("www/errors/400.html")?
+    let www = env::var("WWW_PATH").expect("unable to resolve WWW_PATH");
+    let new_resp = NamedFile::open(format!("{}/errors/400.html", www))?
         .set_status_code(res.status())
         .into_response(res.request())
         .map_into_right_body();
@@ -91,7 +93,8 @@ pub fn bad_request<B>(res: dev::ServiceResponse<B>) -> actix_web::Result<ErrorHa
 
 pub fn not_found<B>(res: dev::ServiceResponse<B>) -> actix_web::Result<ErrorHandlerResponse<B>> {
     warn!("not found: {:?} {:?}", &res.status(), &res.request());
-    let new_resp = NamedFile::open("www/errors/404.html")?
+    let www = env::var("WWW_PATH").expect("unable to resolve WWW_PATH");
+    let new_resp = NamedFile::open(format!("{}/errors/404.html", www))?
         .set_status_code(res.status())
         .into_response(res.request())
         .map_into_right_body();
@@ -106,7 +109,9 @@ pub fn internal_server_error<B>(
         &res.status(),
         &res.request()
     );
-    let new_resp = NamedFile::open("www/errors/500.html")?
+
+    let www = env::var("WWW_PATH").expect("unable to resolve WWW_PATH");
+    let new_resp = NamedFile::open(format!("{}/errors/500.html", www))?
         .set_status_code(res.status())
         .into_response(res.request())
         .map_into_right_body();
