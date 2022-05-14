@@ -48,6 +48,7 @@ var precacheConfig = [
     "/js/components/Login.js",
     "/js/components/Notes.js",
     "/js/components/Settings.js",
+    "/js/components/TopBarMenu.js",
     "/js/components/TriageDropDown.js",
     "/js/components/TriagedNotes.js",
 

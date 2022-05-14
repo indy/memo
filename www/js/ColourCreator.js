@@ -51,10 +51,11 @@ function augmentSettingsWithCssModifierParameters(settings) {
             divider: [0, 0, 77.7],
 
             saturation: 60.2,
-            lightnessFg: 30.0,
             lightnessBg: 90.0,
-            lightnessHi: 80.0,
-            lightnessHi2: 70.0
+            lightnessBg1: 80.0,
+            lightnessBg2: 70.0,
+            lightnessFg: 30.0,
+            lightnessFg1: 70.0
         }
     } else {
 
@@ -82,14 +83,25 @@ function augmentSettingsWithCssModifierParameters(settings) {
             divider: [bgh, bgs, bgl - 13],
 
             saturation: 70,
-            lightnessFg: 60.0,
             lightnessBg: 30.0,
-            lightnessHi: 25.0,
-            lightnessHi2: 15.0
+            lightnessBg1: 25.0,
+            lightnessBg2: 15.0,
+            lightnessFg: 60.0,
+            lightnessFg1: 15.0
         }
     }
     return s;
 }
+
+/*
+| suffix | use                        | example      |
+|--------+----------------------------+--------------|
+| fg     | normal text                | clock-05-fg  |
+| fg1    | secondary text             | clock-05-fg1 |
+| bg     | card colour                | clock-05-bg  |
+| bg1    | button background          | clock-05-bg1 |
+| bg2    | button background on hover | clock-05-bg2 |
+ */
 
 function declareCssVariables(settings, wasmInterface) {
     let root = document.body;
@@ -117,16 +129,20 @@ function declareCssVariables(settings, wasmInterface) {
         index = indexAsString(i);
 
         rgb = wasmInterface.RgbFromHsl([hue, settings.saturation, settings.lightnessFg]);
-        root.style.setProperty(`--fg-clock-${index}`, rgb);
+        root.style.setProperty(`--clock-${index}-fg`, rgb);
+
+        rgb = wasmInterface.RgbFromHsl([hue, settings.saturation, settings.lightnessFg1]);
+        root.style.setProperty(`--clock-${index}-fg1`, rgb);
 
         rgb = wasmInterface.RgbFromHsl([hue, settings.saturation, settings.lightnessBg]);
-        root.style.setProperty(`--bg-clock-${index}`, rgb);
+        root.style.setProperty(`--clock-${index}-bg`, rgb);
 
-        rgb = wasmInterface.RgbFromHsl([hue, settings.saturation, settings.lightnessHi]);
-        root.style.setProperty(`--bg-clock-${index}-hi`, rgb);
+        rgb = wasmInterface.RgbFromHsl([hue, settings.saturation, settings.lightnessBg1]);
+        root.style.setProperty(`--clock-${index}-bg1`, rgb);
 
-        rgb = wasmInterface.RgbFromHsl([hue, settings.saturation, settings.lightnessHi2]);
-        root.style.setProperty(`--bg-clock-${index}-hi2`, rgb);
+        rgb = wasmInterface.RgbFromHsl([hue, settings.saturation, settings.lightnessBg2]);
+        root.style.setProperty(`--clock-${index}-bg2`, rgb);
+
     }
 
     function updateDerivedVariable(cssLabel, copyFrom) {
@@ -134,13 +150,13 @@ function declareCssVariables(settings, wasmInterface) {
         root.style.setProperty(cssLabel, source);
     }
 
-    updateDerivedVariable('--bg-notes', '--bg-clock-06');
-    updateDerivedVariable('--bg-triaged', '--bg-clock-12');
-    updateDerivedVariable('--bg-bin', '--bg-clock-02');
+    updateDerivedVariable('--bg-notes', '--clock-06-bg');
+    updateDerivedVariable('--bg-triaged', '--clock-12-bg');
+    updateDerivedVariable('--bg-bin', '--clock-02-bg');
 
-    updateDerivedVariable('--fg-notes', '--fg-clock-06');
-    updateDerivedVariable('--fg-triaged', '--fg-clock-12');
-    updateDerivedVariable('--fg-bin', '--fg-clock-02');
+    updateDerivedVariable('--fg-notes', '--clock-06-fg');
+    updateDerivedVariable('--fg-triaged', '--clock-12-fg');
+    updateDerivedVariable('--fg-bin', '--clock-02-fg');
 
     updateDerivedVariable('--textarea-border', '--textarea-bg');
 }

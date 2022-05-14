@@ -52,13 +52,13 @@ export function notePigment(noteId) {
   const pigmentNum = (noteId % 12) + 1;
   const pigmentNumString = pigmentNum < 10 ? `0${pigmentNum}` : `${pigmentNum}`;
   const pigmentClass = `pigment-clock-${pigmentNumString}`;
-  const pigmentClassHi = `${pigmentClass}-hi`;
+  const pigmentClassAlt = `${pigmentClass}-alt`;
 
   return {
     num: pigmentNum,
     numString: pigmentNumString,
     class: pigmentClass,
-    classHi: pigmentClassHi
+    classAlt: pigmentClassAlt
   }
 }
 

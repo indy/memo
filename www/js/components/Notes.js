@@ -2,7 +2,6 @@ import { html, useState } from '/lib/preact/mod.js';
 
 import Net from '/js/Net.js';
 import { finishedEditingCallback, getNoteById, notePigment, partitionPinnedNotes } from '/js/NoteUtils.js';
-import { svgBin, svgPinned, svgUnpinned } from '/js/svgIcons.js';
 import { useStateValue } from '/js/StateProvider.js';
 
 import Card from '/js/components/Card.js';

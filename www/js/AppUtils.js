@@ -1,13 +1,13 @@
 
-export function cssColour(numString) {
-  return `var(--bg-clock-${numString})`;
+export function cssColourBg(numString) {
+  return `var(--clock-${numString}-bg)`;
 }
 
-export function cssColourHi(numString) {
-  return `var(--bg-clock-${numString}-hi)`;
+export function cssColourBg1(numString) {
+  return `var(--clock-${numString}-bg1)`;
 
 }
 
-export function cssColourHi2(numString) {
-  return `var(--bg-clock-${numString}-hi2)`;
+export function cssColourFg1(numString) {
+  return `var(--clock-${numString}-fg1)`;
 }

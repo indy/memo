@@ -64,8 +64,8 @@ function NoteListItem(note) {
   }
 
   return html`<${Card} note=${note} resource=${resource} pigment=${pigment}>
-                  <button class="${pigment.classHi} button card-action-cell" onClick=${ onUndeleteClicked }>Undelete</button>
-                  <button class="${pigment.classHi} button card-action-cell" onClick=${ onDeleteClicked }>Really Delete</button>
+                  <button class="${pigment.classAlt} button card-action-cell" onClick=${ onUndeleteClicked }>Undelete</button>
+                  <button class="${pigment.classAlt} button card-action-cell" onClick=${ onDeleteClicked }>Really Delete</button>
               </${Card}>`;
 }
 

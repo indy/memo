@@ -21,8 +21,8 @@ function ButtonDelete({ note, noteKind, pigment, dispatch }) {
     });
   }
 
-  return html`<button class="${pigment.classHi} button card-action-cell" onClick=${ onDeleteClicked }>
-                ${ svgBin(`--fg-clock-${pigment.numString}`) }
+  return html`<button class="${pigment.classAlt} button card-action-cell" onClick=${ onDeleteClicked }>
+                ${ svgBin(`--clock-${pigment.numString}-fg`) }
               </button>`;
 }
 
@@ -43,9 +43,9 @@ function ButtonPinned({ note, pigment, dispatch }) {
     });
   }
 
-  const icon = note.pinned ? svgPinned(`--fg-clock-${pigment.numString}`) : svgUnpinned(`--fg-clock-${pigment.numString}`);
+  const icon = note.pinned ? svgPinned(`--clock-${pigment.numString}-fg`) : svgUnpinned(`--clock-${pigment.numString}-fg`);
 
-  return html`<button class="${pigment.classHi} button card-action-cell" onClick=${ onPinnedClicked }>
+  return html`<button class="${pigment.classAlt} button card-action-cell" onClick=${ onPinnedClicked }>
                 ${ icon }
               </button>`;
 }
@@ -60,7 +60,7 @@ function ButtonEdit({ pigment, editing, callback}) {
 
   let editButtonText = editing ? "Cancel Editing" : "Edit";
 
-  return html`<button class="${pigment.classHi} button card-action-cell" onClick=${ onEditClicked }>
+  return html`<button class="${pigment.classAlt} button card-action-cell" onClick=${ onEditClicked }>
                 ${ editButtonText }
               </button>`;
 }
@@ -77,7 +77,7 @@ function ButtonUntriage({ note, pigment, dispatch}) {
     });
   }
 
-  return html`<button class="${pigment.classHi} button card-action-cell"
+  return html`<button class="${pigment.classAlt} button card-action-cell"
                       onClick=${ onUntriageClicked }>
                 Untriage
               </button>`;

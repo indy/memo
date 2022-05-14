@@ -33,19 +33,19 @@ function TriageDropDown({ dispatch, noteId, categories, pigment, cardFullHeightF
   }
 
   function buildTriageButton() {
-    return html`<button class="${pigment.classHi} button button-triage"
+    return html`<button class="${pigment.classAlt} button button-triage"
                         onClick=${ onToggleShowList }>
                   <span class="button-title-ellipses">Triage</span>
                 </button>`;
   }
 
   function buildTriageList() {
-    let categoryOptions = categories.map(c => html`<li class="triage-dropdown-item  ${pigment.classHi}"
+    let categoryOptions = categories.map(c => html`<li class="triage-dropdown-item  ${pigment.classAlt}"
                                                        onClick=${ onTriageDropDownSelect }>
                                                      ${c.title}
                                                    </li>`);
     return html`<div>
-                  <button class="${pigment.classHi} button"
+                  <button class="${pigment.classAlt} button"
                           onClick=${ onToggleShowList }>
                     Cancel
                   </button>

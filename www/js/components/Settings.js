@@ -2,7 +2,6 @@ import { html, useState } from '/lib/preact/mod.js';
 import { useStateValue } from '/js/StateProvider.js';
 import { declareCssVariables } from '/js/ColourCreator.js';
 import { useWasmInterface } from '/js/WasmInterfaceProvider.js';
-import { cssColourHi } from '/js/AppUtils.js';
 
 import { Logout } from '/js/components/Login.js';
 import Card from '/js/components/Card.js';
@@ -183,7 +182,7 @@ function SampleCard({ pigment }) {
   const pig = {
     numString: pigment,
     class: `pigment-clock-${pigment}`,
-    classHi: `pigment-clock-${pigment}-hi`
+    classAlt: `pigment-clock-${pigment}-alt`
   };
   const editing = false;
   function callback() {
