@@ -66,7 +66,9 @@ function TriagedCategory({ categoryNotes, categoryTitle }) {
   }
 
   const [pin, unpin] = partitionPinnedNotes(categoryNotes);
-  const pinnedListing = pin.map(n => NoteListItem(n));
+  const pinnedListing = pin.map((n, i) => {
+    return NoteListItem(n, i === 0);
+  });
   const unpinnedListing = unpin.map(n => NoteListItem(n));
 
   const numNotes = html`<span class='category-num-notes'>${ categoryNotes.length }</span>`;
@@ -76,7 +78,9 @@ function TriagedCategory({ categoryNotes, categoryTitle }) {
                   <h1 class="pad-left-1rem" onClick=${ toggleShow }>${ svgMinimise() }${ categoryTitle } ${numNotes}</h1>
                   ${ pinnedListing.length > 0 && html`
                     <div class="card-holder-pinned">
-                      ${ pinnedListing }
+                      <div class="card-holder-pinned-inner">
+                        ${ pinnedListing }
+                      </div>
                     </div>
                  `}
                   <div class="card-holder">
@@ -159,13 +163,13 @@ function NewCategoryForm() {
 </form>`;
 }
 
-function NoteListItem(note) {
+function NoteListItem(note, nomargin) {
   const [state, dispatch] = useStateValue();
 
   const resource = 'triaged';
   const pigment = notePigment(note.id);
 
-  return html`<${Card} note=${note} resource=${resource} pigment=${pigment}>
+  return html`<${Card} note=${note} resource=${resource} pigment=${pigment} nomargin=${nomargin}>
                   <${ButtonUntriage} note=${ note } pigment=${pigment} dispatch=${dispatch} />
                   <${ButtonPinned} note=${ note } pigment=${ pigment } dispatch=${dispatch} />
                   <${ButtonDelete} note=${ note } pigment=${ pigment } dispatch=${dispatch} noteKind=${ resource } />

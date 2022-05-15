@@ -37,17 +37,18 @@ function augmentSettingsWithCssModifierParameters(settings) {
             ...settings,
 
             bg: [46.5, 19.2, 95.7],
-            fg: [53.2, 17.4, 3.4],
-            fg1: [0, 0, 40.7],
-            fg_inactive: [0, 0, 59.8],
             bg1: [85.9, 4.5, 93.9],
             bg2: [46.2, 20.1, 92],
+            fg: [53.2, 17.4, 3.4],
+            fg1: [0, 0, 40.7],
+
+            fg_inactive: [0, 0, 59.8],
             textarea_bg: [85.9, 100, 99.8],
             textarea_fg: [53.2, 17.4, 3.4],
 
             save_on_bg: [127, 70, 80],
             save_on_fg: [53.2, 17.4, 3.4],
-            bg_section_controls: [0, 0, 90],
+
             divider: [0, 0, 77.7],
 
             saturation: 60.2,
@@ -59,27 +60,27 @@ function augmentSettingsWithCssModifierParameters(settings) {
         }
     } else {
 
-        let bgh = 220;
+        let bgh = 240;
         let bgs = 60;
-        let bgl = 40;
+        let bgl = 10;
 
 
         s = {
             ...settings,
 
             bg: [bgh, bgs, bgl],
-            fg: [bgh, 100, 10],
-            fg1: [bgh, bgs + 40, 20],
+            bg1: [bgh, bgs, bgl + 10],
+            bg2: [bgh, bgs, bgl + 17],
+            fg: [bgh, 100, 70],
+            fg1: [bgh, 100, 50],
+
             fg_inactive: [bgh, bgs + 40, 20],
-            bg1: [bgh, bgs, bgl + 14],
-            bg2: [bgh, bgs, bgl + 7],
             textarea_bg: [0, 0, 12],
             textarea_fg: [236, 2.7, 69],
 
             save_on_fg: [220, 10, 80],
             save_on_bg: [127, 90, 40],
 
-            bg_section_controls: [bgh, bgs, bgl + 20],
             divider: [bgh, bgs, bgl - 13],
 
             saturation: 70,

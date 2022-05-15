@@ -14,7 +14,9 @@ function Notes() {
   const notes = state.listing.notes;
 
   const [pin, unpin] = notes ? partitionPinnedNotes(notes) : [[], []];
-  const pinnedListing = pin.map(n => NoteListItem(n, state.categories));
+  const pinnedListing = pin.map((n, i) => {
+    return NoteListItem(n, state.categories, i === 0);
+  });
   const unpinnedListing = unpin.map(n => NoteListItem(n, state.categories));
 
   const hasCategories = state.categories.length > 0;
@@ -26,7 +28,9 @@ function Notes() {
       <${CreateNoteForm}/>
       ${ pinnedListing.length > 0 && html`
         <div class="card-holder-pinned">
-          ${ pinnedListing }
+          <div class="card-holder-pinned-inner">
+            ${ pinnedListing }
+          </div>
         </div>
      `}
       <div class="card-holder">
@@ -35,7 +39,7 @@ function Notes() {
     </div>`;
 }
 
-function NoteListItem(note, categories) {
+function NoteListItem(note, categories, nomargin) {
   const [state, dispatch] = useStateValue();
   const [fullHeight, setFullHeight] = useState(false);
 
@@ -43,6 +47,7 @@ function NoteListItem(note, categories) {
   const pigment = notePigment(note.id);
 
   return html`<${Card} note=${note}
+                       nomargin=${nomargin}
                        resource=${resource}
                        pigment=${pigment}
                        fullHeight=${fullHeight}>

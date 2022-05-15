@@ -63,7 +63,7 @@ select {
   appearance: auto;
 
   border-radius: var(--ui-element-border-radius);
-  border: 1px solid var(--bg-section-controls);
+  border: 1px solid var(--bg1);
   background: var(--bg);
   color: var(--fg);
 
@@ -445,7 +445,7 @@ section > form { width: var(--block-width); }
 a.top-bar-menuitem {
   margin-left: 1em;
   margin-right: 1em;
-  padding: 0.4em 1em 0.2em 1em;
+  padding: 0.4em 1em 0.4em 1em;
   border-radius: var(--ui-element-border-radius);
 }
 
@@ -481,7 +481,7 @@ hr {
 }
 
 .section-controls {
-  background: var(--bg-section-controls);
+  background: var(--bg1);
   border-radius: var(--ui-element-border-radius);
   width: 40em;
 
@@ -526,15 +526,22 @@ hr {
 }
 
 .card-holder-pinned {
-  background: var(--bg2);
+  border: 0.5rem solid var(--bg2);
   border-radius: var(--ui-element-border-radius);
   margin-top: 1rem;
-  padding: 0 1rem 1rem 1rem;
+  background: var(--bg2);
+
+}
+.card-holder-pinned-inner {
+  border: 0.5rem solid var(--bg);
+  border-radius: var(--ui-element-border-radius);
+  color: var(--bg);
+  background: var(--bg);
 }
 
 
 .form-holder {
-  background: var(--bg-section-controls);
+  background: var(--bg1);
   border-radius: var(--ui-element-border-radius);
   margin-top: 1rem;
   padding: 0 1rem 1rem 1rem;

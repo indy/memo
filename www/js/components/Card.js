@@ -2,7 +2,7 @@ import { html, route, useState } from '/lib/preact/mod.js';
 import { parseNoteContent, parseCardTitle } from '/js/NoteUtils.js';
 import { cssColourBg, cssColourBg1, cssColourFg1 } from '/js/AppUtils.js';
 
-export default function Card({ note, pigment, resource, fullHeight, children, cardClass, editing, onFinishedEditing }) {
+export default function Card({ note, pigment, resource, fullHeight, children, cardClass, editing, onFinishedEditing, nomargin }) {
   const href = `/${resource}/${note.id}`;
   const [localState, setLocalState] = useState({
     userContent: undefined,
@@ -68,7 +68,13 @@ export default function Card({ note, pigment, resource, fullHeight, children, ca
     classes += ' card-height-limited';
   }
 
-  return html`<div style="box-shadow: 0px 2px 25px 4px ${cssColourBg(pigment.numString)};" class=${classes} onClick=${ onCardClicked }>
+
+    let styles = `box-shadow: 0px 1px 12px 2px ${cssColourBg(pigment.numString)};`
+    if (nomargin) {
+        styles += "margin: 0;"
+    }
+
+    return html`<div style="${styles}" class=${classes} onClick=${ onCardClicked }>
                 <div class="card-body">
                   <div class="card-action" style="border-bottom: 1px solid ${cssColourBg1(pigment.numString)};">
                     <div class="card-action-row">
