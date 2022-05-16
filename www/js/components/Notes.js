@@ -15,7 +15,7 @@ function Notes() {
 
   const [pin, unpin] = notes ? partitionPinnedNotes(notes) : [[], []];
   const pinnedListing = pin.map((n, i) => {
-    return NoteListItem(n, state.categories, i === 0);
+    return NoteListItem(n, state.categories, i === 0, true);
   });
   const unpinnedListing = unpin.map(n => NoteListItem(n, state.categories));
 
@@ -39,7 +39,7 @@ function Notes() {
     </div>`;
 }
 
-function NoteListItem(note, categories, nomargin) {
+function NoteListItem(note, categories, nomargin, halfmargin) {
   const [state, dispatch] = useStateValue();
   const [fullHeight, setFullHeight] = useState(false);
 
@@ -48,6 +48,7 @@ function NoteListItem(note, categories, nomargin) {
 
   return html`<${Card} note=${note}
                        nomargin=${nomargin}
+                       halfmargin=${halfmargin}
                        resource=${resource}
                        pigment=${pigment}
                        fullHeight=${fullHeight}>
@@ -112,22 +113,25 @@ function CreateNoteForm() {
   const textareaClass = usingTextArea ? "" : "no-user-text";
   const textareaValue = usingTextArea ? userText : typeHereMessage;
 
-  return html`<div class="form-holder">
-                <form class="add-note-form" onSubmit=${ onSubmit }>
-                  ${usingTextArea && html`<input class="button save-button"
-                                                 type="submit"
-                                                 disabled=${!hasUserContent}
-                                                 value="Save"/>`}
-                  <br/>
-                  <textarea id="content"
-                            type="text"
-                            name="content"
-                            class=${ textareaClass }
-                            value=${ textareaValue }
-                            onFocus=${ () => setHasFocus(true) }
-                            onBlur=${ () => setHasFocus(false) }
-                            onInput=${ handleChangeEvent }/>
-                </form>
+  return html`<div class="card-holder-pinned margin-below-top-menu">
+                <div class="card-holder-pinned-inner">
+                  <form class="add-note-form" onSubmit=${ onSubmit }>
+                    <textarea id="content"
+                              type="text"
+                              name="content"
+                              class=${ textareaClass }
+                              value=${ textareaValue }
+                              onFocus=${ () => setHasFocus(true) }
+                              onBlur=${ () => setHasFocus(false) }
+                              onInput=${ handleChangeEvent }/>
+                    ${usingTextArea && html`<div class="create-button-container">
+                                              <input class="create-note-button button save-button"
+                                                     type="submit"
+                                                     disabled=${!hasUserContent}
+                                                     value="Save"/>
+                                            </div>`}
+                  </form>
+                </div>
               </div>`;
 }
 

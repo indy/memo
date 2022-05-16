@@ -527,24 +527,29 @@ hr {
 
 .card-holder-pinned {
   border: 0.5rem solid var(--bg2);
-  border-radius: var(--ui-element-border-radius);
+  border-radius: calc(var(--ui-element-border-radius) * 2);
   margin-top: 1rem;
   background: var(--bg2);
 
 }
 .card-holder-pinned-inner {
   border: 0.5rem solid var(--bg);
-  border-radius: var(--ui-element-border-radius);
-  color: var(--bg);
+  border-radius: calc(var(--ui-element-border-radius) * 2);
   background: var(--bg);
 }
 
+.margin-below-top-menu {
+  margin-top: 2rem;
+}
 
-.form-holder {
-  background: var(--bg1);
-  border-radius: var(--ui-element-border-radius);
-  margin-top: 1rem;
-  padding: 0 1rem 1rem 1rem;
+.create-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.create-note-button {
+  margin-bottom: 1rem;
+  color: var(--fg);
 }
 
 .card-common {
