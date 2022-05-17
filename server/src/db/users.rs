@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use crate::db::sqlite::{one, zero, SqlitePool};
+use crate::db::sqlite::{one, SqlitePool};
 use crate::error::Result;
 use crate::interop::users as interop;
 use crate::interop::Key;
@@ -63,18 +63,6 @@ pub(crate) fn create(
 
     let conn = db_pool.get()?;
 
-    // stupid 2 statements: create, then check for update.
-    // later versions of sqlite3 (after 2021-03) have a 'returning' keyword
-    //
-    zero(
-        &conn,
-        r#"
-           insert into users (email, username, password)
-           values(?1, ?2, ?3)
-        "#,
-        params![registration.email, registration.username, hash],
-    )?;
-
     fn from_row(row: &Row) -> Result<(Key, interop::User)> {
         let id: Key = row.get(0)?;
 
@@ -87,14 +75,15 @@ pub(crate) fn create(
             },
         ))
     }
+
     one::<(Key, interop::User)>(
         &conn,
         r#"
-           select id, email, username
-           from users
-           where email = ?1 and password = ?2
+           insert into users (email, username, password)
+           values(?1, ?2, ?3)
+           returning id, email, username
         "#,
-        params![registration.email, hash],
+        params![registration.email, registration.username, hash],
         from_row,
     )
 }

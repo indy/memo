@@ -55,23 +55,14 @@ pub(crate) fn create(
 ) -> Result<interop::Note> {
     let conn = db_pool.get()?;
 
-    zero(
-        &conn,
-        r#"
-           insert into notes (user_id, title, content)
-           values(?1, ?2, ?3)
-        "#,
-        params![user_id, &note.title, &note.content],
-    )?;
-
     one::<interop::Note>(
         &conn,
         r#"
-           select id, title, content, pinned, created_at
-           from notes
-           where user_id = ?1 and content = ?2
+           INSERT INTO notes (user_id, title, content)
+           VALUES(?1, ?2, ?3)
+           RETURNING id, title, content, pinned, created_at
         "#,
-        params![user_id, &note.content],
+        params![user_id, &note.title, &note.content],
         from_row,
     )
 }
