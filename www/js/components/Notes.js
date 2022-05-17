@@ -14,9 +14,7 @@ function Notes() {
   const notes = state.listing.notes;
 
   const [pin, unpin] = notes ? partitionPinnedNotes(notes) : [[], []];
-  const pinnedListing = pin.map((n, i) => {
-    return NoteListItem(n, state.categories, i === 0, true);
-  });
+  const pinnedListing = pin.map(n => NoteListItem(n, state.categories));
   const unpinnedListing = unpin.map(n => NoteListItem(n, state.categories));
 
   const hasCategories = state.categories.length > 0;
@@ -39,7 +37,7 @@ function Notes() {
     </div>`;
 }
 
-function NoteListItem(note, categories, nomargin, halfmargin) {
+function NoteListItem(note, categories) {
   const [state, dispatch] = useStateValue();
   const [fullHeight, setFullHeight] = useState(false);
 
@@ -47,8 +45,6 @@ function NoteListItem(note, categories, nomargin, halfmargin) {
   const pigment = notePigment(note.id);
 
   return html`<${Card} note=${note}
-                       nomargin=${nomargin}
-                       halfmargin=${halfmargin}
                        resource=${resource}
                        pigment=${pigment}
                        fullHeight=${fullHeight}>

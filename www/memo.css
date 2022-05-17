@@ -746,6 +746,14 @@ h3 {
     margin: 1.3em 0 0.8em 0;
   }
 
+  .card-holder-pinned-inner div:first-child {
+    margin-top: 0;
+  }
+
+  .card-holder-pinned-inner .card {
+    margin-top: 0.5rem;
+  }
+
   .card {
     width: 100%;
     margin: 1.3em 0 0 0;
