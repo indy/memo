@@ -22,7 +22,6 @@ function Notes() {
 
   return html`
     <div>
-      <div class="section-controls-headroom"></div>
       <${CreateNoteForm}/>
       ${ pinnedListing.length > 0 && html`
         <div class="card-holder-pinned">
@@ -109,7 +108,7 @@ function CreateNoteForm() {
   const textareaClass = usingTextArea ? "" : "no-user-text";
   const textareaValue = usingTextArea ? userText : typeHereMessage;
 
-  return html`<div class="card-holder-pinned margin-below-top-menu">
+  return html`<div class="card-holder-pinned">
                 <div class="card-holder-pinned-inner">
                   <form class="add-note-form" onSubmit=${ onSubmit }>
                     <textarea id="content"
@@ -120,7 +119,7 @@ function CreateNoteForm() {
                               onFocus=${ () => setHasFocus(true) }
                               onBlur=${ () => setHasFocus(false) }
                               onInput=${ handleChangeEvent }/>
-                    ${usingTextArea && html`<div class="create-button-container">
+                    ${usingTextArea && html`<div class="button-container">
                                               <input class="create-note-button button save-button"
                                                      type="submit"
                                                      disabled=${!hasUserContent}

@@ -25,10 +25,9 @@ function Bin() {
 
   return html`
     <div>
-      <div class="section-controls-headroom"/>
-      <div class="darken-border">
-        ${ listing.length == 0 && html`<h2>Bin is Empty</h2>`}
-        ${ listing.length > 0 && html`<h2 class="button button-delete" onClick=${ onDeleteClicked }>Permanently Delete</h2>`}
+      <div class="button-container darken-border">
+        ${ listing.length == 0 && html`<div>Bin is Empty</div>`}
+        ${ listing.length > 0 && html`<div class="button button-delete" onClick=${ onDeleteClicked }>Permanently Delete</div>`}
       </div>
       <div class="hr"/>
       <div class="card-holder">

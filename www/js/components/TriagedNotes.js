@@ -44,7 +44,6 @@ function TriagedNotes() {
     });
 
     return html`<div>
-                  <div class="section-controls-headroom"></div>
                   <div>${ triagedSectionsHtml }</div>
                   <div class="hr"/>
                   <div class="section-controls">

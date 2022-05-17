@@ -321,6 +321,10 @@ textarea {
    ==========================================================================
 */
 
+#app-content {
+  margin-top: 4rem;
+}
+
 .svg-fill-colour {
   fill: var(--fg);
 }
@@ -476,10 +480,6 @@ hr {
   vertical-align: middle;
 }
 
-.section-controls-headroom {
-  padding-top: 2em !important;
-}
-
 .section-controls {
   background: var(--bg1);
   border-radius: var(--ui-element-border-radius);
@@ -538,14 +538,8 @@ hr {
   background: var(--bg);
 }
 
-.margin-below-top-menu {
-  margin-top: 2rem;
-}
-
-.create-button-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.button-container {
+  margin-left: 2rem;
 }
 .create-note-button {
   margin-bottom: 1rem;
@@ -688,8 +682,6 @@ h3 {
 }
 
 .button-delete {
-  margin-top: 1rem;
-  margin-left: 2rem;
   background: rgba(250,40,50,1);
 }
 
@@ -725,10 +717,6 @@ h3 {
     margin-left: 0;
   }
 
-  .button-delete {
-    margin-top: 4rem;
-  }
-
   a.top-bar-menuitem {
     margin-left: 0;
   }
@@ -762,4 +750,11 @@ h3 {
   .form-holder {
     margin-top: 3rem;
   }
+
+  .button-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
 }
