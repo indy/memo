@@ -60,7 +60,7 @@ function augmentSettingsWithCssModifierParameters(settings) {
         }
     } else {
 
-        let bgh = 240;
+        let bgh = 220;
         let bgs = 60;
         let bgl = 10;
 

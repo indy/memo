@@ -41,16 +41,15 @@ function Settings() {
       <hr/>
       <h2>UI colours</h2>
       <${ColourControl} onInput=${updateColourTriple} value=${settings.bg} id='bg'/>
+      <${ColourControl} onInput=${updateColourTriple} value=${settings.bg1} id='bg1'/>
+      <${ColourControl} onInput=${updateColourTriple} value=${settings.bg2} id='bg2'/>
       <${ColourControl} onInput=${updateColourTriple} value=${settings.fg} id='fg'/>
       <${ColourControl} onInput=${updateColourTriple} value=${settings.fg1} id='fg1'/>
       <${ColourControl} onInput=${updateColourTriple} value=${settings.fg_inactive} id='fg_inactive'/>
-      <${ColourControl} onInput=${updateColourTriple} value=${settings.bg1} id='bg1'/>
-      <${ColourControl} onInput=${updateColourTriple} value=${settings.bg2} id='bg2'/>
       <${ColourControl} onInput=${updateColourTriple} value=${settings.textarea_bg} id='textarea_bg'/>
       <${ColourControl} onInput=${updateColourTriple} value=${settings.textarea_fg} id='textarea_fg'/>
       <${ColourControl} onInput=${updateColourTriple} value=${settings.save_on_bg} id='save_on_bg'/>
       <${ColourControl} onInput=${updateColourTriple} value=${settings.save_on_fg} id='save_on_fg'/>
-      <${ColourControl} onInput=${updateColourTriple} value=${settings.bg_section_controls} id='bg_section_controls'/>
       <${ColourControl} onInput=${updateColourTriple} value=${settings.divider} id='divider'/>
       <hr/>
       <h2>Card colours</h2>

@@ -68,9 +68,7 @@ export default function Card({ note, pigment, resource, fullHeight, children, ca
     classes += ' card-height-limited';
   }
 
-    let styles = `box-shadow: 0px 1px 12px 2px ${cssColourBg(pigment.numString)};`
-
-    return html`<div style="${styles}" class=${classes} onClick=${ onCardClicked }>
+    return html`<div class=${classes} onClick=${ onCardClicked }>
                 <div class="card-body">
                   <div class="card-action" style="border-bottom: 1px solid ${cssColourBg1(pigment.numString)};">
                     <div class="card-action-row">
