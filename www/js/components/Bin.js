@@ -7,23 +7,23 @@ import { useStateValue } from '/js/StateProvider.js';
 import Card from '/js/components/Card.js';
 
 function Bin() {
-  const [state, dispatch] = useStateValue();
+    const [state, dispatch] = useStateValue();
 
-  const notes = state.listing.bin;
-  const listing = notes ? notes.map(n => NoteListItem(n)) : [];
+    const notes = state.listing.bin;
+    const listing = notes ? notes.map(n => NoteListItem(n)) : [];
 
 
-  function onDeleteClicked(e) {
-    e.preventDefault();
+    function onDeleteClicked(e) {
+        e.preventDefault();
 
-    Net.delete(`/api/bin`, {}).then(() => {
-      dispatch({
-        type: 'bin-emptied'
-      });
-    });
-  }
+        Net.delete(`/api/bin`, {}).then(() => {
+            dispatch({
+                type: 'bin-emptied'
+            });
+        });
+    }
 
-  return html`
+    return html`
     <div>
       <div class="button-container darken-border">
         ${ listing.length == 0 && html`<div>Bin is Empty</div>`}
@@ -37,54 +37,54 @@ function Bin() {
 }
 
 function NoteListItem(note) {
-  const [state, dispatch] = useStateValue();
+    const [state, dispatch] = useStateValue();
 
-  const resource = 'bin';
-  const pigment = notePigment(note.id);
+    const resource = 'bin';
+    const pigment = notePigment(note.id);
 
-  function onUndeleteClicked(e) {
-    e.preventDefault();
-    Net.post(`/api/bin/${ note.id }/unbin`, note).then(n => {
-      dispatch({
-        type: 'note-unbinned',
-        note
-      });
-    });
-  }
+    function onUndeleteClicked(e) {
+        e.preventDefault();
+        Net.post(`/api/bin/${ note.id }/unbin`, note).then(n => {
+            dispatch({
+                type: 'note-unbinned',
+                note
+            });
+        });
+    }
 
-  function onDeleteClicked(e) {
-    e.preventDefault();
-    Net.delete(`/api/bin/${ note.id }`, {}).then(n => {
-      dispatch({
-        type: 'note-deleted',
-        note
-      });
-    });
-  }
+    function onDeleteClicked(e) {
+        e.preventDefault();
+        Net.delete(`/api/bin/${ note.id }`, {}).then(n => {
+            dispatch({
+                type: 'note-deleted',
+                note
+            });
+        });
+    }
 
-  return html`<${Card} note=${note} resource=${resource} pigment=${pigment}>
+    return html`<${Card} note=${note} resource=${resource} pigment=${pigment}>
                   <button class="${pigment.classAlt} button card-action-cell" onClick=${ onUndeleteClicked }>Undelete</button>
                   <button class="${pigment.classAlt} button card-action-cell" onClick=${ onDeleteClicked }>Really Delete</button>
               </${Card}>`;
 }
 
 function BinnedNote({ id }) {
-  const noteKind = 'bin';
+    const noteKind = 'bin';
 
-  const [state, dispatch] = useStateValue();
-  const editing = false;
-  const [fullHeight, setFullHeight] = useState(true);
+    const [state, dispatch] = useStateValue();
+    const editing = false;
+    const [fullHeight, setFullHeight] = useState(true);
 
-  if (!state.listing[noteKind]) {
-    // isg todo: fix this
-    return html`<div></div>`;
-  }
+    if (!state.listing[noteKind]) {
+        // isg todo: fix this
+        return html`<div></div>`;
+    }
 
-  const noteId = parseInt(id, 10);
-  const note = getNoteById(state, noteKind, noteId);
-  const pigment = notePigment(id);
+    const noteId = parseInt(id, 10);
+    const note = getNoteById(state, noteKind, noteId);
+    const pigment = notePigment(id);
 
-  return html`<${Card} editing=${editing}
+    return html`<${Card} editing=${editing}
                        note=${note}
                        resource=${noteKind}
                        pigment=${pigment}

@@ -9,27 +9,27 @@ import { ButtonDelete, ButtonEdit, ButtonPinned } from '/js/components/CardButto
 import { TriageDropDown } from '/js/components/TriageDropDown.js';
 
 function Notes() {
-  const [state, dispatch] = useStateValue();
+    const [state, dispatch] = useStateValue();
 
-  const notes = state.listing.notes;
+    const notes = state.listing.notes;
 
-  const [pin, unpin] = notes ? partitionPinnedNotes(notes) : [[], []];
-  const pinnedListing = pin.map(n => NoteListItem(n, state.categories));
-  const unpinnedListing = unpin.map(n => NoteListItem(n, state.categories));
+    const [pin, unpin] = notes ? partitionPinnedNotes(notes) : [[], []];
+    const pinnedListing = pin.map(n => NoteListItem(n, state.categories));
+    const unpinnedListing = unpin.map(n => NoteListItem(n, state.categories));
 
-  const hasCategories = state.categories.length > 0;
-  const categoryOptions = state.categories.map(c => html`<option value="${c.title}">${c.title}</option>`);
+    const hasCategories = state.categories.length > 0;
+    const categoryOptions = state.categories.map(c => html`<option value="${c.title}">${c.title}</option>`);
 
-  return html`
+    return html`
     <div>
       <${CreateNoteForm}/>
       ${ pinnedListing.length > 0 && html`
         <div class="card-holder-pinned">
-          <div class="card-holder-pinned-inner">
-            ${ pinnedListing }
-          </div>
+        <div class="card-holder-pinned-inner">
+        ${ pinnedListing }
+    </div>
         </div>
-     `}
+        `}
       <div class="card-holder">
         ${ unpinnedListing }
       </div>
@@ -37,13 +37,13 @@ function Notes() {
 }
 
 function NoteListItem(note, categories) {
-  const [state, dispatch] = useStateValue();
-  const [fullHeight, setFullHeight] = useState(false);
+    const [state, dispatch] = useStateValue();
+    const [fullHeight, setFullHeight] = useState(false);
 
-  const resource = 'notes';
-  const pigment = notePigment(note.id);
+    const resource = 'notes';
+    const pigment = notePigment(note.id);
 
-  return html`<${Card} note=${note}
+    return html`<${Card} note=${note}
                        resource=${resource}
                        pigment=${pigment}
                        fullHeight=${fullHeight}>
@@ -58,57 +58,57 @@ function NoteListItem(note, categories) {
 }
 
 function noteFromText(text) {
-  const lines = text.split("\n");
+    const lines = text.split("\n");
 
-  const title = lines.shift();
-  const content = lines.join("\n").trim();
+    const title = lines.shift();
+    const content = lines.join("\n").trim();
 
-  if (title.length === 0 && content.length === 0) {
-    return null;
-  }
+    if (title.length === 0 && content.length === 0) {
+        return null;
+    }
 
-  return {
-    title,
-    content,
-    pinned: false
-  }
+    return {
+        title,
+        content,
+        pinned: false
+    }
 }
 
 function CreateNoteForm() {
-  const [userText, setUserText] = useState('');
-  const [hasFocus, setHasFocus] = useState(false);
+    const [userText, setUserText] = useState('');
+    const [hasFocus, setHasFocus] = useState(false);
 
-  const [state, dispatch] = useStateValue();
+    const [state, dispatch] = useStateValue();
 
-  const typeHereMessage = "type note here...";
+    const typeHereMessage = "type note here...";
 
-  function onSubmit(event) {
-    event.preventDefault();
+    function onSubmit(event) {
+        event.preventDefault();
 
-    const protoNote = noteFromText(userText);
-    if (protoNote) {
-      Net.post(`/api/notes`, protoNote).then(note => {
-        dispatch({
-          type: 'listing-note-appended',
-          note
-        });
-      });
-      setUserText('');
+        const protoNote = noteFromText(userText);
+        if (protoNote) {
+            Net.post(`/api/notes`, protoNote).then(note => {
+                dispatch({
+                    type: 'listing-note-appended',
+                    note
+                });
+            });
+            setUserText('');
+        }
     }
-  }
 
-  function handleChangeEvent(event) {
-    const newUserText = event.target.value;
-    setUserText(newUserText);
-  };
+    function handleChangeEvent(event) {
+        const newUserText = event.target.value;
+        setUserText(newUserText);
+    };
 
-  const hasUserContent = userText.trim().length > 0;
-  const usingTextArea = hasFocus || hasUserContent;
+    const hasUserContent = userText.trim().length > 0;
+    const usingTextArea = hasFocus || hasUserContent;
 
-  const textareaClass = usingTextArea ? "" : "no-user-text";
-  const textareaValue = usingTextArea ? userText : typeHereMessage;
+    const textareaClass = usingTextArea ? "" : "no-user-text";
+    const textareaValue = usingTextArea ? userText : typeHereMessage;
 
-  return html`<div class="card-holder-pinned">
+    return html`<div class="card-holder-pinned">
                 <div class="card-holder-pinned-inner">
                   <form class="add-note-form" onSubmit=${ onSubmit }>
                     <textarea id="content"
@@ -120,33 +120,33 @@ function CreateNoteForm() {
                               onBlur=${ () => setHasFocus(false) }
                               onInput=${ handleChangeEvent }/>
                     ${usingTextArea && html`<div class="button-container">
-                                              <input class="create-note-button button save-button"
-                                                     type="submit"
-                                                     disabled=${!hasUserContent}
-                                                     value="Save"/>
-                                            </div>`}
+        <input class="create-note-button button save-button"
+    type="submit"
+    disabled=${!hasUserContent}
+    value="Save"/>
+        </div>`}
                   </form>
                 </div>
               </div>`;
 }
 
 function Note({ id }) {
-  const noteKind = 'notes';
+    const noteKind = 'notes';
 
-  const [state, dispatch] = useStateValue();
-  const [editing, setEditing] = useState(false);
-  const [fullHeight, setFullHeight] = useState(true);
+    const [state, dispatch] = useStateValue();
+    const [editing, setEditing] = useState(false);
+    const [fullHeight, setFullHeight] = useState(true);
 
-  if (!state.listing[noteKind]) {
-    // isg todo: fix this
-    return html`<div></div>`;
-  }
+    if (!state.listing[noteKind]) {
+        // isg todo: fix this
+        return html`<div></div>`;
+    }
 
-  const noteId = parseInt(id, 10);
-  const note = getNoteById(state, noteKind, noteId);
-  const pigment = notePigment(id);
+    const noteId = parseInt(id, 10);
+    const note = getNoteById(state, noteKind, noteId);
+    const pigment = notePigment(id);
 
-  return html`<${Card} onFinishedEditing=${ finishedEditingCallback(dispatch, note, setEditing) }
+    return html`<${Card} onFinishedEditing=${ finishedEditingCallback(dispatch, note, setEditing) }
                        editing=${editing}
                        note=${note}
                        resource=${noteKind}

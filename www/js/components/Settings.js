@@ -8,34 +8,34 @@ import Card from '/js/components/Card.js';
 import { ButtonEdit } from '/js/components/CardButtons.js';
 
 function Settings() {
-  const [state, dispatch] = useStateValue();
+    const [state, dispatch] = useStateValue();
 
-  function updateColourScalar(e, id) {
-    e.preventDefault();
-    dispatch({
-      type: 'settings-colour-scalar',
-      value: e.target.value,
-      id
-    });
-  }
+    function updateColourScalar(e, id) {
+        e.preventDefault();
+        dispatch({
+            type: 'settings-colour-scalar',
+            value: e.target.value,
+            id
+        });
+    }
 
-  function updateColourTriple(e, index, id) {
-    e.preventDefault();
-    let value = settings[id];
-    value[index] = e.target.value;
-    dispatch({
-      type: 'settings-colour-triple',
-      value,
-      id
-    });
-  }
+    function updateColourTriple(e, index, id) {
+        e.preventDefault();
+        let value = settings[id];
+        value[index] = e.target.value;
+        dispatch({
+            type: 'settings-colour-triple',
+            value,
+            id
+        });
+    }
 
-  const settings = state.settings;
+    const settings = state.settings;
 
-  const wasmInterface = useWasmInterface();
-  declareCssVariables(settings, wasmInterface);
+    const wasmInterface = useWasmInterface();
+    declareCssVariables(settings, wasmInterface);
 
-  return html`
+    return html`
     <div>
       <${Logout} />
       <hr/>
@@ -132,15 +132,15 @@ function Settings() {
 }
 
 function ColourControl({ onInput, value, id }) {
-  const labelH = `${id} h`;
-  const labelS = `${id} s`;
-  const labelL = `${id} l`;
+    const labelH = `${id} h`;
+    const labelS = `${id} s`;
+    const labelL = `${id} l`;
 
-  const idH = `${id}-h`;
-  const idS = `${id}-s`;
-  const idL = `${id}-l`;
+    const idH = `${id}-h`;
+    const idS = `${id}-s`;
+    const idL = `${id}-l`;
 
-  return html`
+    return html`
 <div>
   <label for=${idH}>${labelH}</label>
   <input type="number"
@@ -172,22 +172,22 @@ function ColourControl({ onInput, value, id }) {
 }
 
 function SampleCard({ pigment }) {
-  const note = {
-    title: "test title",
-    content: "test content",
-    age: "test age"
-  };
+    const note = {
+        title: "test title",
+        content: "test content",
+        age: "test age"
+    };
 
-  const pig = {
-    numString: pigment,
-    class: `pigment-clock-${pigment}`,
-    classAlt: `pigment-clock-${pigment}-alt`
-  };
-  const editing = false;
-  function callback() {
-  }
+    const pig = {
+        numString: pigment,
+        class: `pigment-clock-${pigment}`,
+        classAlt: `pigment-clock-${pigment}-alt`
+    };
+    const editing = false;
+    function callback() {
+    }
 
-  return html`<${Card} note=${note} pigment=${pig} editing=${editing}>
+    return html`<${Card} note=${note} pigment=${pig} editing=${editing}>
                 <${ButtonEdit} pigment=${pig} editing=${editing} callback=${callback}/>
               </${Card}>`;
 }

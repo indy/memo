@@ -10,16 +10,16 @@ import { buildColourConversionFn, declareCssVariables } from '/js/ColourCreator.
 // });
 
 wasm_bindgen('/client_colour_bg.wasm')
-  .then(async wasm_colour_bg => {
+    .then(async wasm_colour_bg => {
 
-    const wasmInterface = {
-      RgbFromHsl: buildColourConversionFn(wasm_bindgen)
-    };
+        const wasmInterface = {
+            RgbFromHsl: buildColourConversionFn(wasm_bindgen)
+        };
 
-    const state = await buildInitialState();
+        const state = await buildInitialState();
 
-    declareCssVariables(state.settings, wasmInterface);
+        declareCssVariables(state.settings, wasmInterface);
 
-    render(App(state, wasmInterface), document.getElementById('root'));
-  })
-  .catch(console.error);
+        render(App(state, wasmInterface), document.getElementById('root'));
+    })
+    .catch(console.error);

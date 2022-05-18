@@ -95,14 +95,14 @@ function augmentSettingsWithCssModifierParameters(settings) {
 }
 
 /*
-| suffix | use                        | example      |
-|--------+----------------------------+--------------|
-| fg     | normal text                | clock-05-fg  |
-| fg1    | secondary text             | clock-05-fg1 |
-| bg     | card colour                | clock-05-bg  |
-| bg1    | button background          | clock-05-bg1 |
-| bg2    | button background on hover | clock-05-bg2 |
- */
+  | suffix | use                        | example      |
+  |--------+----------------------------+--------------|
+  | fg     | normal text                | clock-05-fg  |
+  | fg1    | secondary text             | clock-05-fg1 |
+  | bg     | card colour                | clock-05-bg  |
+  | bg1    | button background          | clock-05-bg1 |
+  | bg2    | button background on hover | clock-05-bg2 |
+*/
 
 function declareCssVariables(settings, wasmInterface) {
     let root = document.body;
