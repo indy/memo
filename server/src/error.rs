@@ -24,7 +24,6 @@ pub type Result<T> = ::std::result::Result<T, Error>;
 pub enum Error {
     NotFound,
     TooManyFound,
-    ThreadpoolBlocking(actix_threadpool::BlockingError<std::io::Error>),
     Actix(actix_web::Error),
     IO(std::io::Error),
     Var(std::env::VarError),
