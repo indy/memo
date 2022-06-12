@@ -188,7 +188,7 @@ textarea {
   height: 15em;
 }
 
-.add-note-form textarea:focus {
+.bigger-when-focused:focus {
   height: 15em;
 }
 
@@ -382,10 +382,6 @@ a:visited.pigment-inherit {
 .pigment-clock-11-alt:hover { background: var(--clock-11-bg2); }
 
 .darken-border { border: 1px solid rgba(0, 0, 0, 0.05)}
-
-.add-note-form {
-  width: 100%;
-}
 
 a:link {
   text-decoration: none;
@@ -688,10 +684,6 @@ h3 {
 .bin-button {
   float: right;
 }
-
-/* .no-user-text { */
-/*   color: var(--fg-inactive) !important; */
-/* } */
 
 .bg2 {
   background: var(--bg2);

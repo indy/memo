@@ -82,9 +82,30 @@ function CreateNoteForm() {
 
     const typeHereMessage = "type note here...";
 
-    function onSubmit(event) {
-        event.preventDefault();
+    function handleChangeEvent(event) {
+        const newUserText = event.target.value;
+        setUserText(newUserText);
+    };
 
+    const hasUserContent = userText.trim().length > 0;
+    const usingTextArea = hasFocus || hasUserContent;
+
+    const textareaValue = usingTextArea ? userText : typeHereMessage;
+
+    function onMouseDown(e) {
+        /*
+          NOTE: why not use a form and have logic in a submit function?
+          With the save button below the textarea then the following will occur:
+          The user clicks submit, the textarea will lose focus and shrink back
+          in size, this will shift the save button up, away from the pointer
+          and the onMouseUp won't be sent to the save button, resulting in no
+          click event
+
+          The workaround is either to have the save button above the textarea
+          and use the normal submit form logic, or, as we're doing here just
+          intercept the onMouseDown event and treat that as the trigger for
+          saving the note.
+         */
         const protoNote = noteFromText(userText);
         if (protoNote) {
             Net.post(`/api/notes`, protoNote).then(note => {
@@ -97,37 +118,25 @@ function CreateNoteForm() {
         }
     }
 
-    function handleChangeEvent(event) {
-        const newUserText = event.target.value;
-        setUserText(newUserText);
-    };
-
-    const hasUserContent = userText.trim().length > 0;
-    const usingTextArea = hasFocus || hasUserContent;
-
-    const textareaClass = usingTextArea ? "" : "no-user-text";
-    const textareaValue = usingTextArea ? userText : typeHereMessage;
-
     return html`<div class="card-holder-pinned">
-                <div class="card-holder-pinned-inner">
-                  <form class="add-note-form" onSubmit=${ onSubmit }>
-                    <textarea id="content"
-                              type="text"
-                              name="content"
-                              class=${ textareaClass }
-                              value=${ textareaValue }
-                              onFocus=${ () => setHasFocus(true) }
-                              onBlur=${ () => setHasFocus(false) }
-                              onInput=${ handleChangeEvent }/>
-                    ${usingTextArea && html`<div class="button-container">
-        <input class="create-note-button button save-button"
-    type="submit"
-    disabled=${!hasUserContent}
-    value="Save"/>
-        </div>`}
-                  </form>
-                </div>
-              </div>`;
+                  <div class="card-holder-pinned-inner">
+                      <textarea id="content"
+                                type="text"
+                                name="content"
+                                class="bigger-when-focused"
+                                value=${ textareaValue }
+                                onFocus=${ () => setHasFocus(true) }
+                                onBlur=${ () => setHasFocus(false) }
+                                onInput=${ handleChangeEvent }/>
+                      ${usingTextArea && html`<div class="button-container">
+                                                <input class="create-note-button button save-button"
+                                                       type="submit"
+                                                       onmousedown=${ onMouseDown }
+                                                       disabled=${!hasUserContent}
+                                                       value="Save"/>
+                                              </div>`}
+                  </div>
+                </div>`;
 }
 
 function Note({ id }) {
