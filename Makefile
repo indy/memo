@@ -52,7 +52,7 @@ SYSTEMD_FILES = $(wildcard misc/systemd/*)
 
 WASM_FILES = $(wildcard $(WASM_FOLDER)/src/*) $(WASM_FOLDER)/Cargo.toml
 
-.PHONY: run clean-staging
+.PHONY: run clean-staging download-db
 
 ################################################################################
 # top-level public targets
@@ -71,6 +71,9 @@ upload: staging
 
 clean-staging:
 	rm -rf staging
+
+download-db:
+	scp indy.io:work/memo/memo.db* .
 
 ################################################################################
 # targets
