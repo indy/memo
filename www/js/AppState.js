@@ -1,4 +1,4 @@
-import { plural } from "/js/JsUtils.js";
+import { plural } from "./JsUtils.js";
 
 export const initialState = {
     user: undefined,

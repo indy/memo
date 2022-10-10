@@ -6,6 +6,9 @@ www/client.js
 www/client_colour_bg.wasm
 www/client_colour.js
 
+www/main.js
+www/main.js.map
+
 *.db
 *.db-shm
 *.db-wal

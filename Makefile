@@ -52,7 +52,13 @@ SYSTEMD_FILES = $(wildcard misc/systemd/*)
 
 WASM_FILES = $(wildcard $(WASM_FOLDER)/src/*) $(WASM_FOLDER)/Cargo.toml
 
-.PHONY: run clean-staging download-db
+.PHONY: run clean-staging download-db jsx watch
+
+jsx:
+	esbuild www/js/index.jsx --sourcemap --bundle --jsx-factory=h --jsx-fragment=Fragment --format=esm --outfile=www/main.js
+
+watch:
+	while true; do inotifywait -e close_write --quiet --recursive www/js; make jsx; done
 
 ################################################################################
 # top-level public targets
@@ -74,6 +80,7 @@ clean-staging:
 
 download-db:
 	scp indy.io:work/memo/memo.db* .
+
 
 ################################################################################
 # targets

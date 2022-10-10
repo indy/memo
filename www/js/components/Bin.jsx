@@ -1,10 +1,10 @@
-import { html, route, Link, useState } from '/lib/preact/mod.js';
+import { h, Fragment, route, Link, useState } from '../../lib/preact/mod.js';
 
-import Net from '/js/Net.js';
-import { notePigment } from '/js/NoteUtils.js';
-import { useStateValue } from '/js/StateProvider.js';
+import Net from '../Net.js';
+import { notePigment } from '../NoteUtils.js';
+import { useStateValue } from './StateProvider.jsx';
 
-import Card from '/js/components/Card.js';
+import Card from './Card.jsx';
 
 function Bin() {
     const [state, dispatch] = useStateValue();
@@ -23,17 +23,16 @@ function Bin() {
         });
     }
 
-    return html`
-    <div>
+    return <div>
       <div class="button-container darken-border">
-        ${ listing.length == 0 && html`<div>Bin is Empty</div>`}
-        ${ listing.length > 0 && html`<div class="button button-delete" onClick=${ onDeleteClicked }>Permanently Delete</div>`}
+        { listing.length == 0 && <div>Bin is Empty</div>}
+        { listing.length > 0 && <div class="button button-delete" onClick={ onDeleteClicked }>Permanently Delete</div>}
       </div>
       <div class="hr"/>
       <div class="card-holder">
-        ${ listing }
+        { listing }
       </div>
-    </div>`;
+    </div>
 }
 
 function NoteListItem(note) {
@@ -62,10 +61,10 @@ function NoteListItem(note) {
         });
     }
 
-    return html`<${Card} note=${note} resource=${resource} pigment=${pigment}>
-                  <button class="${pigment.classAlt} button card-action-cell" onClick=${ onUndeleteClicked }>Undelete</button>
-                  <button class="${pigment.classAlt} button card-action-cell" onClick=${ onDeleteClicked }>Really Delete</button>
-              </${Card}>`;
+    return <Card note={note} resource={resource} pigment={pigment}>
+               <button class={`${pigment.classAlt} button card-action-cell`} onClick={ onUndeleteClicked }>Undelete</button>
+               <button class={`${pigment.classAlt} button card-action-cell`} onClick={ onDeleteClicked }>Really Delete</button>
+           </Card>
 }
 
 function BinnedNote({ id }) {
@@ -77,20 +76,20 @@ function BinnedNote({ id }) {
 
     if (!state.listing[noteKind]) {
         // isg todo: fix this
-        return html`<div></div>`;
+        return <div></div>;
     }
 
     const noteId = parseInt(id, 10);
     const note = getNoteById(state, noteKind, noteId);
     const pigment = notePigment(id);
 
-    return html`<${Card} editing=${editing}
-                       note=${note}
-                       resource=${noteKind}
-                       pigment=${pigment}
-                       fullHeight=${fullHeight}
-                       cardClass="wider-card">
-              </${Card}>`;
+    return <Card editing={editing}
+                 note={note}
+                 resource={noteKind}
+                 pigment={pigment}
+                 fullHeight={fullHeight}
+                 cardClass="wider-card">
+           </Card>
 }
 
 export { Bin, BinnedNote };

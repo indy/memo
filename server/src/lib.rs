@@ -27,12 +27,11 @@ pub use crate::error::{Error, Result};
 use actix_files as fs;
 use actix_session::CookieSession;
 use actix_web::cookie::SameSite;
-use actix_web::middleware::ErrorHandlers;
+use actix_web::middleware::{self, ErrorHandlers};
 use actix_web::{http, web, App, HttpServer};
 use dotenv;
 use std::env;
-use tracing::Level;
-use tracing::{error, info};
+use tracing::{error, info, Level};
 use tracing_subscriber::FmtSubscriber;
 
 use r2d2_sqlite::SqliteConnectionManager;
@@ -103,10 +102,10 @@ pub async fn start_server() -> Result<()> {
                 registration_magic_word: registration_magic_word.clone(),
             }))
             .app_data(web::JsonConfig::default().limit(1024 * 1024))
+            .wrap(middleware::DefaultHeaders::new().add(("Cache-control", "no-cache")))
             .wrap(session_store)
             .wrap(error_handlers)
             .service(api::public_api("/api"))
-            .service(fs::Files::new("/nocache", &www_path))
             .service(fs::Files::new("/", &www_path).index_file("index.html"))
     })
     .bind(format!("127.0.0.1:{}", port))?

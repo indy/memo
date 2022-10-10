@@ -30,33 +30,7 @@ var precacheConfig = [
     "/index.html",
     "/memo.css",
 
-    "/js/App.js",
-    "/js/AppState.js",
-    "/js/AppUtils.js",
-    "/js/ColourCreator.js",
-    "/js/JsUtils.js",
-    "/js/Net.js",
-    "/js/NoteUtils.js",
-    "/js/StateProvider.js",
-    "/js/WasmInterfaceProvider.js",
-    "/js/index.js",
-    "/js/svgIcons.js",
-
-    "/js/components/Bin.js",
-    "/js/components/Card.js",
-    "/js/components/CardButtons.js",
-    "/js/components/Login.js",
-    "/js/components/Notes.js",
-    "/js/components/Settings.js",
-    "/js/components/TopBarMenu.js",
-    "/js/components/TriageDropDown.js",
-    "/js/components/TriagedNotes.js",
-
-    "/lib/preact/hooks.mjs",
-    "/lib/preact/htm.js",
-    "/lib/preact/mod.js",
-    "/lib/preact/preact-router.js",
-    "/lib/preact/preact.mjs"
+    "./main.js"
 ];
 
 var urlsToCache = new Set();
@@ -175,17 +149,11 @@ self.addEventListener("activate", function (e) {
 });
 
 self.addEventListener("fetch", function (event) {
-    // some urls should always ignore service worker caches, regardless of devMode
-    if (event.request.url.includes("/nocache/")) {
-        return fetch(event.request);
-    }
-
     if ("GET" === event.request.method || "HEAD" === event.request.method) {
         var url = stripIgnoredUrlParameters(event.request.url, ignoreUrlParametersMatching);
 
         var isCached = urlsToCache.has(url);
 
-        // one of the urls to cache  but we're in devMode so fetch the resource from the network anyway
         if (devMode && isCached) {
             var headers = new Headers();
             headers.append('pragma', 'no-cache');
@@ -221,6 +189,33 @@ self.addEventListener("fetch", function (event) {
                         return fetch(event.request);
                     })
             );
+        } else {
+            // check for a phantom request made by Chrome's debug
+            let path = url.split("/").slice(3);
+            if (path[0] !== "api" && path[0] !== "site.webmanifest" && path[0] !== "u") {
+                // when opening Chromium's Developer Tools, there is a GET
+                // request made for the current page. As Memo's router
+                // re-writes the url this will result in a request to the server
+                // for a location that it doesn't understand
+                //
+                // this code detects these probable fake requests and returns a fake response
+                //
+                // opening the developer tools pane should result in one of
+                // these phantom GET requests that this code should pick up and
+                // then print some message to the console
+                //
+                console.log(`fake responding for Chrome Dev Pane's request for ${url}`);
+                event.respondWith(
+                    new Response("fake response for Chrome's Dev Tools", {
+                        status: 200,
+                        statusText: "OK",
+                        headers: { "Content-Type": "text/plain" }
+                    })
+                )
+            } else {
+                // make the actual request to the server
+            }
+
         }
     }
 });

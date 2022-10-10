@@ -1,6 +1,6 @@
-import { html, route, useState } from '/lib/preact/mod.js';
-import Net from '/js/Net.js';
-import { svgBin, svgPinned, svgUnpinned } from '/js/svgIcons.js';
+import { h, Fragment, route, useState } from '../../lib/preact/mod.js';
+import Net from '../Net.js';
+import { SvgBin, SvgPinned, SvgUnpinned } from '../svgIcons.jsx';
 
 function ButtonDelete({ note, noteKind, pigment, dispatch }) {
     function onDeleteClicked(e) {
@@ -20,9 +20,9 @@ function ButtonDelete({ note, noteKind, pigment, dispatch }) {
         });
     }
 
-    return html`<button class="${pigment.classAlt} button card-action-cell" onClick=${ onDeleteClicked }>
-                ${ svgBin(`--clock-${pigment.numString}-fg`) }
-              </button>`;
+    return <button class={`${pigment.classAlt} button card-action-cell`} onClick={ onDeleteClicked }>
+               <SvgBin fillColour={`--clock-${pigment.numString}-fg`}/>
+           </button>;
 }
 
 function ButtonPinned({ note, pigment, dispatch }) {
@@ -41,11 +41,11 @@ function ButtonPinned({ note, pigment, dispatch }) {
         });
     }
 
-    const icon = note.pinned ? svgPinned(`--clock-${pigment.numString}-fg`) : svgUnpinned(`--clock-${pigment.numString}-fg`);
-
-    return html`<button class="${pigment.classAlt} button card-action-cell" onClick=${ onPinnedClicked }>
-                ${ icon }
-              </button>`;
+    return <button class={`${pigment.classAlt} button card-action-cell`} onClick={ onPinnedClicked }>
+               { note.pinned ?
+                 <SvgPinned fillColour={`--clock-${pigment.numString}-fg`}/> :
+                 <SvgUnpinned fillColour={`--clock-${pigment.numString}-fg`}/> }
+           </button>;
 }
 
 
@@ -57,9 +57,9 @@ function ButtonEdit({ pigment, editing, callback}) {
 
     let editButtonText = editing ? "Cancel Editing" : "Edit";
 
-    return html`<button class="${pigment.classAlt} button card-action-cell" onClick=${ onEditClicked }>
-                ${ editButtonText }
-              </button>`;
+    return <button class={`${pigment.classAlt} button card-action-cell`} onClick={ onEditClicked }>
+               { editButtonText }
+           </button>;
 }
 
 function ButtonUntriage({ note, pigment, dispatch}) {
@@ -73,10 +73,10 @@ function ButtonUntriage({ note, pigment, dispatch}) {
         });
     }
 
-    return html`<button class="${pigment.classAlt} button card-action-cell"
-                      onClick=${ onUntriageClicked }>
-                Untriage
-              </button>`;
+    return <button class={`${pigment.classAlt} button card-action-cell`}
+                   onClick={ onUntriageClicked }>
+               Untriage
+           </button>
 }
 
 export { ButtonDelete, ButtonPinned, ButtonEdit, ButtonUntriage };

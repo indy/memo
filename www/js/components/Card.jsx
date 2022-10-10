@@ -1,6 +1,6 @@
-import { html, route, useState } from '/lib/preact/mod.js';
-import { parseNoteContent, parseCardTitle } from '/js/NoteUtils.js';
-import { cssColourBg, cssColourBg1, cssColourFg1 } from '/js/AppUtils.js';
+import { h, Fragment, route, useState } from '../../lib/preact/mod.js';
+import { parseNoteContent, parseCardTitle } from '../NoteUtils.js';
+import { cssColourBg, cssColourBg1, cssColourFg1 } from '../AppUtils.js';
 
 export default function Card({ note, pigment, resource, fullHeight, children, cardClass, editing, onFinishedEditing }) {
     const href = `/${resource}/${note.id}`;
@@ -68,33 +68,32 @@ export default function Card({ note, pigment, resource, fullHeight, children, ca
         classes += ' card-height-limited';
     }
 
-    return html`<div class=${classes} onClick=${ onCardClicked }>
-                <div class="card-body">
-                  <div class="card-action" style="border-bottom: 1px solid ${cssColourBg1(pigment.numString)};">
-                    <div class="card-action-row">
-                      ${ children }
-                    </div>
-                    <div class="card-action-row-reverse">
-                      <div class="card-age" style="color: ${cssColourFg1(pigment.numString)};">
-                        ${ note.age }
-                      </div>
-                    </div>
-                  </div>
-                  ${ !editing && parseCardTitle(note)}
-                  ${ !editing && parseNoteContent(note) }
+    return <div class={classes} onClick={ onCardClicked }>
+               <div class="card-body">
+                   <div class="card-action" style="border-bottom: 1px solid {cssColourBg1(pigment.numString)};">
+                       <div class="card-action-row">
+                           { children }
+                       </div>
+                       <div class="card-action-row-reverse">
+                           <div class="card-age" style="color: {cssColourFg1(pigment.numString)};">
+                               { note.age }
+                           </div>
+                       </div>
+                   </div>
+                   { !editing && parseCardTitle(note)}
+                   { !editing && parseNoteContent(note) }
 
-                  ${ editing && html`
-        <div class="edit">
-        <input class="full-width" type="text" value=${localState.userTitle} onInput=${ handleChangeTitle }/>
-        <br/><br/>
-        <textarea class="full-width" type="text" value=${ localState.userContent } onInput=${ handleChangeContent }/>
-        <br/>
-        <button class="${pigment.classAlt} button card-action-cell" onClick=${ onSaveClicked }>Save</button>
+                   { editing && <div class="edit">
+                                    <input class="full-width" type="text" value={localState.userTitle} onInput={ handleChangeTitle }/>
+                                    <br/><br/>
+                                    <textarea class="full-width" type="text" value={ localState.userContent } onInput={ handleChangeContent }/>
+                                    <br/>
+                                    <button class="{pigment.classAlt} button card-action-cell" onClick={ onSaveClicked }>Save</button>
 
-    </div>`}
+                                </div>}
 
-                </div>
-              </div>`;
+               </div>
+           </div>
 
 }
 

@@ -1,4 +1,4 @@
-import { Component, cloneElement, createElement, toChildArray } from '/lib/preact/preact.mjs';
+import { Component, cloneElement, createElement, toChildArray } from './preact.mjs';
 
 var EMPTY$1 = {};
 

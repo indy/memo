@@ -1,7 +1,7 @@
-import { h, useEffect } from '/lib/preact/mod.js';
+import { h, useEffect } from '../lib/preact/mod.js';
 
-import { useStateValue } from '/js/StateProvider.js';
-import Net from '/js/Net.js';
+import { useStateValue } from './components/StateProvider.jsx';
+import Net from './Net.js';
 
 
 export function finishedEditingCallback(dispatch, note, setEditing) {

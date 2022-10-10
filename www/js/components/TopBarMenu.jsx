@@ -1,5 +1,6 @@
-import { html, Link } from '/lib/preact/mod.js';
-import { useStateValue } from '/js/StateProvider.js';
+import { h, Fragment, Link } from '../../lib/preact/mod.js';
+
+import { useStateValue } from './StateProvider.jsx';
 
 function TopBarMenu(props) {
     const [state] = useStateValue();
@@ -36,14 +37,12 @@ function TopBarMenu(props) {
         binExtraClass = 'top-bar-menuitem-active';
     }
 
-    return html`
-    <div id='top-bar-menu' class="hr">
-      <${Link} href=${ loggedLink() } id="login-menuitem" class="pigment-inherit">${ loggedStatus() }</${Link}>
-      <${Link} class='top-bar-menuitem pigment-notes ${notesExtraClass}' href=${'/'}>Notes</${Link}>
-      <${Link} class='top-bar-menuitem pigment-triaged ${triagedExtraClass}' href=${'/triaged'}>Triaged</${Link}>
-      <${Link} class='top-bar-menuitem pigment-bin ${binExtraClass}' href=${'/bin'}>Bin</${Link}>
-    </div>
-`;
+    return <div id='top-bar-menu' class="hr">
+               <Link href={ loggedLink() } id="login-menuitem" class="pigment-inherit">{ loggedStatus() }</Link>
+               <Link class='top-bar-menuitem pigment-notes {notesExtraClass}' href={'/'}>Notes</Link>
+               <Link class='top-bar-menuitem pigment-triaged {triagedExtraClass}' href={'/triaged'}>Triaged</Link>
+               <Link class='top-bar-menuitem pigment-bin {binExtraClass}' href={'/bin'}>Bin</Link>
+           </div>
 }
 
 export { TopBarMenu }
