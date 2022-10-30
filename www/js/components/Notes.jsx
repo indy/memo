@@ -2,14 +2,14 @@ import { h, Fragment, useState } from '../../lib/preact/mod.js';
 
 import Net from '../Net.js';
 import { finishedEditingCallback, getNoteById, notePigment, partitionPinnedNotes } from '../NoteUtils.js';
-import { useStateValue } from './StateProvider.jsx';
+import { getAppState } from '../AppState.jsx';
 
 import Card from './Card.jsx';
 import { ButtonDelete, ButtonEdit, ButtonPinned } from './CardButtons.jsx';
 import { TriageDropDown } from './TriageDropDown.jsx';
 
 function Notes() {
-    const [state, dispatch] = useStateValue();
+    const [state, dispatch] = getAppState();
 
     const notes = state.listing.notes;
 
@@ -35,7 +35,7 @@ function Notes() {
 }
 
 function NoteListItem(note, categories) {
-    const [state, dispatch] = useStateValue();
+    const [state, dispatch] = getAppState();
     const [fullHeight, setFullHeight] = useState(false);
 
     const resource = 'notes';
@@ -76,7 +76,7 @@ function CreateNoteForm() {
     const [userText, setUserText] = useState('');
     const [hasFocus, setHasFocus] = useState(false);
 
-    const [state, dispatch] = useStateValue();
+    const [state, dispatch] = getAppState();
 
     const typeHereMessage = "type note here...";
 
@@ -140,7 +140,7 @@ function CreateNoteForm() {
 function Note({ id }) {
     const noteKind = 'notes';
 
-    const [state, dispatch] = useStateValue();
+    const [state, dispatch] = getAppState();
     const [editing, setEditing] = useState(false);
     const [fullHeight, setFullHeight] = useState(true);
 

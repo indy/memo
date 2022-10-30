@@ -1,9 +1,9 @@
 import { h, Fragment, Link } from '../../lib/preact/mod.js';
 
-import { useStateValue } from './StateProvider.jsx';
+import { getAppState } from '../AppState.jsx';
 
 function TopBarMenu(props) {
-    const [state] = useStateValue();
+    const [state] = getAppState();
 
     function loggedStatus() {
         let status = '';

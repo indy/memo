@@ -3,14 +3,14 @@ import { h, Fragment, useState } from '../../lib/preact/mod.js';
 import Net from '../Net.js';
 import { finishedEditingCallback, getNoteById, notePigment, partitionPinnedNotes } from '../NoteUtils.js';
 import { SvgBin, SvgExpand, SvgMinimise, SvgPinned, SvgUnpinned } from '../svgIcons.jsx';
-import { useStateValue } from './StateProvider.jsx';
+import { getAppState } from '../AppState.jsx';
 
 import Card from './Card.jsx';
 import { ButtonUntriage, ButtonDelete, ButtonEdit, ButtonPinned } from './CardButtons.jsx';
 import { TriageDropDown } from './TriageDropDown.jsx';
 
 function TriagedNotes() {
-    const [state, dispatch] = useStateValue();
+    const [state, dispatch] = getAppState();
 
     const notes = state.listing.triaged;
 
@@ -90,7 +90,7 @@ function TriagedCategory({ categoryNotes, categoryTitle }) {
 }
 
 function DeletableCategory({ category }) {
-    const [state, dispatch] = useStateValue();
+    const [state, dispatch] = getAppState();
 
     function onDeleteClicked(e) {
         e.preventDefault();
@@ -110,7 +110,7 @@ function DeletableCategory({ category }) {
 }
 
 function NewCategoryForm() {
-    const [state, dispatch] = useStateValue();
+    const [state, dispatch] = getAppState();
 
     const [localState, setLocalState] = useState({
         text: '',
@@ -158,7 +158,7 @@ function NewCategoryForm() {
 }
 
 function NoteListItem(note) {
-    const [state, dispatch] = useStateValue();
+    const [state, dispatch] = getAppState();
 
     const resource = 'triaged';
     const pigment = notePigment(note.id);
@@ -173,7 +173,7 @@ function NoteListItem(note) {
 function TriagedNote({ id }) {
     const noteKind = 'triaged';
 
-    const [state, dispatch] = useStateValue();
+    const [state, dispatch] = getAppState();
     const [editing, setEditing] = useState(false);
     const [fullHeight, setFullHeight] = useState(true);
 

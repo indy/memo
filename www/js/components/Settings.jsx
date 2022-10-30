@@ -1,5 +1,5 @@
 import { h, Fragment, useState } from '../../lib/preact/mod.js';
-import { useStateValue } from './StateProvider.jsx';
+import { getAppState } from '../AppState.jsx';
 import { declareCssVariables } from '../ColourCreator.js';
 import { useWasmInterface } from '../WasmInterfaceProvider.jsx';
 
@@ -8,7 +8,7 @@ import Card from './Card.jsx';
 import { ButtonEdit } from './CardButtons.jsx';
 
 function Settings() {
-    const [state, dispatch] = useStateValue();
+    const [state, dispatch] = getAppState();
 
     function updateColourScalar(e, id) {
         e.preventDefault();

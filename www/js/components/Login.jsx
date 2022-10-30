@@ -1,10 +1,10 @@
 import { h, Fragment, route, useState } from '../../lib/preact/mod.js';
 
-import { useStateValue } from './StateProvider.jsx';
+import { getAppState } from '../AppState.jsx';
 import Net from '../Net.js';
 
 function Login() {
-    const [appState, dispatch] = useStateValue();
+    const [appState, dispatch] = getAppState();
 
     if (appState.user) {
         route('/', true);
@@ -144,7 +144,7 @@ function Login() {
 }
 
 function Logout() {
-    const [state, dispatch] = useStateValue();
+    const [state, dispatch] = getAppState();
 
     const handleLogout = (event) => {
         Net.delete('api/auth', {}).then(() => {

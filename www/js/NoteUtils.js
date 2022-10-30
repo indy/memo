@@ -1,6 +1,6 @@
 import { h, useEffect } from '../lib/preact/mod.js';
 
-import { useStateValue } from './components/StateProvider.jsx';
+import { getAppState } from './AppState.jsx';
 import Net from './Net.js';
 
 

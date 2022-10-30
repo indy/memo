@@ -1,4 +1,15 @@
+import { h, Fragment, createContext, useContext, useReducer } from '../lib/preact/mod.js';
 import { plural } from "./JsUtils.js";
+
+export const AppStateContext = createContext();
+
+export const AppStateProvider = ({reducer, initialState, children}) => {
+    return <AppStateContext.Provider value={useReducer(reducer, initialState)}>
+               { children }
+           </AppStateContext.Provider>;
+};
+
+export const getAppState = () => useContext(AppStateContext);
 
 export const initialState = {
     user: undefined,

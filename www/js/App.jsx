@@ -1,10 +1,9 @@
 import { h, Fragment, Router, Route, Link, route, useContext } from '../lib/preact/mod.js';
 
-import { initialState, reducer } from './AppState.js';
+import { initialState, reducer, AppStateProvider, getAppState } from './AppState.jsx';
 import Net from './Net.js';
 import { WasmInterfaceProvider }        from './WasmInterfaceProvider.jsx';
 import { augmentSettingsWithCssModifierParameters } from './ColourCreator.js';
-import { useStateValue, StateProvider } from './components/StateProvider.jsx';
 
 import { Bin, BinnedNote } from './components/Bin.jsx';
 import { Login, Logout } from './components/Login.jsx';
@@ -17,14 +16,14 @@ export {initialState, reducer, augmentSettingsWithCssModifierParameters};
 
 export function App(state, wasmInterface) {
     return <WasmInterfaceProvider wasmInterface={wasmInterface}>
-               <StateProvider initialState={state} reducer={reducer}>
+               <AppStateProvider initialState={state} reducer={reducer}>
                    <AppUI/>
-               </StateProvider>
+               </AppStateProvider>
            </WasmInterfaceProvider>;
 }
 
 function AppUI() {
-    const [state, dispatch] = useStateValue();
+    const [state, dispatch] = getAppState();
 
     function handleRoute(e) {
         dispatch({

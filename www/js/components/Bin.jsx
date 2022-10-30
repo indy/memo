@@ -2,12 +2,12 @@ import { h, Fragment, route, Link, useState } from '../../lib/preact/mod.js';
 
 import Net from '../Net.js';
 import { notePigment } from '../NoteUtils.js';
-import { useStateValue } from './StateProvider.jsx';
+import { getAppState } from '../AppState.jsx';
 
 import Card from './Card.jsx';
 
 function Bin() {
-    const [state, dispatch] = useStateValue();
+    const [state, dispatch] = getAppState();
 
     const notes = state.listing.bin;
     const listing = notes ? notes.map(n => NoteListItem(n)) : [];
@@ -36,7 +36,7 @@ function Bin() {
 }
 
 function NoteListItem(note) {
-    const [state, dispatch] = useStateValue();
+    const [state, dispatch] = getAppState();
 
     const resource = 'bin';
     const pigment = notePigment(note.id);
@@ -70,7 +70,7 @@ function NoteListItem(note) {
 function BinnedNote({ id }) {
     const noteKind = 'bin';
 
-    const [state, dispatch] = useStateValue();
+    const [state, dispatch] = getAppState();
     const editing = false;
     const [fullHeight, setFullHeight] = useState(true);
 
