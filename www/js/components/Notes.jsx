@@ -22,11 +22,12 @@ function Notes() {
 
     return <div>
                <CreateNoteForm/>
-               { pinnedListing.length > 0 && <div class="card-holder-pinned">
-                                                 <div class="card-holder-pinned-inner">
-                                                     { pinnedListing }
-                                                 </div>
-                                             </div>
+               { pinnedListing.length > 0 &&
+                 <div class="card-holder-pinned">
+                     <div class="card-holder-pinned-inner">
+                         { pinnedListing }
+                     </div>
+                 </div>
                }
                <div class="card-holder">
                    { unpinnedListing }
@@ -122,7 +123,7 @@ function CreateNoteForm() {
         }
     }
 
-    return <div class="card-holder-pinned">
+    return <div class="form-holder card-holder-pinned">
                <div class="card-holder-pinned-inner">
                    <textarea id="content"
                              type="text"
