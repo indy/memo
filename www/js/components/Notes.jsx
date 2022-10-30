@@ -1,4 +1,4 @@
-import { h, Fragment, useState } from '../../lib/preact/mod.js';
+import { h, Fragment, useState, useEffect } from '../../lib/preact/mod.js';
 
 import Net from '../Net.js';
 import { finishedEditingCallback, getNoteById, notePigment, partitionPinnedNotes } from '../NoteUtils.js';
@@ -72,13 +72,19 @@ function noteFromText(text) {
     }
 }
 
+const USER_TEXT = 'user-text';
+
 function CreateNoteForm() {
-    const [userText, setUserText] = useState('');
+    const [userText, setUserText] = useState(window.localStorage.getItem(USER_TEXT) || '');
     const [hasFocus, setHasFocus] = useState(false);
 
     const [state, dispatch] = getAppState();
 
     const typeHereMessage = "type note here...";
+
+    useEffect(() => {
+        window.localStorage.setItem(USER_TEXT, userText);
+    }, [userText]);
 
     function handleChangeEvent(event) {
         const newUserText = event.target.value;
