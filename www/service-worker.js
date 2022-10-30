@@ -30,6 +30,9 @@ var precacheConfig = [
     "/index.html",
     "/memo.css",
 
+    "/client_colour.js",
+    "/client_colour_bg.wasm",
+
     "./main.js"
 ];
 
