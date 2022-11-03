@@ -61,106 +61,186 @@ export const AppStateChange = {
             console.log("userLogin");
         }
 
+        let listing: IListing = {
+            bin: bin.map(calculateAge),
+            notes: notes.map(calculateAge),
+            triaged: triaged.map(calculateAge)
+        };
+
         state.user.value = user;
         state.categories.value = categories;
-        state.listing.value.notes = notes.map(calculateAge);
-        state.listing.value.triaged = triaged.map(calculateAge);
-        state.listing.value.bin = bin.map(calculateAge);
+        state.listing.value = listing;
     },
     userLogout: function() {
-        state.user.value.username == "";
-    },
-    listingNoteAppended: function(note: INote) {
-        if (!state.listing.value.notes) {
-            state.listing.value.notes = [];
+        if (DEBUG_APP_STATE) {
+            console.log("userLogout");
         }
 
-        state.listing.value.notes.unshift(note);
+        let user: IUser = { ...state.user.value };
+        user.username = "";
+
+        state.user.value = user;
+    },
+    listingNoteAppended: function(note: INote) {
+        if (DEBUG_APP_STATE) {
+            console.log("listingNoteAppended");
+        }
+
+        let listing: IListing = { ...state.listing.value };
+        if (!listing.notes) {
+            listing.notes = [];
+        }
+        listing.notes.unshift(note);
+
+        state.listing.value = listing;
     },
     notePinStateUpdated: function(n: INote) {
+        if (DEBUG_APP_STATE) {
+            console.log("notePinStateUpdated");
+        }
 
-        let note = findNote(state.listing.value.notes, n.id);
+        let listing = { ...state.listing.value };
 
+        let note = findNote(listing.notes, n.id);
         if (note) {
-            note.pinned = note.pinned;
+            note.pinned = n.pinned;
         } else {
-            note = findNote(state.listing.value.triaged, n.id);
+            note = findNote(listing.triaged, n.id);
             if (note) {
-                note.pinned = note.pinned;
+                note.pinned = n.pinned;
             } else {
-                note = findNote(state.listing.value.bin, n.id);
+                note = findNote(listing.bin, n.id);
                 if (note) {
-                    note.pinned = note.pinned;
+                    note.pinned = n.pinned;
                 }
             }
         }
+        state.listing.value = listing;
     },
     noteBinned: function(n: INote) {
-        state.listing.value.notes = removeNoteFromArray(state.listing.value.notes, n.id);
-        state.listing.value.triaged = removeNoteFromArray(state.listing.value.triaged, n.id);
-
-        if (state.listing.value.bin) {
-            state.listing.value.bin.unshift(n);
+        if (DEBUG_APP_STATE) {
+            console.log("noteBinned");
         }
+        let listing = { ...state.listing.value };
+
+        listing.notes = removeNoteFromArray(listing.notes, n.id);
+        listing.triaged = removeNoteFromArray(listing.triaged, n.id);
+
+        if (listing.bin) {
+            listing.bin.unshift(n);
+        }
+
+        state.listing.value = listing;
     },
     noteContentUpdated: function(n: INote) {
-        let note = findNote(state.listing.value.notes, n.id)
-            || findNote(state.listing.value.triaged, n.id)
-            || findNote(state.listing.value.bin, n.id);
+        if (DEBUG_APP_STATE) {
+            console.log("noteContentUpdated");
+        }
+
+        let listing = { ...state.listing.value };
+
+        let note = findNote(listing.notes, n.id)
+            || findNote(listing.triaged, n.id)
+            || findNote(listing.bin, n.id);
         if (note) {
             note.content = n.content;
             note.title = n.title;
             note.pinned = n.pinned;
         }
+
+        state.listing.value = listing;
     },
     categoryDeleted: function(deletedCategory: ICategory) {
+        if (DEBUG_APP_STATE) {
+            console.log("categoryDeleted");
+        }
         state.categories.value = state.categories.value.filter((c: ICategory)  => c.id !== deletedCategory.id);
 
     },
     categoriesSet: function(categories: Array<ICategory>) {
+        if (DEBUG_APP_STATE) {
+            console.log("categoriesSet");
+        }
         state.categories.value = categories;
     },
     noteUntriaged: function(note: INote) {
-        state.listing.value.triaged = removeNoteFromArray(state.listing.value.triaged, note.id);
-
-        if (state.listing.value.notes) {
-            // todo: maybe insert this note in the correct position, not just at the beginning
-            state.listing.value.notes.unshift(note);
+        if (DEBUG_APP_STATE) {
+            console.log("noteUntriaged");
         }
+
+        let listing = { ...state.listing.value };
+
+        listing.triaged = removeNoteFromArray(listing.triaged, note.id);
+
+        if (listing.notes) {
+            // todo: maybe insert this note in the correct position, not just at the beginning
+            listing.notes.unshift(note);
+        }
+
+        state.listing.value = listing;
     },
     settingsColourScalar: function(id: string, value: string) {
+        if (DEBUG_APP_STATE) {
+            console.log("settingsColourScalar");
+        }
         state.settings.value[id] = parseInt(value, 10);
     },
     settingsColourTriple: function(id: string, value: [string, string, string]) {
+        if (DEBUG_APP_STATE) {
+            console.log("settingsColourTriple");
+        }
         state.settings.value[id] = [parseInt(value[0], 10),
                                     parseInt(value[1], 10),
                                     parseInt(value[2], 10)];
     },
     noteTriaged: function(note: INote) {
-        state.listing.value.notes = removeNoteFromArray(state.listing.value.notes, note.id);
-
-        if (state.listing.value.triaged) {
-            state.listing.value.triaged.unshift(note);
+        if (DEBUG_APP_STATE) {
+            console.log("noteTriaged");
         }
+        let listing = { ...state.listing.value };
+
+        listing.notes = removeNoteFromArray(listing.notes, note.id);
+
+        if (listing.triaged) {
+            listing.triaged.unshift(note);
+        }
+
+        state.listing.value = listing;
     },
     noteDeleted: function(note: INote) {
-        state.listing.value.bin = removeNoteFromArray(state.listing.value.bin, note.id);
+        if (DEBUG_APP_STATE) {
+            console.log("noteDeleted");
+        }
+        let listing = { ...state.listing.value };
+
+        listing.bin = removeNoteFromArray(listing.bin, note.id);
+
+        state.listing.value = listing;
     },
     noteUnbinned: function(note: INote) {
-        state.listing.value.bin = removeNoteFromArray(state.listing.value.bin, note.id);
+        if (DEBUG_APP_STATE) {
+            console.log("noteUnbinned");
+        }
+
+        let listing = { ...state.listing.value };
+        listing.bin = removeNoteFromArray(listing.bin, note.id);
 
         // todo: make this more robust
         if (note.category_id) {
-            if (state.listing.value.triaged) {
-                state.listing.value.triaged.unshift(note);
+            if (listing.triaged) {
+                listing.triaged.unshift(note);
             }
         } else {
-            if (state.listing.value.notes) {
-                state.listing.value.notes.unshift(note);
+            if (listing.notes) {
+                listing.notes.unshift(note);
             }
         }
+        state.listing.value = listing;
     },
     binEmptied: function() {
+        if (DEBUG_APP_STATE) {
+            console.log("binEmptied");
+        }
         state.listing.value.bin = [];
     }
 }

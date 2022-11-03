@@ -1,10 +1,8 @@
-import { h, Fragment } from 'preact';
+import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import { route } from 'preact-router';
-import { getAppState } from '../AppState';
 
 import { parseNoteContent, parseCardTitle } from '../NoteUtils';
-import { cssColourBg, cssColourBg1, cssColourFg1 } from '../AppUtils';
 
 import { INote, IPigment } from "../types";
 
@@ -17,8 +15,8 @@ export default function Card({ note, pigment, resource, fullHeight, children, ca
     }
 
     let ls: LocalState = {
-        userContent: "",
-        userTitle: ""
+        userContent: note.content,
+        userTitle: note.title
     };
 
     const [localState, setLocalState] = useState(ls);

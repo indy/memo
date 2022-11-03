@@ -13,7 +13,6 @@ import { INote, ICategory } from "../types";
 
 function Notes({ path }: { path?: string }) {
     const appState = getAppState();
-
     const notes = appState.listing.value.notes;
     const [pin, unpin] = notes ? partitionPinnedNotes(notes) : [[], []];
 
