@@ -47,12 +47,11 @@ WASM_FOLDER = client/wasm-colour
 # filesets
 ################################################################################
 
-CLIENT_FILES = $(call rwildcard,$(CLIENT_FOLDER)/www,*)
 SERVER_FILES = $(call rwildcard,$(SERVER_FOLDER)/src,*) $(SERVER_FOLDER)/Cargo.toml
 SYSTEMD_FILES = $(wildcard misc/systemd/*)
 
 WASM_FILES = $(wildcard $(WASM_FOLDER)/src/*) $(WASM_FOLDER)/Cargo.toml
-TS_FILES = $(call rwildcard,$(CLIENT_FOLDER)/src,*)
+CLIENT_FILES = $(call rwildcard,$(CLIENT_FOLDER)/src,*)
 
 .PHONY: run clean-staging download-db typescript-watch typescript-typecheck typescript-format init
 
@@ -100,7 +99,7 @@ $(SERVER_FOLDER)/target/debug/$(SERVER_BINARY): $(SERVER_FILES)
 $(SERVER_FOLDER)/target/release/$(SERVER_BINARY): $(SERVER_FILES)
 	cargo build --manifest-path $(SERVER_FOLDER)/Cargo.toml --bin $(SERVER_BINARY) --release
 
-$(CLIENT_FOLDER)/www/index.js: $(TS_FILES)
+$(CLIENT_FOLDER)/www/index.js: $(CLIENT_FILES)
 	./$(CLIENT_FOLDER)/node_modules/esbuild/bin/esbuild ./$(CLIENT_FOLDER)/src/index.tsx --sourcemap --bundle --outdir=./$(CLIENT_FOLDER)/www
 
 $(CLIENT_FOLDER)/www/$(CLIENT_WASM_BG): $(WASM_FILES)
@@ -112,7 +111,7 @@ staging/www/$(CLIENT_WASM_BG): $(WASM_FILES)
 	cargo build --manifest-path $(WASM_FOLDER)/Cargo.toml --release --target wasm32-unknown-unknown
 	wasm-bindgen $(WASM_FOLDER)/target/wasm32-unknown-unknown/release/$(CLIENT_WASM) --out-dir staging/www --no-typescript --no-modules
 
-staging/www/index.html: $(CLIENT_FILES)
+staging/www/index.html: $(CLIENT_FOLDER)/www/index.js
 	mkdir -p $(@D)
 	cp -r $(CLIENT_FOLDER)/www staging/.
 ifdef MINIFY
