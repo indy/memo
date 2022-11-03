@@ -1,5 +1,5 @@
 import { h, createContext } from 'preact';
-import { Link, Router, Route, route } from 'preact-router';
+import { signal } from '@preact/signals';
 
 import { WasmInterfaceProvider }        from './WasmInterfaceProvider';
 
@@ -16,7 +16,7 @@ export const initialState: IState = {
         hueOffset: 0,
         hueDelta: 30
     },
-    activeTopBarMenuItem: '',
+    activeTopBarMenuItem: signal(''),
     categories: [],
     listing: {
         notes: [],
@@ -60,22 +60,20 @@ export const reducer = (state: IState, action: IAction) => {
             newState.settings[action.id] = parseInt(action.value, 10);
             return newState;
         }
-    case 'route-changed':
-        {
-            let activeTopBarMenuItem = '';
-            if (action.url === '/') {
-                activeTopBarMenuItem = 'notes';
-            } else if (action.url === '/triaged') {
-                activeTopBarMenuItem = 'triaged';
-            } else if (action.url === '/bin') {
-                activeTopBarMenuItem = 'bin';
-            }
+        case 'route-changed':
+            {
+                let newState = { ...state };
 
-            return {
-                ...state,
-                activeTopBarMenuItem
-            };
-        }
+                if (action.url === '/') {
+                    newState.activeTopBarMenuItem.value = 'notes';
+                } else if (action.url === '/triaged') {
+                    newState.activeTopBarMenuItem.value = 'triaged';
+                } else if (action.url === '/bin') {
+                    newState.activeTopBarMenuItem.value = 'bin';
+                }
+
+                return newState;
+            }
     case 'user-login': {
         let newState = { ...state };
 

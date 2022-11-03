@@ -1,5 +1,7 @@
 // todo: the exports could be wrong, see the correct way of defining interfaces
 
+import { Signal } from '@preact/signals';
+
 export interface IAdmin {
     db_name: string
 }
@@ -44,7 +46,7 @@ export interface IListing {
 export interface IState {
     user?: IUser,
     settings: any,
-    activeTopBarMenuItem: string,
+    activeTopBarMenuItem: Signal<string>,
     categories: Array<ICategory>,
     listing: IListing,
 }

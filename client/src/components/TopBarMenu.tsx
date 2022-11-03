@@ -29,11 +29,11 @@ function TopBarMenu() {
     let triagedExtraClass: string='';
     let binExtraClass: string='';
 
-    if (state.activeTopBarMenuItem === 'notes') {
+    if (state.activeTopBarMenuItem.value === 'notes') {
         notesExtraClass = 'top-bar-menuitem-active';
-    } else if (state.activeTopBarMenuItem === 'triaged') {
+    } else if (state.activeTopBarMenuItem.value === 'triaged') {
         triagedExtraClass = 'top-bar-menuitem-active';
-    } else if (state.activeTopBarMenuItem === 'bin') {
+    } else if (state.activeTopBarMenuItem.value === 'bin') {
         binExtraClass = 'top-bar-menuitem-active';
     }
 
