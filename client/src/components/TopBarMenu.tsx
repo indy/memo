@@ -3,12 +3,12 @@ import { Link } from 'preact-router';
 import { getAppState } from '../AppState';
 
 function TopBarMenu() {
-    const [state] = getAppState();
+    const appState = getAppState();
 
     function loggedStatus() {
         let status = '';
 
-        let user = state.user;
+        let user = appState.user.value;
         if (user) {
             status += user.username;
             if (user.admin) {
@@ -22,18 +22,18 @@ function TopBarMenu() {
     }
 
     function loggedLink() {
-        return state.user ? "/settings" : "/login";
+        return appState.user.value.username !== "" ? "/settings" : "/login";
     }
 
     let notesExtraClass: string='';
     let triagedExtraClass: string='';
     let binExtraClass: string='';
 
-    if (state.activeTopBarMenuItem.value === 'notes') {
+    if (appState.activeTopBarMenuItem.value === 'notes') {
         notesExtraClass = 'top-bar-menuitem-active';
-    } else if (state.activeTopBarMenuItem.value === 'triaged') {
+    } else if (appState.activeTopBarMenuItem.value === 'triaged') {
         triagedExtraClass = 'top-bar-menuitem-active';
-    } else if (state.activeTopBarMenuItem.value === 'bin') {
+    } else if (appState.activeTopBarMenuItem.value === 'bin') {
         binExtraClass = 'top-bar-menuitem-active';
     }
 

@@ -1,9 +1,10 @@
 import { h } from 'preact';
 import Net from './Net';
 
-import { IState, IAction, INote, IListing, ICategory, IPigment } from "./types";
+import { IState, INote, IPigment } from "./types";
+import { AppStateChange } from './AppState';
 
-export function finishedEditingCallback(dispatch: any, note: INote, setEditing: any) {
+export function finishedEditingCallback(note: INote, setEditing: any) {
     return function(updatedTitle: string, updatedContent: string) {
         let data = {
             ...note,
@@ -11,10 +12,7 @@ export function finishedEditingCallback(dispatch: any, note: INote, setEditing: 
             title: updatedTitle
         };
         Net.put(`/api/notes/${note.id}`, data).then(newNote => {
-            dispatch({
-                type: 'note-content-updated',
-                note: newNote
-            });
+            AppStateChange.noteContentUpdated(newNote);
             setEditing(false);
         });
     }
@@ -24,17 +22,17 @@ export function getNoteById(state: IState, noteKind: string, id: number): INote 
 
     let notes: Array<INote> = [];
     if (noteKind === "triaged") {
-        notes = state.listing.triaged;
+        notes = state.listing.value.triaged;
     } else if (noteKind === "bin") {
-        notes = state.listing.bin;
+        notes = state.listing.value.bin;
     } else if (noteKind === "notes") {
-        notes = state.listing.notes;
+        notes = state.listing.value.notes;
     }
 
     let res = notes.find((n: INote) => n.id === id);
     if (!res) {
         // isg hack: when triaging a note it may move from noteKind 'notes' to noteKind 'triaged', so look there
-        res = state.listing.triaged.find(n => n.id === id);
+        res = state.listing.value.triaged.find(n => n.id === id);
     }
 
     return res!;

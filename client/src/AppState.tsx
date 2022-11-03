@@ -1,261 +1,177 @@
 import { h, createContext } from 'preact';
 import { signal } from '@preact/signals';
+import { useContext } from 'preact/hooks';
 
-import { WasmInterfaceProvider }        from './WasmInterfaceProvider';
+import { IUser, IState, IAction, INote, IListing, ICategory } from "./types";
 
-import { useContext, useReducer } from 'preact/hooks';
 import { plural } from "./JsUtils";
 
-import { IReducer, IState, IAction, INote, ITriagedNote, IListing, ICategory } from "./types";
+const emptyUser: IUser = {
+    username: "",
+    email: "",
+    admin: { db_name: ""}
+}
 
-export const initialState: IState = {
-    user: undefined,
-    settings: {
+const state: IState = {
+    user: signal(emptyUser),
+    settings: signal({
         // note: extra setting variables are declared in
         // ColourCreator.js::augmentSettingsWithCssModifierParameters
         hueOffset: 0,
         hueDelta: 30
-    },
+    }),
     activeTopBarMenuItem: signal(''),
-    categories: [],
-    listing: {
+    categories: signal([]),
+    listing: signal({
         notes: [],
         triaged: [],
         bin: []
-    }
+    })
 };
 
-// - Message names are in 'object-verb' convention.
-// - Verbs is in the past tense mean that the new state is reflecting changes made
-//   by another 'source of ground truth', e.g. on the server, preact's routing, etc
-// - Verbs in the present tense mean that this state system holds the definitive truth
-//
+export const initialState = state;
 
-// function fuckfn(action: IAction): void {}
-// let fuck = [initialState, fuckfn]
-export const AppStateContext = createContext({});
+export const AppStateContext = createContext(state);
 
-export const AppStateProvider = ({reducer, initialState, children}: {reducer: IReducer, initialState: IState, children: any}) => {
-    return <AppStateContext.Provider value={useReducer(reducer, initialState)}>
+export const AppStateProvider = ({state, children}: {state: IState, children: any}) => {
+    return <AppStateContext.Provider value={state}>
         { children }
     </AppStateContext.Provider>;
 };
 
 export const getAppState = () => useContext(AppStateContext);
 
+const DEBUG_APP_STATE = true;
 
-export const reducer = (state: IState, action: IAction) => {
-    switch (action.type) {
-    case 'settings-colour-triple': // these triples are in HSLuv colour space
-        {
-            let newState = { ...state };
-            newState.settings[action.id] = [parseInt(action.value[0], 10),
-                                            parseInt(action.value[1], 10),
-                                            parseInt(action.value[2], 10)];
-            return newState;
+export const AppStateChange = {
+    routeChanged: function(url: string) {
+        if (DEBUG_APP_STATE) {
+            console.log("routeChanged");
         }
-    case 'settings-colour-scalar':
-        {
-            let newState = { ...state };
-            newState.settings[action.id] = parseInt(action.value, 10);
-            return newState;
+        if (url === '/') {
+            state.activeTopBarMenuItem.value = 'notes';
+        } else if (url === '/triaged') {
+            state.activeTopBarMenuItem.value = 'triaged';
+        } else if (url === '/bin') {
+            state.activeTopBarMenuItem.value = 'bin';
         }
-        case 'route-changed':
-            {
-                let newState = { ...state };
-
-                if (action.url === '/') {
-                    newState.activeTopBarMenuItem.value = 'notes';
-                } else if (action.url === '/triaged') {
-                    newState.activeTopBarMenuItem.value = 'triaged';
-                } else if (action.url === '/bin') {
-                    newState.activeTopBarMenuItem.value = 'bin';
-                }
-
-                return newState;
-            }
-    case 'user-login': {
-        let newState = { ...state };
-
-        newState.user = action.user;
-
-        newState.categories = action.categories;
-
-        newState.listing['notes'] = action.notes.map(calculateAge);
-        newState.listing['triaged'] = action.triaged.map(calculateAge);
-        newState.listing['bin'] = action.bin.map(calculateAge);
-
-        return newState;
-    }
-    case 'user-logout': {
-        return {
-            ...state,
-            user: undefined
+    },
+    userLogin: function(user: IUser, categories: Array<ICategory>, notes: Array<INote>, triaged: Array<INote>, bin: Array<INote>) {
+        if (DEBUG_APP_STATE) {
+            console.log("userLogin");
         }
-    }
-    case 'category-deleted':
-        {
-            return {
-                ...state,
-                categories: state.categories.filter((c: ICategory)  => c.id !== action.deletedCategory.id)
-            }
+
+        state.user.value = user;
+        state.categories.value = categories;
+        state.listing.value.notes = notes.map(calculateAge);
+        state.listing.value.triaged = triaged.map(calculateAge);
+        state.listing.value.bin = bin.map(calculateAge);
+    },
+    userLogout: function() {
+        state.user.value.username == "";
+    },
+    listingNoteAppended: function(note: INote) {
+        if (!state.listing.value.notes) {
+            state.listing.value.notes = [];
         }
-    case 'categories-set':
-        return {
-            ...state,
-            categories: action.categories
-        };
-    case 'listing-note-appended':
-        {
-            let listing = getListingFromState(state);
 
-            if (!listing.notes) {
-                listing.notes = [];
-            }
+        state.listing.value.notes.unshift(note);
+    },
+    notePinStateUpdated: function(n: INote) {
 
-            listing.notes.unshift(action.note);
+        let note = findNote(state.listing.value.notes, n.id);
 
-            return updateStateWithListing(state, listing);
-        }
-    case 'note-pinstate-updated':
-        {
-            let listing = getListingFromState(state);
-            let note = findNote(listing.notes, action.note.id);
-
+        if (note) {
+            note.pinned = note.pinned;
+        } else {
+            note = findNote(state.listing.value.triaged, n.id);
             if (note) {
-                note.pinned = action.note.pinned;
+                note.pinned = note.pinned;
             } else {
-                note = findNote(listing.triaged, action.note.id);
+                note = findNote(state.listing.value.bin, n.id);
                 if (note) {
-                    note.pinned = action.note.pinned;
-                } else {
-                    note = findNote(listing.bin, action.note.id);
-                    if (note) {
-                        note.pinned = action.note.pinned;
-                    }
+                    note.pinned = note.pinned;
                 }
             }
-
-            return updateStateWithListing(state, listing);
         }
-    case 'note-content-updated':
-        {
-            let listing = getListingFromState(state);
+    },
+    noteBinned: function(n: INote) {
+        state.listing.value.notes = removeNoteFromArray(state.listing.value.notes, n.id);
+        state.listing.value.triaged = removeNoteFromArray(state.listing.value.triaged, n.id);
 
-            let note = findNote(listing.notes, action.note.id)
-                || findNote(listing.triaged, action.note.id)
-                || findNote(listing.bin, action.note.id);
-            if (note) {
-                note.content = action.note.content;
-                note.title = action.note.title;
-                note.pinned = action.note.pinned;
+        if (state.listing.value.bin) {
+            state.listing.value.bin.unshift(n);
+        }
+    },
+    noteContentUpdated: function(n: INote) {
+        let note = findNote(state.listing.value.notes, n.id)
+            || findNote(state.listing.value.triaged, n.id)
+            || findNote(state.listing.value.bin, n.id);
+        if (note) {
+            note.content = n.content;
+            note.title = n.title;
+            note.pinned = n.pinned;
+        }
+    },
+    categoryDeleted: function(deletedCategory: ICategory) {
+        state.categories.value = state.categories.value.filter((c: ICategory)  => c.id !== deletedCategory.id);
+
+    },
+    categoriesSet: function(categories: Array<ICategory>) {
+        state.categories.value = categories;
+    },
+    noteUntriaged: function(note: INote) {
+        state.listing.value.triaged = removeNoteFromArray(state.listing.value.triaged, note.id);
+
+        if (state.listing.value.notes) {
+            // todo: maybe insert this note in the correct position, not just at the beginning
+            state.listing.value.notes.unshift(note);
+        }
+    },
+    settingsColourScalar: function(id: string, value: string) {
+        state.settings.value[id] = parseInt(value, 10);
+    },
+    settingsColourTriple: function(id: string, value: [string, string, string]) {
+        state.settings.value[id] = [parseInt(value[0], 10),
+                                    parseInt(value[1], 10),
+                                    parseInt(value[2], 10)];
+    },
+    noteTriaged: function(note: INote) {
+        state.listing.value.notes = removeNoteFromArray(state.listing.value.notes, note.id);
+
+        if (state.listing.value.triaged) {
+            state.listing.value.triaged.unshift(note);
+        }
+    },
+    noteDeleted: function(note: INote) {
+        state.listing.value.bin = removeNoteFromArray(state.listing.value.bin, note.id);
+    },
+    noteUnbinned: function(note: INote) {
+        state.listing.value.bin = removeNoteFromArray(state.listing.value.bin, note.id);
+
+        // todo: make this more robust
+        if (note.category_id) {
+            if (state.listing.value.triaged) {
+                state.listing.value.triaged.unshift(note);
             }
-
-            return updateStateWithListing(state, listing);
-        }
-    case 'note-triaged':
-        {
-            let listing = getListingFromState(state);
-
-            // remove note from listing.notes
-            listing.notes = removeNoteFromArray(listing.notes, action.note.id);
-
-            if (listing.triaged) {
-                listing.triaged.unshift(action.note);
+        } else {
+            if (state.listing.value.notes) {
+                state.listing.value.notes.unshift(note);
             }
-
-            return updateStateWithListing(state, listing);
         }
-    case 'note-untriaged':
-        {
-            let listing = getListingFromState(state);
-
-            listing.triaged = removeTriagedNoteFromArray(listing.triaged, action.note.id);
-
-            if (listing.notes) {
-                // todo: maybe insert this note in the correct position, not just at the beginning
-                listing.notes.unshift(action.note);
-            }
-
-            return updateStateWithListing(state, listing);
-        }
-    case 'note-binned':
-        {
-            let listing = getListingFromState(state);
-
-            listing.notes = removeNoteFromArray(listing.notes, action.note.id);
-            listing.triaged = removeTriagedNoteFromArray(listing.triaged, action.note.id);
-
-            if (listing.bin) {
-                listing.bin.unshift(action.note);
-            }
-
-            return updateStateWithListing(state, listing);
-        }
-    case 'note-deleted':
-        {
-            let listing = getListingFromState(state);
-
-            listing.bin = removeNoteFromArray(listing.bin, action.note.id);
-
-            return updateStateWithListing(state, listing);
-        }
-    case 'note-unbinned':
-        {
-            let listing = getListingFromState(state);
-
-            listing.bin = removeNoteFromArray(listing.bin, action.note.id);
-
-            // todo: make this more robust
-            if (action.note.category_id) {
-                if (listing.triaged) {
-                    listing.triaged.unshift(action.note);
-                }
-            } else {
-                if (listing.notes) {
-                    listing.notes.unshift(action.note);
-                }
-            }
-
-            return updateStateWithListing(state, listing);
-        }
-    case 'bin-emptied':
-        {
-            let listing = getListingFromState(state);
-
-            listing.bin = [];
-
-            return updateStateWithListing(state, listing);
-        }
-    default:
-        return state;
+    },
+    binEmptied: function() {
+        state.listing.value.bin = [];
     }
-};
+}
 
+;
 function findNote(array: Array<INote>, noteId: number): INote | undefined {
     return array && array.find(n => n.id === noteId);
 }
 
 function removeNoteFromArray(array: Array<INote>, noteId: number): Array<INote> {
     return array ? array.filter(n => n.id !== noteId) : array;
-}
-
-function removeTriagedNoteFromArray(array: Array<ITriagedNote>, noteId: number): Array<ITriagedNote> {
-    return array ? array.filter(n => n.id !== noteId) : array;
-}
-
-function getListingFromState(state: IState): IListing {
-    let listing = { ...state.listing };
-    return listing;
-}
-
-function updateStateWithListing(state: IState, listing: IListing): IState {
-    let newState = {
-        ...state,
-        listing
-    };
-
-    return newState;
 }
 
 function calculateAge(note: INote) {
@@ -267,7 +183,6 @@ function calculateAge(note: INote) {
 
     return note;
 }
-
 
 function humanReadableAge(deltaMS: number) {
 

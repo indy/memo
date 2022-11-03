@@ -1,14 +1,14 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import { route } from 'preact-router';
-import { getAppState } from '../AppState';
+import { AppStateChange, getAppState } from '../AppState';
 
 import Net from '../Net';
 
 function Login({ path }: { path?: string }) {
-    const [appState, dispatch] = getAppState();
+    const appState = getAppState();
 
-    if (appState.user) {
+    if (appState.user.value.username !== "") {
         route('/', true);
     };
 
@@ -56,15 +56,7 @@ function Login({ path }: { path?: string }) {
         let triaged = await Net.get(`/api/triaged`);
         let bin = await Net.get(`/api/bin`);
 
-        dispatch({
-            type: 'user-login',
-            user,
-            categories,
-            notes,
-            triaged,
-            bin
-        });
-
+        AppStateChange.userLogin(user, categories, notes, triaged, bin);
         // once the state has a user, the Login page will redirect to '/'
     }
 
@@ -163,11 +155,9 @@ function Login({ path }: { path?: string }) {
 }
 
 function Logout({ path }: { path?: string }) {
-    const [state, dispatch] = getAppState();
-
     const handleLogout = (event: any) => {
         Net.delete('api/auth', {}).then(() => {
-            dispatch({ type: 'user-logout' });
+            AppStateChange.userLogout();
             route('/login', true);
         });
         event.preventDefault();

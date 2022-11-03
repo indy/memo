@@ -3,16 +3,16 @@ import { useState } from 'preact/hooks';
 
 import Net from '../Net';
 import { notePigment, getNoteById } from '../NoteUtils';
-import { getAppState } from '../AppState';
+import { AppStateChange, getAppState } from '../AppState';
 
 import Card from './Card';
 
 import { INote } from "../types";
 
 function Bin({ path }: { path?: string }) {
-    const [state, dispatch] = getAppState();
+    const appState = getAppState();
 
-    const notes: Array<INote> = state.listing.bin;
+    const notes: Array<INote> = appState.listing.value.bin;
     const listing = notes ? notes.map(n => NoteListItem(n)) : [];
 
 
@@ -20,9 +20,7 @@ function Bin({ path }: { path?: string }) {
         e.preventDefault();
 
         Net.delete(`/api/bin`, {}).then(() => {
-            dispatch({
-                type: 'bin-emptied'
-            });
+            AppStateChange.binEmptied();
         });
     }
 
@@ -39,7 +37,7 @@ function Bin({ path }: { path?: string }) {
 }
 
 function NoteListItem(note: INote) {
-    const [state, dispatch] = getAppState();
+    const appState = getAppState();
 
     const resource = 'bin';
     const pigment = notePigment(note.id);
@@ -47,20 +45,14 @@ function NoteListItem(note: INote) {
     function onUndeleteClicked(e: any) {
         e.preventDefault();
         Net.post(`/api/bin/${ note.id }/unbin`, note).then(() => {
-            dispatch({
-                type: 'note-unbinned',
-                note
-            });
+            AppStateChange.noteUnbinned(note);
         });
     }
 
     function onDeleteClicked(e: any) {
         e.preventDefault();
         Net.delete(`/api/bin/${ note.id }`, {}).then(() => {
-            dispatch({
-                type: 'note-deleted',
-                note
-            });
+            AppStateChange.noteDeleted(note);
         });
     }
 
@@ -73,10 +65,10 @@ function NoteListItem(note: INote) {
 function BinnedNote({ id, path }: { id?: string, path?: string }) {
     const noteKind = 'bin';
 
-    const [state] = getAppState();
+    const appState = getAppState();
     const editing = false;
 
-    if (!state.listing[noteKind]) {
+    if (!appState.listing.value.bin) {
         // isg todo: fix this
         return <div></div>;
     }
@@ -87,7 +79,7 @@ function BinnedNote({ id, path }: { id?: string, path?: string }) {
     }
 
     const noteId = parseInt(id, 10);
-    const note = getNoteById(state, noteKind, noteId);
+    const note = getNoteById(appState, noteKind, noteId);
     const pigment = notePigment(noteId);
 
     return <Card editing={ editing }

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'preact/hooks';
 
 import Net from '../Net';
 import { finishedEditingCallback, getNoteById, notePigment, partitionPinnedNotes } from '../NoteUtils';
-import { getAppState } from '../AppState';
+import { AppStateChange, getAppState } from '../AppState';
 
 import Card from './Card';
 import { ButtonDelete, ButtonEdit, ButtonPinned } from './CardButtons';
@@ -12,13 +12,13 @@ import { TriageDropDown } from './TriageDropDown.jsx';
 import { INote, ICategory } from "../types";
 
 function Notes({ path }: { path?: string }) {
-    const [state] = getAppState();
+    const appState = getAppState();
 
-    const notes = state.listing.notes;
-
+    const notes = appState.listing.value.notes;
     const [pin, unpin] = notes ? partitionPinnedNotes(notes) : [[], []];
-    const pinnedListing = pin.map(n => NoteListItem(n, state.categories));
-    const unpinnedListing = unpin.map(n => NoteListItem(n, state.categories));
+
+    const pinnedListing = pin.map(n => NoteListItem(n, appState.categories.value));
+    const unpinnedListing = unpin.map(n => NoteListItem(n, appState.categories.value));
 
     return <div>
                <CreateNoteForm/>
@@ -36,7 +36,6 @@ function Notes({ path }: { path?: string }) {
 }
 
 function NoteListItem(note: INote, categories: Array<ICategory>) {
-    const [state, dispatch] = getAppState();
     const [fullHeight, setFullHeight] = useState(false);
 
     const resource = 'notes';
@@ -49,10 +48,9 @@ function NoteListItem(note: INote, categories: Array<ICategory>) {
                <TriageDropDown noteId={note.id}
                                categories={categories}
                                pigment={pigment}
-                               dispatch={dispatch}
                                cardFullHeightFn={setFullHeight}/>
-               <ButtonPinned note={ note } pigment={ pigment } dispatch={dispatch} />
-               <ButtonDelete note={ note } pigment={ pigment } dispatch={dispatch} noteKind={ resource } />
+               <ButtonPinned note={ note } pigment={ pigment }  />
+               <ButtonDelete note={ note } pigment={ pigment } noteKind={ resource } />
            </Card>
 }
 
@@ -80,8 +78,6 @@ const USER_TEXT = 'user-text';
 function CreateNoteForm() {
     const [userText, setUserText] = useState(window.localStorage.getItem(USER_TEXT) || '');
     const [hasFocus, setHasFocus] = useState(false);
-
-    const [state, dispatch] = getAppState();
 
     const typeHereMessage = "type note here...";
 
@@ -116,10 +112,7 @@ function CreateNoteForm() {
         const protoNote = noteFromText(userText);
         if (protoNote) {
             Net.post(`/api/notes`, protoNote).then(note => {
-                dispatch({
-                    type: 'listing-note-appended',
-                    note
-                });
+                AppStateChange.listingNoteAppended(note);
             });
             setUserText('');
         }
@@ -149,11 +142,12 @@ function CreateNoteForm() {
 function Note({ id, path }: { id?: string, path?: string }) {
     const noteKind = 'notes';
 
-    const [state, dispatch] = getAppState();
+    const appState = getAppState();
+
     const [editing, setEditing] = useState(false);
     const [fullHeight, setFullHeight] = useState(true);
 
-    if (!state.listing[noteKind]) {
+    if (!appState.listing.value[noteKind]) {
         // isg todo: fix this
         return <div></div>;
     }
@@ -164,10 +158,10 @@ function Note({ id, path }: { id?: string, path?: string }) {
     }
 
     const noteId = parseInt(id, 10);
-    const note = getNoteById(state, noteKind, noteId);
+    const note = getNoteById(appState, noteKind, noteId);
     const pigment = notePigment(noteId);
 
-    return <Card onFinishedEditing={ finishedEditingCallback(dispatch, note, setEditing) }
+    return <Card onFinishedEditing={ finishedEditingCallback(note, setEditing) }
                  editing={editing}
                  note={note}
                  resource={noteKind}
@@ -176,11 +170,11 @@ function Note({ id, path }: { id?: string, path?: string }) {
                  cardClass="wider-card">
                <ButtonEdit pigment={ pigment } editing={ editing } callback={ setEditing }/>
                <TriageDropDown noteId={note.id}
-                               categories={state.categories}
+                               categories={appState.categories.value}
                                pigment={pigment}
                                cardFullHeightFn={setFullHeight}/>
-               <ButtonPinned note={ note } pigment={ pigment } dispatch={dispatch} />
-               <ButtonDelete note={ note } pigment={ pigment } dispatch={dispatch} noteKind={ noteKind } />
+               <ButtonPinned note={ note } pigment={ pigment } />
+               <ButtonDelete note={ note } pigment={ pigment } noteKind={ noteKind } />
            </Card>
 }
 

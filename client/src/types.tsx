@@ -17,17 +17,6 @@ export interface ICategory {
     title: string,
 }
 
-export interface ITriagedNote {
-    age: string,
-    content: string,
-    created_at: string,
-    triaged_at: string,
-    id: number,
-    pinned: boolean,
-    title: string,
-    category_id: number
-}
-
 export interface INote {
     age: string,
     content: string,
@@ -35,20 +24,22 @@ export interface INote {
     id: number,
     pinned: boolean,
     title: string
+    triaged_at?: string,
+    category_id?: number
 }
 
 export interface IListing {
     bin: Array<INote>,
     notes: Array<INote>,
-    triaged: Array<ITriagedNote>,
+    triaged: Array<INote>,
 }
 
 export interface IState {
-    user?: IUser,
-    settings: any,
+    user: Signal<IUser>,
+    settings: Signal<any>,
     activeTopBarMenuItem: Signal<string>,
-    categories: Array<ICategory>,
-    listing: IListing,
+    categories: Signal<Array<ICategory>>,
+    listing: Signal<IListing>,
 }
 
 export interface IAction {
@@ -64,8 +55,6 @@ export interface IAction {
     deletedCategory?: any,
     note?: any,
 }
-
-export type IReducer = (state: IState, action: IAction) => IState;
 
 export interface IPigment {
     num: number,

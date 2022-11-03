@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { getAppState } from '../AppState';
+import { AppStateChange, getAppState } from '../AppState';
 
 import { declareCssVariables } from '../ColourCreator';
 import { useWasmInterface } from '../WasmInterfaceProvider';
@@ -11,29 +11,21 @@ import { ButtonEdit } from './CardButtons';
 import { INote, IPigment } from "../types";
 
 function Settings({ path }: { path?: string }) {
-    const [state, dispatch] = getAppState();
+    const appState = getAppState();
 
     function updateColourScalar(e: any, id: string) {
         e.preventDefault();
-        dispatch({
-            type: 'settings-colour-scalar',
-            value: e.target.value,
-            id
-        });
+        AppStateChange.settingsColourScalar(id, e.target.value);
     }
 
     function updateColourTriple(e: any, index: number, id: string) {
         e.preventDefault();
         let value = settings[id];
         value[index] = e.target.value;
-        dispatch({
-            type: 'settings-colour-triple',
-            value,
-            id
-        });
+        AppStateChange.settingsColourTriple(id, value);
     }
 
-    const settings = state.settings;
+    const settings = appState.settings.value;
 
     const wasmInterface = useWasmInterface();
     declareCssVariables(settings, wasmInterface);

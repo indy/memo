@@ -4,22 +4,22 @@ import { useState } from 'preact/hooks';
 import Net from '../Net';
 import { finishedEditingCallback, getNoteById, notePigment, partitionPinnedNotes } from '../NoteUtils';
 import { SvgBin, SvgExpand, SvgMinimise, SvgPinned, SvgUnpinned } from '../svgIcons';
-import { getAppState } from '../AppState';
+import { AppStateChange, getAppState } from '../AppState';
 
 import Card from './Card';
 import { ButtonUntriage, ButtonDelete, ButtonEdit, ButtonPinned } from './CardButtons';
 import { TriageDropDown } from './TriageDropDown';
 
-import { INote, ICategory, ITriagedNote } from "../types";
+import { INote, ICategory } from "../types";
 
 function TriagedNotes({ path }: { path?: string }) {
-    const [state, dispatch] = getAppState();
+    const appState = getAppState();
 
-    if (state.categories && state.listing && state.listing.triaged) {
+    if (appState.categories.value && appState.listing.value && appState.listing.value.triaged) {
 
         // place triaged notes in their categories
-        const partitionByCategoryId = state.categories.reduce((acc: any, category: any) => {
-            acc[category.id] = state.listing.triaged.filter((n: ITriagedNote) => n.category_id === category.id);
+        const partitionByCategoryId = appState.categories.value.reduce((acc: any, category: any) => {
+            acc[category.id] = appState.listing.value.triaged.filter((n: INote) => n.category_id === category.id);
             return acc;
         }, {});
 
@@ -34,7 +34,7 @@ function TriagedNotes({ path }: { path?: string }) {
         const triagedSectionsHtml: any = [];
         const deletableHtml: any = [];
 
-        state.categories.forEach((category: ICategory) => {
+        appState.categories.value.forEach((category: ICategory) => {
             if (triagedByCategory[category.id]) {
                 triagedSectionsHtml.push(<TriagedCategory
                                              categoryNotes={ triagedByCategory[category.id] }
@@ -91,16 +91,11 @@ function TriagedCategory({ categoryNotes, categoryTitle }: { categoryNotes: any,
 }
 
 function DeletableCategory({ category }: { category: any }) {
-    const [state, dispatch] = getAppState();
-
     function onDeleteClicked(e: any) {
         e.preventDefault();
 
         Net.delete(`/api/categories/${ category.id }`, {}).then(() => {
-            dispatch({
-                type: 'category-deleted',
-                deletedCategory: category
-            });
+            AppStateChange.categoryDeleted(category);
         });
     }
 
@@ -111,7 +106,7 @@ function DeletableCategory({ category }: { category: any }) {
 }
 
 function NewCategoryForm() {
-    const [state, dispatch] = getAppState();
+    const appState = getAppState();
 
     const [localState, setLocalState] = useState({
         text: '',
@@ -120,7 +115,7 @@ function NewCategoryForm() {
 
     function onInput(e: any) {
         const value = e.target.value;
-        const found = state.categories.find((c: ICategory) => c.title === value);
+        const found = appState.categories.value.find((c: ICategory) => c.title === value);
 
         const newState = {
             ...localState,
@@ -135,10 +130,7 @@ function NewCategoryForm() {
         e.preventDefault();
 
         Net.post(`/api/categories`, { title: localState.text }).then(latestCategories => {
-            dispatch({
-                type: 'categories-set',
-                categories: latestCategories
-            });
+            AppStateChange.categoriesSet(latestCategories);
             setLocalState({...localState, text: ''});
         });
     }
@@ -159,26 +151,24 @@ function NewCategoryForm() {
 }
 
 function NoteListItem(note: INote) {
-    const [state, dispatch] = getAppState();
-
     const resource = 'triaged';
     const pigment = notePigment(note.id);
 
     return <Card note={note} resource={resource} pigment={pigment}>
-               <ButtonUntriage note={ note } pigment={pigment} dispatch={dispatch} />
-               <ButtonPinned note={ note } pigment={ pigment } dispatch={dispatch} />
-               <ButtonDelete note={ note } pigment={ pigment } dispatch={dispatch} noteKind={ resource } />
+               <ButtonUntriage note={ note } pigment={pigment}  />
+               <ButtonPinned note={ note } pigment={ pigment }  />
+               <ButtonDelete note={ note } pigment={ pigment }  noteKind={ resource } />
            </Card>;
 }
 
 function TriagedNote({ id, path }: { id?: string, path?: string }) {
     const noteKind = 'triaged';
 
-    const [state, dispatch] = getAppState();
+    const appState = getAppState();
     const [editing, setEditing] = useState(false);
     const [fullHeight, setFullHeight] = useState(true);
 
-    if (!state.listing[noteKind]) {
+    if (!appState.listing.value.triaged) {
         // isg todo: fix this
         return <div></div>;
     }
@@ -189,10 +179,10 @@ function TriagedNote({ id, path }: { id?: string, path?: string }) {
     }
 
     const noteId = parseInt(id, 10);
-    const note = getNoteById(state, noteKind, noteId);
+    const note = getNoteById(appState, noteKind, noteId);
     const pigment = notePigment(noteId);
 
-    return <Card onFinishedEditing={ finishedEditingCallback(dispatch, note, setEditing) }
+    return <Card onFinishedEditing={ finishedEditingCallback(note, setEditing) }
                  editing={editing}
                  note={note}
                  resource={noteKind}
@@ -201,12 +191,11 @@ function TriagedNote({ id, path }: { id?: string, path?: string }) {
                  cardClass="wider-card">
                <ButtonEdit pigment={ pigment } editing={ editing } callback={ setEditing }/>
                <TriageDropDown noteId={note.id}
-                               categories={state.categories}
+                               categories={appState.categories.value}
                                pigment={pigment}
-                               dispatch={dispatch}
                                cardFullHeightFn={setFullHeight}/>
-               <ButtonPinned note={ note } pigment={ pigment } dispatch={dispatch} />
-               <ButtonDelete note={ note } pigment={ pigment } dispatch={dispatch} noteKind={ noteKind } />
+               <ButtonPinned note={ note } pigment={ pigment } />
+               <ButtonDelete note={ note } pigment={ pigment } noteKind={ noteKind } />
            </Card>;
 }
 

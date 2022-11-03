@@ -1,9 +1,7 @@
 import { h, Fragment, FunctionalComponent } from 'preact';
-import { Router, Route, route } from 'preact-router';
-import { Link } from 'preact-router/match';
+import { Router, route } from 'preact-router';
 import { WasmInterfaceProvider }        from './WasmInterfaceProvider';
-import { useContext, useReducer } from 'preact/hooks';
-import { AppStateContext, AppStateProvider, getAppState, reducer, initialState } from './AppState';
+import { AppStateChange, AppStateProvider, getAppState, initialState } from './AppState';
 
 import { Bin, BinnedNote } from './components/Bin';
 import { TopBarMenu } from './components/TopBarMenu';
@@ -14,28 +12,24 @@ import { TriagedNote, TriagedNotes } from './components/TriagedNotes';
 
 import { IState } from "./types";
 
-export { initialState, reducer }
-
 export const App = ({state, wasmInterface}: {state: IState, wasmInterface: any}) =>  {
     return <WasmInterfaceProvider wasmInterface={wasmInterface}>
-               <AppStateProvider initialState={state} reducer={reducer}>
+               <AppStateProvider state={state}>
                    <AppUI/>
                </AppStateProvider>
            </WasmInterfaceProvider>;
 };
 
 const AppUI = () => {
-    const [state, dispatch] = getAppState();
+    const state = getAppState();
 
-    function handleRoute(e) {
-        dispatch({
-            type: 'route-changed',
-            url: e.url
-        });
+    function handleRoute(e: any) {
+        AppStateChange.routeChanged(e.url);
 
         if (e.url !== '/login') {
             // all other pages require the user to be logged in
-            if (!state.user) {
+            if (state.user.value.username === "") {
+                console.log(state.user.value);
                 console.log("redirecting to /login because user is not logged in");
                 route('/login', true);
             }

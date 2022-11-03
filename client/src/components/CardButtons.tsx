@@ -3,18 +3,15 @@ import { route } from 'preact-router';
 
 import Net from '../Net';
 import { SvgBin, SvgPinned, SvgUnpinned } from '../svgIcons';
-
+import { AppStateChange } from '../AppState';
 import { INote, IPigment } from "../types";
 
-function ButtonDelete({ note, noteKind, pigment, dispatch }: { note: INote, noteKind: string, pigment: IPigment, dispatch: any }) {
+function ButtonDelete({ note, noteKind, pigment }: { note: INote, noteKind: string, pigment: IPigment }) {
     function onDeleteClicked(e: any) {
         e.preventDefault();
 
         Net.post(`/api/${ noteKind }/${ note.id }/bin`, {}).then(() => {
-            dispatch({
-                type: 'note-binned',
-                note
-            });
+            AppStateChange.noteBinned(note);
             if (noteKind === 'triaged') {
                 route('/triaged');
             } else {
@@ -29,7 +26,7 @@ function ButtonDelete({ note, noteKind, pigment, dispatch }: { note: INote, note
            </button>;
 }
 
-function ButtonPinned({ note, pigment, dispatch }: { note: INote, pigment: IPigment, dispatch: any }) {
+function ButtonPinned({ note, pigment }: { note: INote, pigment: IPigment }) {
     function onPinnedClicked(e: any) {
         e.preventDefault();
 
@@ -38,10 +35,7 @@ function ButtonPinned({ note, pigment, dispatch }: { note: INote, pigment: IPigm
             pinned: !note.pinned
         };
         Net.put(`/api/notes/${note.id}`, data).then(n => {
-            dispatch({
-                type: 'note-pinstate-updated',
-                note: n
-            });
+            AppStateChange.notePinStateUpdated(n);
         });
     }
 
@@ -66,14 +60,11 @@ function ButtonEdit({ pigment, editing, callback}: { pigment: IPigment, editing:
            </button>;
 }
 
-function ButtonUntriage({ note, pigment, dispatch}: { note: INote, pigment: IPigment, dispatch: any}) {
+function ButtonUntriage({ note, pigment}: { note: INote, pigment: IPigment}) {
     function onUntriageClicked(e: any) {
         e.preventDefault();
         Net.post(`/api/triaged/${ note.id }/untriage`, {}).then(() => {
-            dispatch({
-                type: 'note-untriaged',
-                note
-            });
+            AppStateChange.noteUntriaged(note);
         });
     }
 

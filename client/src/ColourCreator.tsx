@@ -107,20 +107,15 @@ function augmentSettingsWithCssModifierParameters(settings: any) {
 function declareCssVariables(settings: any, wasmInterface: any) {
     let root = document.body;
 
-    function updateVariable(label: string, val: [number, number, number]) {
+    function updateVariable(label: string, val: any[]) {
         let cssName = '--' + label.replaceAll('_', '-');
 
         root.style.setProperty(cssName, wasmInterface.RgbFromHsl(val));
     }
 
-    function isColourTriplet(val: any): boolean {
-        return Array.isArray(val) && val.length === 3;
-    }
-
     for (const [key, val] of Object.entries(settings)) {
-        if (isColourTriplet(val)) {
-            let v: [number, number, number] = val;
-            updateVariable(key, v);
+        if (Array.isArray(val) && val.length === 3) {
+            updateVariable(key, val);
         }
     }
 
@@ -166,7 +161,7 @@ function declareCssVariables(settings: any, wasmInterface: any) {
 
 // let current = getComputedStyle(root).getPropertyValue("--fg-clock-12");
 
-function indexAsString(i) {
+function indexAsString(i: number) {
     if (i === 0) {
         return "12";
     } else if (i < 10) {

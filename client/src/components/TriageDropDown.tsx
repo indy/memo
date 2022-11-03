@@ -3,6 +3,8 @@ import { useState } from 'preact/hooks';
 
 import Net from '../Net';
 
+import { AppStateChange } from '../AppState';
+
 import { INote, ICategory, IPigment } from "../types";
 
 function TriageDropDown({ dispatch, noteId, categories, pigment, cardFullHeightFn }: { dispatch?: any, noteId: string | number, categories: Array<ICategory>, pigment: IPigment, cardFullHeightFn: any }) {
