@@ -29,22 +29,24 @@ function TriageDropDown({
         );
     }
 
-    function onToggleShowList(e: any) {
+    function onToggleShowList(e: MouseEvent) {
         e.preventDefault();
         cardFullHeightFn(!showList);
         setShowList(!showList);
     }
 
-    function onTriageDropDownSelect(e: any) {
+    function onTriageDropDownSelect(e: MouseEvent) {
         e.preventDefault();
 
-        const value = e.target.textContent;
-        const category = categories.find((c) => c.title === value);
+        if (e.target && e.target instanceof HTMLElement) {
+            const value = e.target.textContent;
+            const category = categories.find((c) => c.title === value);
 
-        setShowList(!showList);
+            setShowList(!showList);
 
-        if (category) {
-            onTriageCategorySelected(category);
+            if (category) {
+                onTriageCategorySelected(category);
+            }
         }
     }
 

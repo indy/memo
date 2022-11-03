@@ -1,4 +1,4 @@
-import { h } from "preact";
+import { h, ComponentChildren } from "preact";
 import { useState } from "preact/hooks";
 import { route } from "preact-router";
 
@@ -20,7 +20,7 @@ export default function Card({
     pigment: IPigment;
     resource?: string;
     fullHeight?: boolean;
-    children: any;
+    children?: ComponentChildren;
     cardClass?: string;
     editing?: boolean;
     onFinishedEditing?: any;
@@ -39,15 +39,20 @@ export default function Card({
 
     const [localState, setLocalState] = useState(ls);
 
-    function onCardClicked(e: any) {
-        if (!clickedOnCardUI(e.target) && !clickedOnInCardHyperlink(e.target)) {
-            e.preventDefault();
+    function onCardClicked(e: MouseEvent) {
+        if (e.target && e.target instanceof HTMLElement) {
+            if (
+                !clickedOnCardUI(e.target) &&
+                !clickedOnInCardHyperlink(e.target)
+            ) {
+                e.preventDefault();
 
-            let selection = document.getSelection();
-            if (selection) {
-                let s: string = selection.toString();
-                if (s.length === 0 && resource !== "bin") {
-                    route(href);
+                let selection = document.getSelection();
+                if (selection) {
+                    let s: string = selection.toString();
+                    if (s.length === 0 && resource !== "bin") {
+                        route(href);
+                    }
                 }
             }
         }
@@ -82,14 +87,16 @@ export default function Card({
     }
 
     function handleChangeContent(event: any) {
-        const newUserText = event.target.value;
-        setLocalState({
-            ...localState,
-            userContent: newUserText,
-        });
+        if (event) {
+            const newUserText = event.target.value;
+            setLocalState({
+                ...localState,
+                userContent: newUserText,
+            });
+        }
     }
 
-    function onSaveClicked(e: any) {
+    function onSaveClicked(e: MouseEvent) {
         e.preventDefault();
         onFinishedEditing(localState.userTitle, localState.userContent);
     }
@@ -152,7 +159,7 @@ export default function Card({
     );
 }
 
-function clickedOnCardUI(n: any): boolean {
+function clickedOnCardUI(n: HTMLElement): boolean {
     if (!n) {
         return false;
     }
@@ -168,7 +175,11 @@ function clickedOnCardUI(n: any): boolean {
         return true;
     }
 
-    return clickedOnCardUI(n.parentNode);
+    if (n.parentNode && n.parentNode instanceof HTMLElement) {
+        return clickedOnCardUI(n.parentNode);
+    } else {
+        return false;
+    }
 }
 
 function clickedOnInCardHyperlink(n: HTMLElement) {

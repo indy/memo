@@ -15,7 +15,7 @@ function Bin({ path }: { path?: string }) {
     const notes: Array<INote> = appState.listing.value.bin;
     const listing = notes ? notes.map((n) => NoteListItem(n)) : [];
 
-    function onDeleteClicked(e: any) {
+    function onDeleteClicked(e: MouseEvent) {
         e.preventDefault();
 
         Net.delete(`/api/bin`, {}).then(() => {
@@ -40,19 +40,17 @@ function Bin({ path }: { path?: string }) {
 }
 
 function NoteListItem(note: INote) {
-    const appState = getAppState();
-
     const resource = "bin";
     const pigment = notePigment(note.id);
 
-    function onUndeleteClicked(e: any) {
+    function onUndeleteClicked(e: MouseEvent) {
         e.preventDefault();
         Net.post(`/api/bin/${note.id}/unbin`, note).then(() => {
             AppStateChange.noteUnbinned(note);
         });
     }
 
-    function onDeleteClicked(e: any) {
+    function onDeleteClicked(e: MouseEvent) {
         e.preventDefault();
         Net.delete(`/api/bin/${note.id}`, {}).then(() => {
             AppStateChange.noteDeleted(note);

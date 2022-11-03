@@ -1,8 +1,8 @@
-import { h, createContext } from "preact";
+import { h, createContext, ComponentChildren } from "preact";
 import { signal } from "@preact/signals";
 import { useContext } from "preact/hooks";
 
-import { IUser, IState, IAction, INote, IListing, ICategory } from "./types";
+import { IUser, IState, INote, IListing, ICategory } from "./types";
 
 import { plural } from "./JsUtils";
 
@@ -38,7 +38,7 @@ export const AppStateProvider = ({
     children,
 }: {
     state: IState;
-    children: any;
+    children: ComponentChildren;
 }) => {
     return (
         <AppStateContext.Provider value={state}>

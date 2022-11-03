@@ -1,4 +1,4 @@
-import { h, createContext } from "preact";
+import { h, createContext, ComponentChildren } from "preact";
 import { useContext } from "preact/hooks";
 
 export const WasmInterfaceContext = createContext({});
@@ -8,7 +8,7 @@ export const WasmInterfaceProvider = ({
     children,
 }: {
     wasmInterface: any;
-    children: any;
+    children: ComponentChildren;
 }) => {
     return (
         <WasmInterfaceContext.Provider value={wasmInterface}>

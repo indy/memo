@@ -15,7 +15,7 @@ function ButtonDelete({
     noteKind: string;
     pigment: IPigment;
 }) {
-    function onDeleteClicked(e: any) {
+    function onDeleteClicked(e: MouseEvent) {
         e.preventDefault();
 
         Net.post(`/api/${noteKind}/${note.id}/bin`, {}).then(() => {
@@ -39,7 +39,7 @@ function ButtonDelete({
 }
 
 function ButtonPinned({ note, pigment }: { note: INote; pigment: IPigment }) {
-    function onPinnedClicked(e: any) {
+    function onPinnedClicked(e: MouseEvent) {
         e.preventDefault();
 
         let data = {
@@ -74,7 +74,7 @@ function ButtonEdit({
     editing: boolean;
     callback: any;
 }) {
-    function onEditClicked(e: any) {
+    function onEditClicked(e: MouseEvent) {
         e.preventDefault();
         callback(!editing);
     }
@@ -92,7 +92,7 @@ function ButtonEdit({
 }
 
 function ButtonUntriage({ note, pigment }: { note: INote; pigment: IPigment }) {
-    function onUntriageClicked(e: any) {
+    function onUntriageClicked(e: MouseEvent) {
         e.preventDefault();
         Net.post(`/api/triaged/${note.id}/untriage`, {}).then(() => {
             AppStateChange.noteUntriaged(note);

@@ -139,7 +139,7 @@ function TriagedCategory({
 }
 
 function DeletableCategory({ category }: { category: any }) {
-    function onDeleteClicked(e: any) {
+    function onDeleteClicked(e: MouseEvent) {
         e.preventDefault();
 
         Net.delete(`/api/categories/${category.id}`, {}).then(() => {
