@@ -52,14 +52,12 @@ SERVER_FILES = $(call rwildcard,$(SERVER_FOLDER)/src,*) $(SERVER_FOLDER)/Cargo.t
 SYSTEMD_FILES = $(wildcard misc/systemd/*)
 
 WASM_FILES = $(wildcard $(WASM_FOLDER)/src/*) $(WASM_FOLDER)/Cargo.toml
+TS_FILES = $(call rwildcard,$(CLIENT_FOLDER)/src,*)
 
-.PHONY: run clean-staging download-db jsx watch tsx-dev tsx-watch
+.PHONY: run clean-staging download-db watch-typescript
 
-tsx-dev:
-	./$(CLIENT_FOLDER)/node_modules/esbuild/bin/esbuild ./$(CLIENT_FOLDER)/src/index.tsx --sourcemap --bundle --outdir=./$(CLIENT_FOLDER)/www
-
-tsx-watch:
-	while true; do inotifywait -e close_write --quiet --recursive ./$(CLIENT_FOLDER)/src; make tsx-dev; done
+watch-typescript:
+	while true; do inotifywait -e close_write --quiet --recursive ./$(CLIENT_FOLDER)/src; make $(CLIENT_FOLDER)/www/index.js; done
 
 typecheck:
 	./$(CLIENT_FOLDER)/node_modules/typescript/bin/tsc -p ./$(CLIENT_FOLDER)/tsconfig.json --noEmit
@@ -95,6 +93,9 @@ $(SERVER_FOLDER)/target/debug/$(SERVER_BINARY): $(SERVER_FILES)
 
 $(SERVER_FOLDER)/target/release/$(SERVER_BINARY): $(SERVER_FILES)
 	cargo build --manifest-path $(SERVER_FOLDER)/Cargo.toml --bin $(SERVER_BINARY) --release
+
+$(CLIENT_FOLDER)/www/index.js: $(TS_FILES)
+	./$(CLIENT_FOLDER)/node_modules/esbuild/bin/esbuild ./$(CLIENT_FOLDER)/src/index.tsx --sourcemap --bundle --outdir=./$(CLIENT_FOLDER)/www
 
 $(CLIENT_FOLDER)/www/$(CLIENT_WASM_BG): $(WASM_FILES)
 	cargo build --manifest-path $(WASM_FOLDER)/Cargo.toml --target wasm32-unknown-unknown
