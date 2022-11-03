@@ -1,21 +1,18 @@
-import { h, Fragment } from 'preact';
+import { h } from 'preact';
 import { useState } from 'preact/hooks';
 
 import Net from '../Net';
 
 import { AppStateChange } from '../AppState';
 
-import { INote, ICategory, IPigment } from "../types";
+import { ICategory, IPigment } from "../types";
 
-function TriageDropDown({ dispatch, noteId, categories, pigment, cardFullHeightFn }: { dispatch?: any, noteId: string | number, categories: Array<ICategory>, pigment: IPigment, cardFullHeightFn: any }) {
+function TriageDropDown({ noteId, categories, pigment, cardFullHeightFn }: { dispatch?: any, noteId: string | number, categories: Array<ICategory>, pigment: IPigment, cardFullHeightFn: any }) {
     const [showList, setShowList] = useState(false);
 
     function onTriageCategorySelected(category: any) {
         Net.post(`/api/notes/${ noteId }/triage`, category).then(triagedNote => {
-            dispatch({
-                type: 'note-triaged',
-                note: triagedNote
-            });
+            AppStateChange.noteTriaged(triagedNote);
         });
     }
 
