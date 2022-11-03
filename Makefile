@@ -35,36 +35,40 @@ MINIFY := $(shell command -v minify 2> /dev/null)
 
 SERVER_BINARY = memo_server
 
-CLIENT_WASM_NAME = client_colour
+CLIENT_WASM_NAME = wasm_colour
 CLIENT_WASM = $(CLIENT_WASM_NAME).wasm
 CLIENT_WASM_BG = $(CLIENT_WASM_NAME)_bg.wasm
 
-WASM_FOLDER = client-colour
 SERVER_FOLDER = server
+CLIENT_FOLDER = client
+WASM_FOLDER = client/wasm-colour
 
 ################################################################################
 # filesets
 ################################################################################
 
-CLIENT_FILES = $(call rwildcard,www,*)
+CLIENT_FILES = $(call rwildcard,$(CLIENT_FOLDER)/www,*)
 SERVER_FILES = $(call rwildcard,$(SERVER_FOLDER)/src,*) $(SERVER_FOLDER)/Cargo.toml
 SYSTEMD_FILES = $(wildcard misc/systemd/*)
 
 WASM_FILES = $(wildcard $(WASM_FOLDER)/src/*) $(WASM_FOLDER)/Cargo.toml
 
-.PHONY: run clean-staging download-db jsx watch
+.PHONY: run clean-staging download-db jsx watch tsx-dev tsx-watch
 
-jsx:
-	esbuild www/js/index.jsx --sourcemap --bundle --minify --jsx-factory=h --jsx-fragment=Fragment --format=esm --outfile=www/main.js
+tsx-dev:
+	./$(CLIENT_FOLDER)/node_modules/esbuild/bin/esbuild ./$(CLIENT_FOLDER)/src/index.tsx --sourcemap --bundle --outdir=./$(CLIENT_FOLDER)/www
 
-watch:
-	while true; do inotifywait -e close_write --quiet --recursive www/js; make jsx; done
+tsx-watch:
+	while true; do inotifywait -e close_write --quiet --recursive ./$(CLIENT_FOLDER)/src; make tsx-dev; done
+
+typecheck:
+	./$(CLIENT_FOLDER)/node_modules/typescript/bin/tsc -p ./$(CLIENT_FOLDER)/tsconfig.json --noEmit
 
 ################################################################################
 # top-level public targets
 ################################################################################
 
-run: www/$(CLIENT_WASM_BG) server
+run: $(CLIENT_FOLDER)/www/$(CLIENT_WASM_BG) server
 	cargo run --manifest-path $(SERVER_FOLDER)/Cargo.toml --bin $(SERVER_BINARY)
 
 server: $(SERVER_FOLDER)/target/debug/$(SERVER_BINARY)
@@ -92,9 +96,9 @@ $(SERVER_FOLDER)/target/debug/$(SERVER_BINARY): $(SERVER_FILES)
 $(SERVER_FOLDER)/target/release/$(SERVER_BINARY): $(SERVER_FILES)
 	cargo build --manifest-path $(SERVER_FOLDER)/Cargo.toml --bin $(SERVER_BINARY) --release
 
-www/$(CLIENT_WASM_BG): $(WASM_FILES)
+$(CLIENT_FOLDER)/www/$(CLIENT_WASM_BG): $(WASM_FILES)
 	cargo build --manifest-path $(WASM_FOLDER)/Cargo.toml --target wasm32-unknown-unknown
-	wasm-bindgen $(WASM_FOLDER)/target/wasm32-unknown-unknown/debug/$(CLIENT_WASM) --out-dir www --no-typescript --no-modules
+	wasm-bindgen $(WASM_FOLDER)/target/wasm32-unknown-unknown/debug/$(CLIENT_WASM) --out-dir $(CLIENT_FOLDER)/www --no-modules
 
 staging/www/$(CLIENT_WASM_BG): $(WASM_FILES)
 	mkdir -p $(@D)
@@ -103,7 +107,7 @@ staging/www/$(CLIENT_WASM_BG): $(WASM_FILES)
 
 staging/www/index.html: $(CLIENT_FILES)
 	mkdir -p $(@D)
-	cp -r www staging/.
+	cp -r $(CLIENT_FOLDER)/www staging/.
 ifdef MINIFY
 	minify -o staging/www/ --match=\.css www
 	minify -r -o staging/www/js --match=\.js www/js

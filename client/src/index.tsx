@@ -1,20 +1,13 @@
-import { render } from '../lib/preact/mod.js';
+import { render, h } from 'preact';
+import "./index.css";
 
-import { App, initialState, reducer, augmentSettingsWithCssModifierParameters } from './App.jsx';
-
+import { App, initialState, reducer } from './App';
 import Net from './Net.js';
-import { buildColourConversionFn, declareCssVariables } from './ColourCreator.js';
 
+import { buildColourConversionFn, declareCssVariables, augmentSettingsWithCssModifierParameters } from './ColourCreator.js';
 
-// document.addEventListener('DOMContentLoaded', function() {
-//     const state = {a: 1, b: 2, c: 3};
-//     render(App(state), document.getElementById('root'));
-// });
-
-
-
-wasm_bindgen('/client_colour_bg.wasm')
-    .then(wasm_colour_bg => {
+wasm_bindgen('/wasm_colour_bg.wasm')
+    .then((wasm_colour_bg: any) => {
         const wasmInterface = {
             RgbFromHsl: buildColourConversionFn(wasm_bindgen)
         };
@@ -39,9 +32,18 @@ wasm_bindgen('/client_colour_bg.wasm')
                     triaged,
                     bin
                 });
+
+
+                console.log(user);
+                console.log(state);
             }
             declareCssVariables(state.settings, wasmInterface);
-            render(App(state, wasmInterface), document.getElementById('root'));
+            let root = document.getElementById('root');
+            if (root) {
+                render(<App state={state} wasmInterface={wasmInterface}/>, root);
+            }
         });
+
+
     })
     .catch(console.error);

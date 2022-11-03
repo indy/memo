@@ -27,13 +27,13 @@ var precacheConfig = [
     "/apple-touch-icon.png",
     "/favicon-16x16.png",
     "/favicon-32x32.png",
+
+    "/wasm_colour.js",
+    "/wasm_colour_bg.wasm",
+
     "/index.html",
-    "/memo.css",
-
-    "/client_colour.js",
-    "/client_colour_bg.wasm",
-
-    "./main.js"
+    "/index.css",
+    "/index.js"
 ];
 
 var urlsToCache = new Set();
@@ -195,7 +195,10 @@ self.addEventListener("fetch", function (event) {
         } else {
             // check for a phantom request made by Chrome's debug
             let path = url.split("/").slice(3);
-            if (path[0] !== "api" && path[0] !== "site.webmanifest" && path[0] !== "u") {
+            if (path[0] !== "api" &&
+                path[0] !== "site.webmanifest" &&
+                path[0] !== "u" &&
+                !url.endsWith("png")) {
                 // when opening Chromium's Developer Tools, there is a GET
                 // request made for the current page. As Memo's router
                 // re-writes the url this will result in a request to the server
