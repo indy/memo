@@ -1,22 +1,28 @@
-import { render, h } from 'preact';
+import { render, h } from "preact";
 import "./index.css";
 
-import { App } from './App';
-import { AppStateChange, initialState } from './AppState';
-import Net from './Net.js';
+import { App } from "./App";
+import { AppStateChange, initialState } from "./AppState";
+import Net from "./Net.js";
 
-import { buildColourConversionFn, declareCssVariables, augmentSettingsWithCssModifierParameters } from './ColourCreator.js';
+import {
+    buildColourConversionFn,
+    declareCssVariables,
+    augmentSettingsWithCssModifierParameters,
+} from "./ColourCreator.js";
 
-wasm_bindgen('/wasm_colour_bg.wasm')
+wasm_bindgen("/wasm_colour_bg.wasm")
     .then((wasm_colour_bg: any) => {
         const wasmInterface = {
-            RgbFromHsl: buildColourConversionFn(wasm_bindgen)
+            RgbFromHsl: buildColourConversionFn(wasm_bindgen),
         };
 
         let state = initialState;
-        state.settings.value = augmentSettingsWithCssModifierParameters(state.settings.value);
+        state.settings.value = augmentSettingsWithCssModifierParameters(
+            state.settings.value
+        );
 
-        Net.get("/api/users").then(async user => {
+        Net.get("/api/users").then(async (user) => {
             if (user) {
                 // update initial state with user
                 //
@@ -28,12 +34,13 @@ wasm_bindgen('/wasm_colour_bg.wasm')
                 AppStateChange.userLogin(user, categories, notes, triaged, bin);
             }
             declareCssVariables(state.settings.value, wasmInterface);
-            let root = document.getElementById('root');
+            let root = document.getElementById("root");
             if (root) {
-                render(<App state={state} wasmInterface={wasmInterface}/>, root);
+                render(
+                    <App state={state} wasmInterface={wasmInterface} />,
+                    root
+                );
             }
         });
-
-
     })
     .catch(console.error);

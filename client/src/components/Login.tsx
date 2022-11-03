@@ -1,26 +1,26 @@
-import { h } from 'preact';
-import { useState } from 'preact/hooks';
-import { route } from 'preact-router';
-import { AppStateChange, getAppState } from '../AppState';
+import { h } from "preact";
+import { useState } from "preact/hooks";
+import { route } from "preact-router";
+import { AppStateChange, getAppState } from "../AppState";
 
-import Net from '../Net';
+import Net from "../Net";
 
 function Login({ path }: { path?: string }) {
     const appState = getAppState();
 
     if (appState.user.value.username !== "") {
-        route('/', true);
-    };
+        route("/", true);
+    }
 
     const [state, setState] = useState({
-        'login-email': '',
-        'login-password': '',
-        'register-username': '',
-        'register-magic-word': '',
-        'register-email': '',
-        'register-password': '',
-        'register-password-2': '',
-        errorMessage: ''
+        "login-email": "",
+        "login-password": "",
+        "register-username": "",
+        "register-magic-word": "",
+        "register-email": "",
+        "register-password": "",
+        "register-password-2": "",
+        errorMessage: "",
     });
 
     const handleChangeEvent = (event: any) => {
@@ -31,20 +31,20 @@ function Login({ path }: { path?: string }) {
         const newState = { ...state };
         // crappy code to please typescript type-checking
         //
-        if (name === 'login-email') {
-            newState['login-email'] = value;
-        } else if (name === 'login-password') {
-            newState['login-password'] = value;
-        } else if (name === 'register-username') {
-            newState['register-username'] = value;
-        } else if (name === 'register-magic-word') {
-            newState['register-magic-word'] = value;
-        } else if (name === 'register-email') {
-            newState['register-email'] = value;
-        } else if (name === 'register-password') {
-            newState['register-password'] = value;
-        } else if (name === 'register-password-2') {
-            newState['register-password-2'] = value;
+        if (name === "login-email") {
+            newState["login-email"] = value;
+        } else if (name === "login-password") {
+            newState["login-password"] = value;
+        } else if (name === "register-username") {
+            newState["register-username"] = value;
+        } else if (name === "register-magic-word") {
+            newState["register-magic-word"] = value;
+        } else if (name === "register-email") {
+            newState["register-email"] = value;
+        } else if (name === "register-password") {
+            newState["register-password"] = value;
+        } else if (name === "register-password-2") {
+            newState["register-password-2"] = value;
         }
 
         setState(newState);
@@ -63,111 +63,159 @@ function Login({ path }: { path?: string }) {
     function handleLoginSubmit(event: any) {
         event.preventDefault();
 
-        Net.post('api/auth', {
-            email: state['login-email'],
-            password: state['login-password']
-        }).then(user => {
-            loginCallback(user);
-        }).catch(() => {
-            setState({
-                ...state,
-                errorMessage: "Unable to login"
+        Net.post("api/auth", {
+            email: state["login-email"],
+            password: state["login-password"],
+        })
+            .then((user) => {
+                loginCallback(user);
             })
-        });
-    };
+            .catch(() => {
+                setState({
+                    ...state,
+                    errorMessage: "Unable to login",
+                });
+            });
+    }
 
     function okToSendRegistration() {
-        return state['register-username'].length > 0 &&
-            state['register-email'].length > 0 &&
-            state['register-magic-word'].length > 0 &&
-            state['register-password'].length > 0 &&
-            state['register-password'] === state['register-password-2'];
+        return (
+            state["register-username"].length > 0 &&
+            state["register-email"].length > 0 &&
+            state["register-magic-word"].length > 0 &&
+            state["register-password"].length > 0 &&
+            state["register-password"] === state["register-password-2"]
+        );
     }
 
     function handleRegisterSubmit(event: any) {
         if (okToSendRegistration()) {
-            Net.post('api/users', {
-                username: state['register-username'],
-                email: state['register-email'],
-                password: state['register-password'],
-                magic_word: state['register-magic-word']
-            }).then(user => {
+            Net.post("api/users", {
+                username: state["register-username"],
+                email: state["register-email"],
+                password: state["register-password"],
+                magic_word: state["register-magic-word"],
+            }).then((user) => {
                 loginCallback(user);
             });
         }
 
         event.preventDefault();
-    };
+    }
 
-    return <section>
-               <h1 class="login-title">Login</h1>
-               <form class="login-form" onSubmit={ handleLoginSubmit }>
-                   <label class="login-label" for="login-email">Email:</label>
-                   <input class="login-input" id="login-email"
-                          type="text"
-                          name="login-email"
-                          value={ state['login-email'] }
-                          onInput={ handleChangeEvent } />
-                   <label class="login-label" for="login-password">Password:</label>
-                   <input class="login-input" id="login-password"
-                          type="password"
-                          name="login-password"
-                          value={ state['login-password'] }
-                          onInput={ handleChangeEvent } />
-                   <input class="login-button" type="submit" value="Login"/>
-                   <div class="login-error-message">{state.errorMessage}</div>
-               </form>
-               <h1>Register New User</h1>
-               <form class="login-form" onSubmit={ handleRegisterSubmit }>
-                   <label class="login-label" for="register-magic-word">Magic Word:</label>
-                   <input class="login-input" id="register-magic-word"
-                          type="text"
-                          name="register-magic-word"
-                          value={ state['register-magic-word'] }
-                          onInput={ handleChangeEvent } />
-                   <label class="login-label" for="register-username">Username:</label>
-                   <input class="login-input" id="register-username"
-                          type="text"
-                          name="register-username"
-                          value={ state['register-username'] }
-                          onInput={ handleChangeEvent } />
-                   <label class="login-label" for="register-email">Email:</label>
-                   <input class="login-input" id="register-email"
-                          type="text"
-                          name="register-email"
-                          value={ state['register-email'] }
-                          onInput={ handleChangeEvent } />
-                   <label class="login-label" for="register-password">Password:</label>
-                   <input class="login-input" id="register-password"
-                          type="password"
-                          name="register-password"
-                          value={ state['register-password'] }
-                          onInput={ handleChangeEvent } />
-                   <label class="login-label" for="register-password-2">Confirm Password:</label>
-                   <input class="login-input" id="register-password-2"
-                          type="password"
-                          name="register-password-2"
-                          value={ state['register-password-2'] }
-                          onInput={ handleChangeEvent } />
-                   <input class="login-button" type="submit" value="Register" disabled={!okToSendRegistration()}/>
-               </form>
-           </section>;
+    return (
+        <section>
+            <h1 class="login-title">Login</h1>
+            <form class="login-form" onSubmit={handleLoginSubmit}>
+                <label class="login-label" for="login-email">
+                    Email:
+                </label>
+                <input
+                    class="login-input"
+                    id="login-email"
+                    type="text"
+                    name="login-email"
+                    value={state["login-email"]}
+                    onInput={handleChangeEvent}
+                />
+                <label class="login-label" for="login-password">
+                    Password:
+                </label>
+                <input
+                    class="login-input"
+                    id="login-password"
+                    type="password"
+                    name="login-password"
+                    value={state["login-password"]}
+                    onInput={handleChangeEvent}
+                />
+                <input class="login-button" type="submit" value="Login" />
+                <div class="login-error-message">{state.errorMessage}</div>
+            </form>
+            <h1>Register New User</h1>
+            <form class="login-form" onSubmit={handleRegisterSubmit}>
+                <label class="login-label" for="register-magic-word">
+                    Magic Word:
+                </label>
+                <input
+                    class="login-input"
+                    id="register-magic-word"
+                    type="text"
+                    name="register-magic-word"
+                    value={state["register-magic-word"]}
+                    onInput={handleChangeEvent}
+                />
+                <label class="login-label" for="register-username">
+                    Username:
+                </label>
+                <input
+                    class="login-input"
+                    id="register-username"
+                    type="text"
+                    name="register-username"
+                    value={state["register-username"]}
+                    onInput={handleChangeEvent}
+                />
+                <label class="login-label" for="register-email">
+                    Email:
+                </label>
+                <input
+                    class="login-input"
+                    id="register-email"
+                    type="text"
+                    name="register-email"
+                    value={state["register-email"]}
+                    onInput={handleChangeEvent}
+                />
+                <label class="login-label" for="register-password">
+                    Password:
+                </label>
+                <input
+                    class="login-input"
+                    id="register-password"
+                    type="password"
+                    name="register-password"
+                    value={state["register-password"]}
+                    onInput={handleChangeEvent}
+                />
+                <label class="login-label" for="register-password-2">
+                    Confirm Password:
+                </label>
+                <input
+                    class="login-input"
+                    id="register-password-2"
+                    type="password"
+                    name="register-password-2"
+                    value={state["register-password-2"]}
+                    onInput={handleChangeEvent}
+                />
+                <input
+                    class="login-button"
+                    type="submit"
+                    value="Register"
+                    disabled={!okToSendRegistration()}
+                />
+            </form>
+        </section>
+    );
 }
 
 function Logout({ path }: { path?: string }) {
     const handleLogout = (event: any) => {
-        Net.delete('api/auth', {}).then(() => {
+        Net.delete("api/auth", {}).then(() => {
             AppStateChange.userLogout();
-            route('/login', true);
+            route("/login", true);
         });
         event.preventDefault();
     };
 
-    return <section>
-               <form onSubmit={ handleLogout }>
-                   <input type="submit" value="Logout"/>
-               </form>
-           </section>;
+    return (
+        <section>
+            <form onSubmit={handleLogout}>
+                <input type="submit" value="Logout" />
+            </form>
+        </section>
+    );
 }
 
 export { Login, Logout };

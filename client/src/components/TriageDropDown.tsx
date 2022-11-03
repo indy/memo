@@ -1,19 +1,32 @@
-import { h } from 'preact';
-import { useState } from 'preact/hooks';
+import { h } from "preact";
+import { useState } from "preact/hooks";
 
-import Net from '../Net';
+import Net from "../Net";
 
-import { AppStateChange } from '../AppState';
+import { AppStateChange } from "../AppState";
 
 import { ICategory, IPigment } from "../types";
 
-function TriageDropDown({ noteId, categories, pigment, cardFullHeightFn }: { dispatch?: any, noteId: string | number, categories: Array<ICategory>, pigment: IPigment, cardFullHeightFn: any }) {
+function TriageDropDown({
+    noteId,
+    categories,
+    pigment,
+    cardFullHeightFn,
+}: {
+    dispatch?: any;
+    noteId: string | number;
+    categories: Array<ICategory>;
+    pigment: IPigment;
+    cardFullHeightFn: any;
+}) {
     const [showList, setShowList] = useState(false);
 
     function onTriageCategorySelected(category: any) {
-        Net.post(`/api/notes/${ noteId }/triage`, category).then(triagedNote => {
-            AppStateChange.noteTriaged(triagedNote);
-        });
+        Net.post(`/api/notes/${noteId}/triage`, category).then(
+            (triagedNote) => {
+                AppStateChange.noteTriaged(triagedNote);
+            }
+        );
     }
 
     function onToggleShowList(e: any) {
@@ -26,7 +39,7 @@ function TriageDropDown({ noteId, categories, pigment, cardFullHeightFn }: { dis
         e.preventDefault();
 
         const value = e.target.textContent;
-        const category = categories.find(c => c.title === value);
+        const category = categories.find((c) => c.title === value);
 
         setShowList(!showList);
 
@@ -36,32 +49,44 @@ function TriageDropDown({ noteId, categories, pigment, cardFullHeightFn }: { dis
     }
 
     function buildTriageButton() {
-        return <button class={`${pigment.classAlt} button button-triage`}
-                       onClick={ onToggleShowList }>
-                   <span class="button-title-ellipses">Triage</span>
-               </button>
+        return (
+            <button
+                class={`${pigment.classAlt} button button-triage`}
+                onClick={onToggleShowList}
+            >
+                <span class="button-title-ellipses">Triage</span>
+            </button>
+        );
     }
 
     function buildTriageList() {
-        let categoryOptions = categories.map(c => <li class={`triage-dropdown-item ${pigment.classAlt}`}
-                                                      onClick={ onTriageDropDownSelect }>
-                                                      {c.title}
-                                                  </li>);
-        return <div>
-                   <button class={`${pigment.classAlt} button`}
-                           onClick={ onToggleShowList }>
-                       Cancel
-                   </button>
-                   <ul class="triage-dropdown-list">
-                       {categoryOptions}
-                   </ul>
-               </div>
+        let categoryOptions = categories.map((c) => (
+            <li
+                class={`triage-dropdown-item ${pigment.classAlt}`}
+                onClick={onTriageDropDownSelect}
+            >
+                {c.title}
+            </li>
+        ));
+        return (
+            <div>
+                <button
+                    class={`${pigment.classAlt} button`}
+                    onClick={onToggleShowList}
+                >
+                    Cancel
+                </button>
+                <ul class="triage-dropdown-list">{categoryOptions}</ul>
+            </div>
+        );
     }
 
-    return <div class="triage-dropdown card-action-cell">
-               { !showList && buildTriageButton()}
-               { showList && buildTriageList()}
-           </div>
+    return (
+        <div class="triage-dropdown card-action-cell">
+            {!showList && buildTriageButton()}
+            {showList && buildTriageList()}
+        </div>
+    );
 }
 
 export { TriageDropDown };

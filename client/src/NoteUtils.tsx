@@ -1,25 +1,28 @@
-import { h } from 'preact';
-import Net from './Net';
+import { h } from "preact";
+import Net from "./Net";
 
 import { IState, INote, IPigment } from "./types";
-import { AppStateChange } from './AppState';
+import { AppStateChange } from "./AppState";
 
 export function finishedEditingCallback(note: INote, setEditing: any) {
-    return function(updatedTitle: string, updatedContent: string) {
+    return function (updatedTitle: string, updatedContent: string) {
         let data = {
             ...note,
             content: updatedContent,
-            title: updatedTitle
+            title: updatedTitle,
         };
-        Net.put(`/api/notes/${note.id}`, data).then(newNote => {
+        Net.put(`/api/notes/${note.id}`, data).then((newNote) => {
             AppStateChange.noteContentUpdated(newNote);
             setEditing(false);
         });
-    }
+    };
 }
 
-export function getNoteById(state: IState, noteKind: string, id: number): INote {
-
+export function getNoteById(
+    state: IState,
+    noteKind: string,
+    id: number
+): INote {
     let notes: Array<INote> = [];
     if (noteKind === "triaged") {
         notes = state.listing.value.triaged;
@@ -32,7 +35,7 @@ export function getNoteById(state: IState, noteKind: string, id: number): INote 
     let res = notes.find((n: INote) => n.id === id);
     if (!res) {
         // isg hack: when triaging a note it may move from noteKind 'notes' to noteKind 'triaged', so look there
-        res = state.listing.value.triaged.find(n => n.id === id);
+        res = state.listing.value.triaged.find((n) => n.id === id);
     }
 
     return res!;
@@ -42,7 +45,7 @@ export function partitionPinnedNotes(list: Array<INote>): Array<Array<INote>> {
     let pinned: Array<INote> = [];
     let unpinned: Array<INote> = [];
 
-    list.forEach(n => {
+    list.forEach((n) => {
         if (n.pinned) {
             pinned.push(n);
         } else {
@@ -58,7 +61,8 @@ export function partitionPinnedNotes(list: Array<INote>): Array<Array<INote>> {
 
 export function notePigment(noteId: number): IPigment {
     const pigmentNum = (noteId % 12) + 1;
-    const pigmentNumString = pigmentNum < 10 ? `0${pigmentNum}` : `${pigmentNum}`;
+    const pigmentNumString =
+        pigmentNum < 10 ? `0${pigmentNum}` : `${pigmentNum}`;
     const pigmentClass = `pigment-clock-${pigmentNumString}`;
     const pigmentClassAlt = `${pigmentClass}-alt`;
 
@@ -66,8 +70,8 @@ export function notePigment(noteId: number): IPigment {
         num: pigmentNum,
         numString: pigmentNumString,
         class: pigmentClass,
-        classAlt: pigmentClassAlt
-    }
+        classAlt: pigmentClassAlt,
+    };
 }
 
 // simple parsing for urls and newlines only. A stupid regexp approach will do here,
@@ -91,9 +95,18 @@ function parseNoteText(text: string, parentTag: string, noteId: number) {
     const pigment = notePigment(noteId);
 
     lines.forEach((line, i) => {
-        splitLineByHyperlinks(line).forEach(seg => {
+        splitLineByHyperlinks(line).forEach((seg) => {
             if (isHyperlinkSegment(seg)) {
-                elems.push(h("a", { href: ensureLinkable(seg), class: `in-note-link ${pigment.class}` }, seg));
+                elems.push(
+                    h(
+                        "a",
+                        {
+                            href: ensureLinkable(seg),
+                            class: `in-note-link ${pigment.class}`,
+                        },
+                        seg
+                    )
+                );
             } else {
                 elems.push(seg);
             }
@@ -110,7 +123,9 @@ function splitLineByHyperlinks(line: string): Array<string> {
     // put space at the end of the line for the split regexp  to work with a regexp that ends a line
     let lineWithSpace = line + " ";
 
-    let segs = lineWithSpace.split(/(https:\/\/.*?|http:\/\/.*?|www\..*?)(\s+)/).filter(seg => seg.length > 0);
+    let segs = lineWithSpace
+        .split(/(https:\/\/.*?|http:\/\/.*?|www\..*?)(\s+)/)
+        .filter((seg) => seg.length > 0);
 
     // remove space at end of the last seg
     segs[segs.length - 1] = segs[segs.length - 1].trim();
@@ -119,7 +134,11 @@ function splitLineByHyperlinks(line: string): Array<string> {
 }
 
 function isHyperlinkSegment(seg: string): boolean {
-    return seg.startsWith("https://") || seg.startsWith("http://") || seg.startsWith("www.");
+    return (
+        seg.startsWith("https://") ||
+        seg.startsWith("http://") ||
+        seg.startsWith("www.")
+    );
 }
 
 function ensureLinkable(seg: string): string {

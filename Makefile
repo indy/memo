@@ -54,19 +54,25 @@ SYSTEMD_FILES = $(wildcard misc/systemd/*)
 WASM_FILES = $(wildcard $(WASM_FOLDER)/src/*) $(WASM_FOLDER)/Cargo.toml
 TS_FILES = $(call rwildcard,$(CLIENT_FOLDER)/src,*)
 
-.PHONY: run clean-staging download-db watch-typescript
+.PHONY: run clean-staging download-db typescript-watch typescript-typecheck typescript-format init
 
-watch-typescript:
+init:
+	cd client; yarn install
+
+typescript-watch:
 	while true; do inotifywait -e close_write --quiet --recursive ./$(CLIENT_FOLDER)/src; make $(CLIENT_FOLDER)/www/index.js; done
 
-typecheck:
+typescript-typecheck:
 	./$(CLIENT_FOLDER)/node_modules/typescript/bin/tsc -p ./$(CLIENT_FOLDER)/tsconfig.json --noEmit
+
+typescript-format:
+	cd client; yarn prettier --write src
 
 ################################################################################
 # top-level public targets
 ################################################################################
 
-run: $(CLIENT_FOLDER)/www/$(CLIENT_WASM_BG) server
+run: $(CLIENT_FOLDER)/www/$(CLIENT_WASM_BG) $(CLIENT_FOLDER)/www/index.js server
 	cargo run --manifest-path $(SERVER_FOLDER)/Cargo.toml --bin $(SERVER_BINARY)
 
 server: $(SERVER_FOLDER)/target/debug/$(SERVER_BINARY)

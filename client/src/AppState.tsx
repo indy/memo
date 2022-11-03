@@ -1,6 +1,6 @@
-import { h, createContext } from 'preact';
-import { signal } from '@preact/signals';
-import { useContext } from 'preact/hooks';
+import { h, createContext } from "preact";
+import { signal } from "@preact/signals";
+import { useContext } from "preact/hooks";
 
 import { IUser, IState, IAction, INote, IListing, ICategory } from "./types";
 
@@ -9,8 +9,8 @@ import { plural } from "./JsUtils";
 const emptyUser: IUser = {
     username: "",
     email: "",
-    admin: { db_name: ""}
-}
+    admin: { db_name: "" },
+};
 
 const state: IState = {
     user: signal(emptyUser),
@@ -18,25 +18,33 @@ const state: IState = {
         // note: extra setting variables are declared in
         // ColourCreator.js::augmentSettingsWithCssModifierParameters
         hueOffset: 0,
-        hueDelta: 30
+        hueDelta: 30,
     }),
-    activeTopBarMenuItem: signal(''),
+    activeTopBarMenuItem: signal(""),
     categories: signal([]),
     listing: signal({
         notes: [],
         triaged: [],
-        bin: []
-    })
+        bin: [],
+    }),
 };
 
 export const initialState = state;
 
 export const AppStateContext = createContext(state);
 
-export const AppStateProvider = ({state, children}: {state: IState, children: any}) => {
-    return <AppStateContext.Provider value={state}>
-        { children }
-    </AppStateContext.Provider>;
+export const AppStateProvider = ({
+    state,
+    children,
+}: {
+    state: IState;
+    children: any;
+}) => {
+    return (
+        <AppStateContext.Provider value={state}>
+            {children}
+        </AppStateContext.Provider>
+    );
 };
 
 export const getAppState = () => useContext(AppStateContext);
@@ -44,19 +52,25 @@ export const getAppState = () => useContext(AppStateContext);
 const DEBUG_APP_STATE = true;
 
 export const AppStateChange = {
-    routeChanged: function(url: string) {
+    routeChanged: function (url: string) {
         if (DEBUG_APP_STATE) {
             console.log("routeChanged");
         }
-        if (url === '/') {
-            state.activeTopBarMenuItem.value = 'notes';
-        } else if (url === '/triaged') {
-            state.activeTopBarMenuItem.value = 'triaged';
-        } else if (url === '/bin') {
-            state.activeTopBarMenuItem.value = 'bin';
+        if (url === "/") {
+            state.activeTopBarMenuItem.value = "notes";
+        } else if (url === "/triaged") {
+            state.activeTopBarMenuItem.value = "triaged";
+        } else if (url === "/bin") {
+            state.activeTopBarMenuItem.value = "bin";
         }
     },
-    userLogin: function(user: IUser, categories: Array<ICategory>, notes: Array<INote>, triaged: Array<INote>, bin: Array<INote>) {
+    userLogin: function (
+        user: IUser,
+        categories: Array<ICategory>,
+        notes: Array<INote>,
+        triaged: Array<INote>,
+        bin: Array<INote>
+    ) {
         if (DEBUG_APP_STATE) {
             console.log("userLogin");
         }
@@ -64,14 +78,14 @@ export const AppStateChange = {
         let listing: IListing = {
             bin: bin.map(calculateAge),
             notes: notes.map(calculateAge),
-            triaged: triaged.map(calculateAge)
+            triaged: triaged.map(calculateAge),
         };
 
         state.user.value = user;
         state.categories.value = categories;
         state.listing.value = listing;
     },
-    userLogout: function() {
+    userLogout: function () {
         if (DEBUG_APP_STATE) {
             console.log("userLogout");
         }
@@ -81,7 +95,7 @@ export const AppStateChange = {
 
         state.user.value = user;
     },
-    listingNoteAppended: function(note: INote) {
+    listingNoteAppended: function (note: INote) {
         if (DEBUG_APP_STATE) {
             console.log("listingNoteAppended");
         }
@@ -94,7 +108,7 @@ export const AppStateChange = {
 
         state.listing.value = listing;
     },
-    notePinStateUpdated: function(n: INote) {
+    notePinStateUpdated: function (n: INote) {
         if (DEBUG_APP_STATE) {
             console.log("notePinStateUpdated");
         }
@@ -117,7 +131,7 @@ export const AppStateChange = {
         }
         state.listing.value = listing;
     },
-    noteBinned: function(n: INote) {
+    noteBinned: function (n: INote) {
         if (DEBUG_APP_STATE) {
             console.log("noteBinned");
         }
@@ -132,16 +146,17 @@ export const AppStateChange = {
 
         state.listing.value = listing;
     },
-    noteContentUpdated: function(n: INote) {
+    noteContentUpdated: function (n: INote) {
         if (DEBUG_APP_STATE) {
             console.log("noteContentUpdated");
         }
 
         let listing = { ...state.listing.value };
 
-        let note = findNote(listing.notes, n.id)
-            || findNote(listing.triaged, n.id)
-            || findNote(listing.bin, n.id);
+        let note =
+            findNote(listing.notes, n.id) ||
+            findNote(listing.triaged, n.id) ||
+            findNote(listing.bin, n.id);
         if (note) {
             note.content = n.content;
             note.title = n.title;
@@ -150,20 +165,21 @@ export const AppStateChange = {
 
         state.listing.value = listing;
     },
-    categoryDeleted: function(deletedCategory: ICategory) {
+    categoryDeleted: function (deletedCategory: ICategory) {
         if (DEBUG_APP_STATE) {
             console.log("categoryDeleted");
         }
-        state.categories.value = state.categories.value.filter((c: ICategory)  => c.id !== deletedCategory.id);
-
+        state.categories.value = state.categories.value.filter(
+            (c: ICategory) => c.id !== deletedCategory.id
+        );
     },
-    categoriesSet: function(categories: Array<ICategory>) {
+    categoriesSet: function (categories: Array<ICategory>) {
         if (DEBUG_APP_STATE) {
             console.log("categoriesSet");
         }
         state.categories.value = categories;
     },
-    noteUntriaged: function(note: INote) {
+    noteUntriaged: function (note: INote) {
         if (DEBUG_APP_STATE) {
             console.log("noteUntriaged");
         }
@@ -179,21 +195,26 @@ export const AppStateChange = {
 
         state.listing.value = listing;
     },
-    settingsColourScalar: function(id: string, value: string) {
+    settingsColourScalar: function (id: string, value: string) {
         if (DEBUG_APP_STATE) {
             console.log("settingsColourScalar");
         }
         state.settings.value[id] = parseInt(value, 10);
     },
-    settingsColourTriple: function(id: string, value: [string, string, string]) {
+    settingsColourTriple: function (
+        id: string,
+        value: [string, string, string]
+    ) {
         if (DEBUG_APP_STATE) {
             console.log("settingsColourTriple");
         }
-        state.settings.value[id] = [parseInt(value[0], 10),
-                                    parseInt(value[1], 10),
-                                    parseInt(value[2], 10)];
+        state.settings.value[id] = [
+            parseInt(value[0], 10),
+            parseInt(value[1], 10),
+            parseInt(value[2], 10),
+        ];
     },
-    noteTriaged: function(note: INote) {
+    noteTriaged: function (note: INote) {
         if (DEBUG_APP_STATE) {
             console.log("noteTriaged");
         }
@@ -207,7 +228,7 @@ export const AppStateChange = {
 
         state.listing.value = listing;
     },
-    noteDeleted: function(note: INote) {
+    noteDeleted: function (note: INote) {
         if (DEBUG_APP_STATE) {
             console.log("noteDeleted");
         }
@@ -217,7 +238,7 @@ export const AppStateChange = {
 
         state.listing.value = listing;
     },
-    noteUnbinned: function(note: INote) {
+    noteUnbinned: function (note: INote) {
         if (DEBUG_APP_STATE) {
             console.log("noteUnbinned");
         }
@@ -237,21 +258,22 @@ export const AppStateChange = {
         }
         state.listing.value = listing;
     },
-    binEmptied: function() {
+    binEmptied: function () {
         if (DEBUG_APP_STATE) {
             console.log("binEmptied");
         }
         state.listing.value.bin = [];
-    }
-}
-
-;
+    },
+};
 function findNote(array: Array<INote>, noteId: number): INote | undefined {
-    return array && array.find(n => n.id === noteId);
+    return array && array.find((n) => n.id === noteId);
 }
 
-function removeNoteFromArray(array: Array<INote>, noteId: number): Array<INote> {
-    return array ? array.filter(n => n.id !== noteId) : array;
+function removeNoteFromArray(
+    array: Array<INote>,
+    noteId: number
+): Array<INote> {
+    return array ? array.filter((n) => n.id !== noteId) : array;
 }
 
 function calculateAge(note: INote) {
@@ -265,7 +287,6 @@ function calculateAge(note: INote) {
 }
 
 function humanReadableAge(deltaMS: number) {
-
     let minutes = deltaMS / (1000 * 60);
     if (minutes < 60.0) {
         if (minutes < 1.0) {

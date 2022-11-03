@@ -3,7 +3,7 @@ function buildColourConversionFn(wasm_bindgen: any) {
 
     return (hsl: [number, number, number]) => {
         function clamp(value: number, min: number, max: number) {
-            return value < min ? min : (value > max ? max : value);
+            return value < min ? min : value > max ? max : value;
         }
 
         function componentAsHexString(c: number) {
@@ -22,8 +22,13 @@ function buildColourConversionFn(wasm_bindgen: any) {
 
         transportRGB.free();
 
-        return "#" + componentAsHexString(r) + componentAsHexString(g) + componentAsHexString(b);
-    }
+        return (
+            "#" +
+            componentAsHexString(r) +
+            componentAsHexString(g) +
+            componentAsHexString(b)
+        );
+    };
 }
 
 function augmentSettingsWithCssModifierParameters(settings: any) {
@@ -56,14 +61,12 @@ function augmentSettingsWithCssModifierParameters(settings: any) {
             lightnessBg1: 80.0,
             lightnessBg2: 70.0,
             lightnessFg: 30.0,
-            lightnessFg1: 70.0
-        }
+            lightnessFg1: 70.0,
+        };
     } else {
-
         let bgh = 220;
         let bgs = 60;
         let bgl = 10;
-
 
         s = {
             ...settings,
@@ -88,8 +91,8 @@ function augmentSettingsWithCssModifierParameters(settings: any) {
             lightnessBg1: 25.0,
             lightnessBg2: 15.0,
             lightnessFg: 60.0,
-            lightnessFg1: 15.0
-        }
+            lightnessFg1: 15.0,
+        };
     }
     return s;
 }
@@ -108,7 +111,7 @@ function declareCssVariables(settings: any, wasmInterface: any) {
     let root = document.body;
 
     function updateVariable(label: string, val: any[]) {
-        let cssName = '--' + label.replaceAll('_', '-');
+        let cssName = "--" + label.replaceAll("_", "-");
 
         root.style.setProperty(cssName, wasmInterface.RgbFromHsl(val));
     }
@@ -120,27 +123,46 @@ function declareCssVariables(settings: any, wasmInterface: any) {
     }
 
     let hue, rgb, index;
-    for(let i = 0; i < 12; i++) {
-        hue = settings.hueOffset + ( i * settings.hueDelta);
+    for (let i = 0; i < 12; i++) {
+        hue = settings.hueOffset + i * settings.hueDelta;
 
         index = indexAsString(i);
 
-        rgb = wasmInterface.RgbFromHsl([hue, settings.saturation, settings.lightnessFg]);
+        rgb = wasmInterface.RgbFromHsl([
+            hue,
+            settings.saturation,
+            settings.lightnessFg,
+        ]);
 
         root.style.setProperty(`--clock-${index}-fg`, rgb);
 
-        rgb = wasmInterface.RgbFromHsl([hue, settings.saturation, settings.lightnessFg1]);
+        rgb = wasmInterface.RgbFromHsl([
+            hue,
+            settings.saturation,
+            settings.lightnessFg1,
+        ]);
         root.style.setProperty(`--clock-${index}-fg1`, rgb);
 
-        rgb = wasmInterface.RgbFromHsl([hue, settings.saturation, settings.lightnessBg]);
+        rgb = wasmInterface.RgbFromHsl([
+            hue,
+            settings.saturation,
+            settings.lightnessBg,
+        ]);
         root.style.setProperty(`--clock-${index}-bg`, rgb);
 
-        rgb = wasmInterface.RgbFromHsl([hue, settings.saturation, settings.lightnessBg1]);
+        rgb = wasmInterface.RgbFromHsl([
+            hue,
+            settings.saturation,
+            settings.lightnessBg1,
+        ]);
         root.style.setProperty(`--clock-${index}-bg1`, rgb);
 
-        rgb = wasmInterface.RgbFromHsl([hue, settings.saturation, settings.lightnessBg2]);
+        rgb = wasmInterface.RgbFromHsl([
+            hue,
+            settings.saturation,
+            settings.lightnessBg2,
+        ]);
         root.style.setProperty(`--clock-${index}-bg2`, rgb);
-
     }
 
     function updateDerivedVariable(cssLabel: string, copyFrom: string) {
@@ -148,15 +170,15 @@ function declareCssVariables(settings: any, wasmInterface: any) {
         root.style.setProperty(cssLabel, source);
     }
 
-    updateDerivedVariable('--bg-notes', '--clock-06-bg');
-    updateDerivedVariable('--bg-triaged', '--clock-12-bg');
-    updateDerivedVariable('--bg-bin', '--clock-02-bg');
+    updateDerivedVariable("--bg-notes", "--clock-06-bg");
+    updateDerivedVariable("--bg-triaged", "--clock-12-bg");
+    updateDerivedVariable("--bg-bin", "--clock-02-bg");
 
-    updateDerivedVariable('--fg-notes', '--clock-06-fg');
-    updateDerivedVariable('--fg-triaged', '--clock-12-fg');
-    updateDerivedVariable('--fg-bin', '--clock-02-fg');
+    updateDerivedVariable("--fg-notes", "--clock-06-fg");
+    updateDerivedVariable("--fg-triaged", "--clock-12-fg");
+    updateDerivedVariable("--fg-bin", "--clock-02-fg");
 
-    updateDerivedVariable('--textarea-border', '--textarea-bg');
+    updateDerivedVariable("--textarea-border", "--textarea-bg");
 }
 
 // let current = getComputedStyle(root).getPropertyValue("--fg-clock-12");
@@ -171,4 +193,8 @@ function indexAsString(i: number) {
     }
 }
 
-export { buildColourConversionFn, declareCssVariables, augmentSettingsWithCssModifierParameters }
+export {
+    buildColourConversionFn,
+    declareCssVariables,
+    augmentSettingsWithCssModifierParameters,
+};

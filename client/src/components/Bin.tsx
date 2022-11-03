@@ -1,11 +1,11 @@
-import { h } from 'preact';
-import { useState } from 'preact/hooks';
+import { h } from "preact";
+import { useState } from "preact/hooks";
 
-import Net from '../Net';
-import { notePigment, getNoteById } from '../NoteUtils';
-import { AppStateChange, getAppState } from '../AppState';
+import Net from "../Net";
+import { notePigment, getNoteById } from "../NoteUtils";
+import { AppStateChange, getAppState } from "../AppState";
 
-import Card from './Card';
+import Card from "./Card";
 
 import { INote } from "../types";
 
@@ -13,8 +13,7 @@ function Bin({ path }: { path?: string }) {
     const appState = getAppState();
 
     const notes: Array<INote> = appState.listing.value.bin;
-    const listing = notes ? notes.map(n => NoteListItem(n)) : [];
-
+    const listing = notes ? notes.map((n) => NoteListItem(n)) : [];
 
     function onDeleteClicked(e: any) {
         e.preventDefault();
@@ -24,46 +23,62 @@ function Bin({ path }: { path?: string }) {
         });
     }
 
-    return <div>
-      <div class="button-container darken-border">
-        { listing.length == 0 && <div>Bin is Empty</div>}
-        { listing.length > 0 && <div class="button button-delete" onClick={ onDeleteClicked }>Permanently Delete</div>}
-      </div>
-      <div class="hr"/>
-      <div class="card-holder">
-        { listing }
-      </div>
-    </div>
+    return (
+        <div>
+            <div class="button-container darken-border">
+                {listing.length == 0 && <div>Bin is Empty</div>}
+                {listing.length > 0 && (
+                    <div class="button button-delete" onClick={onDeleteClicked}>
+                        Permanently Delete
+                    </div>
+                )}
+            </div>
+            <div class="hr" />
+            <div class="card-holder">{listing}</div>
+        </div>
+    );
 }
 
 function NoteListItem(note: INote) {
     const appState = getAppState();
 
-    const resource = 'bin';
+    const resource = "bin";
     const pigment = notePigment(note.id);
 
     function onUndeleteClicked(e: any) {
         e.preventDefault();
-        Net.post(`/api/bin/${ note.id }/unbin`, note).then(() => {
+        Net.post(`/api/bin/${note.id}/unbin`, note).then(() => {
             AppStateChange.noteUnbinned(note);
         });
     }
 
     function onDeleteClicked(e: any) {
         e.preventDefault();
-        Net.delete(`/api/bin/${ note.id }`, {}).then(() => {
+        Net.delete(`/api/bin/${note.id}`, {}).then(() => {
             AppStateChange.noteDeleted(note);
         });
     }
 
-    return <Card note={note} resource={resource} pigment={pigment}>
-               <button class={`${pigment.classAlt} button card-action-cell`} onClick={ onUndeleteClicked }>Undelete</button>
-               <button class={`${pigment.classAlt} button card-action-cell`} onClick={ onDeleteClicked }>Really Delete</button>
-           </Card>
+    return (
+        <Card note={note} resource={resource} pigment={pigment}>
+            <button
+                class={`${pigment.classAlt} button card-action-cell`}
+                onClick={onUndeleteClicked}
+            >
+                Undelete
+            </button>
+            <button
+                class={`${pigment.classAlt} button card-action-cell`}
+                onClick={onDeleteClicked}
+            >
+                Really Delete
+            </button>
+        </Card>
+    );
 }
 
-function BinnedNote({ id, path }: { id?: string, path?: string }) {
-    const noteKind = 'bin';
+function BinnedNote({ id, path }: { id?: string; path?: string }) {
+    const noteKind = "bin";
 
     const appState = getAppState();
     const editing = false;
@@ -82,13 +97,16 @@ function BinnedNote({ id, path }: { id?: string, path?: string }) {
     const note = getNoteById(appState, noteKind, noteId);
     const pigment = notePigment(noteId);
 
-    return <Card editing={ editing }
-                 note={ note }
-                 resource={ noteKind }
-                 pigment={ pigment }
-                 fullHeight={ true }
-                 cardClass="wider-card">
-           </Card>
+    return (
+        <Card
+            editing={editing}
+            note={note}
+            resource={noteKind}
+            pigment={pigment}
+            fullHeight={true}
+            cardClass="wider-card"
+        ></Card>
+    );
 }
 
 export { Bin, BinnedNote };
