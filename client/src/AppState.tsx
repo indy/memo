@@ -280,37 +280,38 @@ function calculateAge(note: INote) {
     let created_at = new Date(Date.parse(note.created_at));
     let today = new Date();
     let delta = today.getTime() - created_at.getTime();
+    let decimalPlaces = 2;
 
-    note.age = humanReadableAge(delta);
+    note.age = humanReadableAge(delta, decimalPlaces);
 
     return note;
 }
 
-function humanReadableAge(deltaMS: number) {
+function humanReadableAge(deltaMS: number, decimalPlaces: number) {
     let minutes = deltaMS / (1000 * 60);
     if (minutes < 60.0) {
         if (minutes < 1.0) {
             return `Just created`;
         } else {
-            return plural(minutes, "minute", "s");
+            return plural(minutes, decimalPlaces, "minute", "s");
         }
     }
 
     let hours = deltaMS / (1000 * 60 * 60);
     if (hours < 24.0) {
-        return plural(hours, "hour", "s");
+        return plural(hours, decimalPlaces, "hour", "s");
     }
 
     let days = deltaMS / (1000 * 60 * 60 * 24);
     if (days < 31.0) {
-        return plural(days, "day", "s");
+        return plural(days, decimalPlaces, "day", "s");
     }
 
     let months = deltaMS / (1000 * 60 * 60 * 24 * 30);
     if (months < 12) {
-        return plural(months, "month", "s");
+        return plural(months, decimalPlaces, "month", "s");
     }
 
     let years = deltaMS / (1000 * 60 * 60 * 24 * 365.25);
-    return plural(years, "year", "s");
+    return plural(years, decimalPlaces, "year", "s");
 }
