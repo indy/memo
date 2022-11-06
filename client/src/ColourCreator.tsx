@@ -1,5 +1,5 @@
 function buildColourConversionFn(wasm_bindgen: any) {
-    const { rgb_from_hsl } = wasm_bindgen;
+    const { rgb_from_hsluv } = wasm_bindgen;
 
     return (hsl: [number, number, number]) => {
         function clamp(value: number, min: number, max: number) {
@@ -14,7 +14,7 @@ function buildColourConversionFn(wasm_bindgen: any) {
             return hex;
         }
 
-        const transportRGB = rgb_from_hsl(hsl[0], hsl[1], hsl[2]);
+        const transportRGB = rgb_from_hsluv(hsl[0], hsl[1], hsl[2]);
 
         let r = Math.floor(clamp(transportRGB.get_0(), 0, 1) * 255);
         let g = Math.floor(clamp(transportRGB.get_1(), 0, 1) * 255);

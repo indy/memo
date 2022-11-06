@@ -96,14 +96,21 @@ impl From<Hsluv> for Transport3C {
 }
 
 #[wasm_bindgen]
-pub fn hsl_from_rgb(r: f64, g: f64, b: f64) -> Transport3C {
+pub fn hsluv_from_rgb(r: f64, g: f64, b: f64) -> Transport3C {
     let hsluv: Hsluv = Rgb::new(r as f32, g as f32, b as f32, 1.0).into();
 
     hsluv.into()
 }
 
 #[wasm_bindgen]
-pub fn rgb_from_hsl(h: f64, s: f64, l: f64) -> Transport3C {
+pub fn rgb_from_hsluv(h: f64, s: f64, l: f64) -> Transport3C {
+    let rgb: Rgb = Hsluv::new(h as f32, s as f32, l as f32, 1.0).into();
+
+    rgb.into()
+}
+
+#[wasm_bindgen]
+pub fn rgb_from_oklch(h: f64, s: f64, l: f64) -> Transport3C {
     let rgb: Rgb = Hsluv::new(h as f32, s as f32, l as f32, 1.0).into();
 
     rgb.into()
