@@ -199,7 +199,10 @@ export const AppStateChange = {
         if (DEBUG_APP_STATE) {
             console.log("settingsColourScalar");
         }
-        state.settings.value[id] = parseInt(value, 10);
+        let newSettings = { ...state.settings.value };
+        newSettings[id] = parseInt(value, 10);
+
+        state.settings.value = newSettings;
     },
     settingsColourTriple: function (
         id: string,
@@ -208,11 +211,13 @@ export const AppStateChange = {
         if (DEBUG_APP_STATE) {
             console.log("settingsColourTriple");
         }
-        state.settings.value[id] = [
+        let newSettings = { ...state.settings.value };
+        newSettings.value[id] = [
             parseInt(value[0], 10),
             parseInt(value[1], 10),
             parseInt(value[2], 10),
         ];
+        state.settings.value = newSettings;
     },
     noteTriaged: function (note: INote) {
         if (DEBUG_APP_STATE) {
