@@ -42,11 +42,17 @@ const AppUI = () => {
         if (e.url !== "/login") {
             // all other pages require the user to be logged in
             if (state.user.value.username === "") {
-                console.log(state.user.value);
                 console.log(
                     "redirecting to /login because user is not logged in"
                 );
-                route("/login", true);
+
+                // NOTE: this is a hack to work-around a bug in preact-router
+                // in which a call to route during the initial render is ignored
+                // see https://github.com/preactjs/preact-router/issues/417
+                // once that issue is fixed the setTimeout can be replaced
+                // with a normal function call to 'route'
+                setTimeout(() => route('/login', true), 0);
+                // route("/login", true);
             }
         }
     }
