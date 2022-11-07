@@ -14,6 +14,7 @@ const emptyUser: IUser = {
 
 const state: IState = {
     user: signal(emptyUser),
+    wasmInterface: undefined,
     settings: signal({
         // note: extra setting variables are declared in
         // ColourCreator.js::augmentSettingsWithCssModifierParameters

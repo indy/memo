@@ -4,7 +4,12 @@ export function capitalise(text: string) {
     return text.split(" ").map(capitaliseWord).join(" ");
 }
 
-export function plural(num: number, decimalPlaces: number, phrase: string, suffix: string) {
+export function plural(
+    num: number,
+    decimalPlaces: number,
+    phrase: string,
+    suffix: string
+) {
     let showNum = num.toFixed(decimalPlaces);
     return num === 1 ? `${showNum} ${phrase}` : `${showNum} ${phrase}${suffix}`;
 }

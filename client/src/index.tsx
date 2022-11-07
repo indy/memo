@@ -18,6 +18,7 @@ wasm_bindgen("/wasm_colour_bg.wasm")
         };
 
         let state = initialState;
+        state.wasmInterface = wasmInterface;
         state.settings.value = augmentSettingsWithCssModifierParameters(
             state.settings.value
         );
@@ -36,10 +37,7 @@ wasm_bindgen("/wasm_colour_bg.wasm")
             declareCssVariables(state.settings.value, wasmInterface);
             let root = document.getElementById("root");
             if (root) {
-                render(
-                    <App state={state} wasmInterface={wasmInterface} />,
-                    root
-                );
+                render(<App state={state} />, root);
             }
         });
     })

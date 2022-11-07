@@ -36,6 +36,7 @@ export interface IListing {
 
 export interface IState {
     user: Signal<IUser>;
+    wasmInterface: any;
     settings: Signal<any>;
     activeTopBarMenuItem: Signal<string>;
     categories: Signal<Array<ICategory>>;

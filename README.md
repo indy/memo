@@ -6,14 +6,17 @@ A note keeping app. Developed at git.indy.io for my own use and mirrored on Gith
 
 rename .env.example to .env and update it for your environment. The database tables can be created by running the misc/schema.psql file into a Postgres database.
 
+one time initialisation with:
+```sh
+$ make init
+```
+
+
+then build
 ```sh
 $ make run
 ```
 
-## Client
-```sh
-$ make wasm-colour
-```
 
 ## Release build
 
@@ -30,8 +33,7 @@ $ make upload
 
 
 # Requirements
-- A modern (for c.2020) web-browser
-- PostgreSQL
+- A modern web-browser
 - Rust
 - Make
 - (Optional) Minify (https://github.com/tdewolff/minify)

@@ -1,12 +1,7 @@
 import { h, Fragment, FunctionalComponent } from "preact";
 import { Router, route } from "preact-router";
 import { WasmInterfaceProvider } from "./WasmInterfaceProvider";
-import {
-    AppStateChange,
-    AppStateProvider,
-    getAppState,
-    initialState,
-} from "./AppState";
+import { AppStateChange, AppStateProvider, getAppState } from "./AppState";
 
 import { Bin, BinnedNote } from "./components/Bin";
 import { TopBarMenu } from "./components/TopBarMenu";
@@ -17,19 +12,11 @@ import { TriagedNote, TriagedNotes } from "./components/TriagedNotes";
 
 import { IState } from "./types";
 
-export const App = ({
-    state,
-    wasmInterface,
-}: {
-    state: IState;
-    wasmInterface: any;
-}) => {
+export const App = ({ state }: { state: IState }) => {
     return (
-        <WasmInterfaceProvider wasmInterface={wasmInterface}>
-            <AppStateProvider state={state}>
-                <AppUI />
-            </AppStateProvider>
-        </WasmInterfaceProvider>
+        <AppStateProvider state={state}>
+            <AppUI />
+        </AppStateProvider>
     );
 };
 
@@ -51,7 +38,7 @@ const AppUI = () => {
                 // see https://github.com/preactjs/preact-router/issues/417
                 // once that issue is fixed the setTimeout can be replaced
                 // with a normal function call to 'route'
-                setTimeout(() => route('/login', true), 0);
+                setTimeout(() => route("/login", true), 0);
                 // route("/login", true);
             }
         }

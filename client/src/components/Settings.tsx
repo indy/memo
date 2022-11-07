@@ -2,7 +2,6 @@ import { h } from "preact";
 import { AppStateChange, getAppState } from "../AppState";
 
 import { declareCssVariables } from "../ColourCreator";
-import { useWasmInterface } from "../WasmInterfaceProvider";
 
 import { Logout } from "./Login";
 import Card from "./Card";
@@ -27,7 +26,7 @@ function Settings({ path }: { path?: string }) {
 
     const settings = appState.settings.value;
 
-    const wasmInterface = useWasmInterface();
+    const wasmInterface = appState.wasmInterface;
     declareCssVariables(settings, wasmInterface);
 
     return (
