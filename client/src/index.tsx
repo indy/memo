@@ -11,6 +11,8 @@ import {
     augmentSettingsWithCssModifierParameters,
 } from "./ColourCreator.js";
 
+import { IUser, ICategory, INote } from "./types";
+
 wasm_bindgen("/wasm_colour_bg.wasm")
     .then((wasm_colour_bg: any) => {
         const wasmInterface = {
@@ -23,14 +25,15 @@ wasm_bindgen("/wasm_colour_bg.wasm")
             state.settings.value
         );
 
-        Net.get("/api/users").then(async (user) => {
+        Net.get<IUser>("/api/users").then(async (user) => {
             if (user) {
                 // update initial state with user
                 //
-                let categories = await Net.get("/api/categories");
-                let notes = await Net.get(`/api/notes`);
-                let triaged = await Net.get(`/api/triaged`);
-                let bin = await Net.get(`/api/bin`);
+                let categories = await Net.get<Array<ICategory>>("/api/categories");
+                let notes = await Net.get<Array<INote>>(`/api/notes`);
+                let triaged = await Net.get<Array<INote>>(`/api/triaged`);
+                let bin = await Net.get<Array<INote>>(`/api/bin`);
+
 
                 AppStateChange.userLogin(user, categories, notes, triaged, bin);
             }

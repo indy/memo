@@ -1,13 +1,19 @@
 const Net = {
-    get: (url: string) => go("GET", url),
-    put: (url: string, data: any) => go("PUT", url, data),
-    post: (url: string, data: any) => go("POST", url, data),
-    delete: (url: string, data: any) => go("DELETE", url, data),
-    // use getCORS when you're not allowed to set 'content-type'
-    getCORS: (url: string) => fetch(url).then((response) => response.json()),
+    get: async function<TResp>(url: string): Promise<TResp> {
+        return go<void, TResp>("GET", url);
+    },
+    put: async function<TData, TResp>(url: string, data: TData): Promise<TResp> {
+        return go<TData, TResp>("PUT", url, data);
+    },
+    post: async function<TData, TResp>(url: string, data: TData): Promise<TResp> {
+        return go<TData, TResp>("POST", url, data);
+    },
+    delete: async function<TData, TResp>(url: string, data: TData): Promise<TResp> {
+        return go<TData, TResp>("DELETE", url, data);
+    }
 };
 
-function go(method: string, url: string, data?: any): Promise<any> {
+async function go<TData, TResp>(method: string, url: string, data?: TData): Promise<TResp> {
     let options: RequestInit = {
         method,
         headers: {
@@ -18,12 +24,14 @@ function go(method: string, url: string, data?: any): Promise<any> {
         options.body = JSON.stringify(data);
     }
 
-    return fetch(url, options).then((response) => {
-        if (!response.ok) {
-            throw new Error("Network response was not OK");
-        }
-        return response.json();
-    });
+    let response = await fetch(url, options);
+    if (!response.ok) {
+        throw new Error("Network response was not OK");
+    }
+
+    let ret = await response.json();
+
+    return ret as TResp;
 }
 
 export default Net;

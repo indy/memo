@@ -16,6 +16,12 @@ import { TriageDropDown } from "./TriageDropDown.jsx";
 
 import { INote, ICategory } from "../types";
 
+interface IProtoNote {
+    title: string;
+    content: string;
+    pinned: boolean;
+}
+
 function Notes({ path }: { path?: string }) {
     const appState = getAppState();
     const notes = appState.listing.value.notes;
@@ -66,7 +72,7 @@ function NoteListItem(note: INote, categories: Array<ICategory>) {
     );
 }
 
-function noteFromText(text: string) {
+function noteFromText(text: string): IProtoNote | undefined | null {
     const lines = text.split("\n");
 
     const title = lines.shift();
@@ -77,11 +83,13 @@ function noteFromText(text: string) {
             return null;
         }
 
-        return {
+        let protoNote: IProtoNote = {
             title,
             content,
             pinned: false,
         };
+
+        return protoNote;
     }
 }
 
@@ -125,7 +133,7 @@ function CreateNoteForm() {
         */
         const protoNote = noteFromText(userText);
         if (protoNote) {
-            Net.post(`/api/notes`, protoNote).then((note) => {
+            Net.post<IProtoNote, INote>(`/api/notes`, protoNote).then((note) => {
                 AppStateChange.listingNoteAppended(note);
             });
             setUserText("");

@@ -3,6 +3,8 @@ import { useState } from "preact/hooks";
 import { route } from "preact-router";
 import { AppStateChange, getAppState } from "../AppState";
 
+import { INote, ICategory } from "../types";
+
 import Net from "../Net";
 
 function Login({ path }: { path?: string }) {
@@ -51,10 +53,10 @@ function Login({ path }: { path?: string }) {
     };
 
     async function loginCallback(user: any) {
-        let categories = await Net.get("/api/categories");
-        let notes = await Net.get(`/api/notes`);
-        let triaged = await Net.get(`/api/triaged`);
-        let bin = await Net.get(`/api/bin`);
+        let categories = await Net.get<Array<ICategory>>("/api/categories");
+        let notes = await Net.get<Array<INote>>(`/api/notes`);
+        let triaged = await Net.get<Array<INote>>(`/api/triaged`);
+        let bin = await Net.get<Array<INote>>(`/api/bin`);
 
         AppStateChange.userLogin(user, categories, notes, triaged, bin);
         // once the state has a user, the Login page will redirect to '/'

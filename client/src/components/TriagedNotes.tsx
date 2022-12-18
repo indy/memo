@@ -157,6 +157,10 @@ function DeletableCategory({ category }: { category: any }) {
     );
 }
 
+interface IProtoCategory {
+    title: string;
+}
+
 function NewCategoryForm() {
     const appState = getAppState();
 
@@ -183,7 +187,8 @@ function NewCategoryForm() {
     function newCategorySubmit(e: any) {
         e.preventDefault();
 
-        Net.post(`/api/categories`, { title: localState.text }).then(
+        let protoCategory: IProtoCategory = { title: localState.text };
+        Net.post<IProtoCategory, Array<ICategory>>(`/api/categories`, protoCategory).then(
             (latestCategories) => {
                 AppStateChange.categoriesSet(latestCategories);
                 setLocalState({ ...localState, text: "" });

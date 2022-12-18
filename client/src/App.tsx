@@ -1,6 +1,5 @@
 import { h, Fragment, FunctionalComponent } from "preact";
 import { Router, route } from "preact-router";
-import { WasmInterfaceProvider } from "./WasmInterfaceProvider";
 import { AppStateChange, AppStateProvider, getAppState } from "./AppState";
 
 import { Bin, BinnedNote } from "./components/Bin";

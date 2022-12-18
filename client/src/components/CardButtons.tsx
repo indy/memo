@@ -46,7 +46,7 @@ function ButtonPinned({ note, pigment }: { note: INote; pigment: IPigment }) {
             ...note,
             pinned: !note.pinned,
         };
-        Net.put(`/api/notes/${note.id}`, data).then((n) => {
+        Net.put<INote, INote>(`/api/notes/${note.id}`, data).then((n) => {
             AppStateChange.notePinStateUpdated(n);
         });
     }

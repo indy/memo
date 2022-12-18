@@ -5,7 +5,7 @@ import Net from "../Net";
 
 import { AppStateChange } from "../AppState";
 
-import { ICategory, IPigment } from "../types";
+import { ICategory, INote, IPigment } from "../types";
 
 function TriageDropDown({
     noteId,
@@ -21,8 +21,8 @@ function TriageDropDown({
 }) {
     const [showList, setShowList] = useState(false);
 
-    function onTriageCategorySelected(category: any) {
-        Net.post(`/api/notes/${noteId}/triage`, category).then(
+    function onTriageCategorySelected(category: ICategory) {
+        Net.post<ICategory, INote>(`/api/notes/${noteId}/triage`, category).then(
             (triagedNote) => {
                 AppStateChange.noteTriaged(triagedNote);
             }

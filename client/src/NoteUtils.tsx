@@ -11,7 +11,7 @@ export function finishedEditingCallback(note: INote, setEditing: any) {
             content: updatedContent,
             title: updatedTitle,
         };
-        Net.put(`/api/notes/${note.id}`, data).then((newNote) => {
+        Net.put<INote, INote>(`/api/notes/${note.id}`, data).then((newNote) => {
             AppStateChange.noteContentUpdated(newNote);
             setEditing(false);
         });
