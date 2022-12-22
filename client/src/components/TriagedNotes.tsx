@@ -9,11 +9,7 @@ import {
     partitionPinnedNotes,
 } from "../NoteUtils";
 import {
-    SvgBin,
-    SvgExpand,
-    SvgMinimise,
-    SvgPinned,
-    SvgUnpinned,
+    SvgBin
 } from "../svgIcons";
 import { AppStateChange, getAppState } from "../AppState";
 
@@ -25,117 +21,40 @@ import {
     ButtonPinned,
 } from "./CardButtons";
 import { TriageDropDown } from "./TriageDropDown";
+import { CreateNoteForm } from "./CreateNoteForm.jsx";
 
 import { INote, ICategory } from "../types";
 
-function TriagedNotes({ path }: { path?: string }) {
+function TriagedNotes({ path, id }: { path?: string, id?: string }) {
     const appState = getAppState();
 
-    if (
-        appState.categories.value &&
-        appState.listing.value &&
-        appState.listing.value.triaged
-    ) {
-        // place triaged notes in their categories
-        const partitionByCategoryId = appState.categories.value.reduce(
-            (acc: any, category: any) => {
-                acc[category.id] = appState.listing.value.triaged.filter(
-                    (n: INote) => n.category_id === category.id
-                );
-                return acc;
-            },
-            {}
-        );
 
-        // keep the categories that contain notes
-        const triagedByCategory: any = {};
-        for (const categoryId in partitionByCategoryId) {
-            if (partitionByCategoryId[categoryId].length !== 0) {
-                triagedByCategory[categoryId] =
-                    partitionByCategoryId[categoryId];
-            }
-        }
-
-        const triagedSectionsHtml: any = [];
-        const deletableHtml: any = [];
-
-        appState.categories.value.forEach((category: ICategory) => {
-            if (triagedByCategory[category.id]) {
-                triagedSectionsHtml.push(
-                    <TriagedCategory
-                        categoryNotes={triagedByCategory[category.id]}
-                        categoryTitle={category.title}
-                    />
-                );
-            } else {
-                deletableHtml.push(<DeletableCategory category={category} />);
-            }
-        });
-
-        return (
-            <div>
-                <div>{triagedSectionsHtml}</div>
-                <div class="hr" />
-                <div class="section-controls">
-                    <NewCategoryForm />
-                </div>
-                <div class="hr" />
-                <div class="pad-left-1rem pad-top-1rem">{deletableHtml}</div>
-            </div>
-        );
-    }
-
-    return <div></div>;
-}
-
-function TriagedCategory({
-    categoryNotes,
-    categoryTitle,
-}: {
-    categoryNotes: any;
-    categoryTitle: any;
-}) {
-    let [show, setShow] = useState(false);
-
-    function toggleShow() {
-        setShow(!show);
-    }
+    // can't set id in the TriagedNotes arguments to be non-optional because
+    // then the type-checker wrongly complains about the use of TriagedNotes
+    // in App.tsx's Router setup. So instead we have to have this useless
+    // check for id
+    let cid: number = parseInt(id ? id : "0", 10);
+    let categoryNotes: Array<INote> = appState.listing.value.triaged.filter((n: INote) => n.category_id === cid);
 
     const [pin, unpin] = partitionPinnedNotes(categoryNotes);
     const pinnedListing = pin.map((n) => NoteListItem(n));
     const unpinnedListing = unpin.map((n) => NoteListItem(n));
 
-    const numNotes = (
-        <span class="category-num-notes">{categoryNotes.length}</span>
-    );
+    // const numNotes = (
+    //     <span class="category-num-notes">{categoryNotes.length}</span>
+    // );
 
-    if (show) {
-        return (
-            <div>
-                <h1 class="pad-left-1rem" onClick={toggleShow}>
-                    {" "}
-                    <SvgMinimise /> {categoryTitle} {numNotes}
-                </h1>
-                {pinnedListing.length > 0 && (
-                    <div class="card-holder-pinned">
-                        <div class="card-holder-pinned-inner">
-                            {pinnedListing}
-                        </div>
+    return (<div>
+            <CreateNoteForm />
+            { pinnedListing.length > 0 && (
+                <div class="card-holder-pinned">
+                    <div class="card-holder-pinned-inner">
+                        {pinnedListing}
                     </div>
-                )}
-                <div class="card-holder">{unpinnedListing}</div>
-            </div>
-        );
-    } else {
-        return (
-            <div>
-                <h1 class="pad-left-1rem" onClick={toggleShow}>
-                    {" "}
-                    <SvgExpand /> {categoryTitle} {numNotes}
-                </h1>
-            </div>
-        );
-    }
+                </div>
+            )}
+            <div class="card-holder">{unpinnedListing}</div>
+            </div>);
 }
 
 function DeletableCategory({ category }: { category: any }) {

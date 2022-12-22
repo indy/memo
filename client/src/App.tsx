@@ -8,6 +8,7 @@ import { Note, Notes } from "./components/Notes";
 import { Login, Logout } from "./components/Login";
 import { Settings } from "./components/Settings";
 import { TriagedNote, TriagedNotes } from "./components/TriagedNotes";
+import { TriageDrawer } from "./components/TriageDrawer";
 
 import { IState } from "./types";
 
@@ -47,10 +48,11 @@ const AppUI = () => {
         <div id="memo-app">
             <TopBarMenu />
             <div id="app-content">
+                <TriageDrawer/>
                 <Router onChange={handleRoute}>
                     <Notes path="/" />
                     <Note path="/notes/:id" />
-                    <TriagedNotes path="/triaged" />
+                    <TriagedNotes path="/category/:id" />
                     <TriagedNote path="/triaged/:id" />
                     <Bin path="/bin" />
                     <BinnedNote path="/bin/:id" />

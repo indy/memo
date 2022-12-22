@@ -21,6 +21,7 @@ const state: IState = {
         hueOffset: 0,
         hueDelta: 30,
     }),
+    showTriageDrawer: signal(false),
     activeTopBarMenuItem: signal(""),
     categories: signal([]),
     listing: signal({
@@ -95,6 +96,13 @@ export const AppStateChange = {
         user.username = "";
 
         state.user.value = user;
+    },
+    showTriageDrawer: function (show: boolean) {
+        if (DEBUG_APP_STATE) {
+            console.log("showTriageDrawer");
+        }
+
+        state.showTriageDrawer.value = show;
     },
     listingNoteAppended: function (note: INote) {
         if (DEBUG_APP_STATE) {

@@ -39,6 +39,7 @@ export interface IState {
     wasmInterface: any;
     settings: Signal<any>;
     activeTopBarMenuItem: Signal<string>;
+    showTriageDrawer: Signal<boolean>;
     categories: Signal<Array<ICategory>>;
     listing: Signal<IListing>;
 }

@@ -1,6 +1,6 @@
 import { h } from "preact";
 import { Link } from "preact-router";
-import { getAppState } from "../AppState";
+import { getAppState, AppStateChange } from "../AppState";
 
 function TopBarMenu() {
     const appState = getAppState();
@@ -41,6 +41,11 @@ function TopBarMenu() {
     let s2: string = `top-bar-menuitem pigment-triaged ${triagedExtraClass}`;
     let s3: string = `top-bar-menuitem pigment-bin ${binExtraClass}`;
 
+    function onTriagedClicked(e: MouseEvent) {
+        e.preventDefault();
+        AppStateChange.showTriageDrawer(!appState.showTriageDrawer.value);
+    }
+
     return (
         <div id="top-bar-menu" class="hr">
             <Link
@@ -53,9 +58,7 @@ function TopBarMenu() {
             <Link class={s1} href={"/"}>
                 Notes
             </Link>
-            <Link class={s2} href={"/triaged"}>
-                Triaged
-            </Link>
+            <a class={s2} onClick={onTriagedClicked}>Triaged</a>
             <Link class={s3} href={"/bin"}>
                 Bin
             </Link>
