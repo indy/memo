@@ -18,28 +18,24 @@
 use crate::interop::Key;
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
-pub struct TriagedNote {
-    pub id: Key,
-    pub title: String,
-    pub content: String,
-    pub triaged_at: chrono::NaiveDateTime,
-    pub category_id: Key,
-    pub pinned: bool,
-    pub created_at: chrono::NaiveDateTime,
-}
-
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Note {
     pub id: Key,
     pub title: String,
     pub content: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub triaged_at: Option<chrono::NaiveDateTime>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub category_id: Option<Key>,
     pub pinned: bool,
     pub created_at: chrono::NaiveDateTime,
 }
 
 #[derive(Debug, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ProtoNote {
     pub title: String,
     pub content: String,
     pub pinned: bool,
+    pub category_id: Option<Key>,
 }

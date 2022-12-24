@@ -59,7 +59,9 @@ init:
 	cd client; yarn install
 
 typescript-watch:
-	while true; do inotifywait -e close_write --quiet --recursive ./$(CLIENT_FOLDER)/src; make $(CLIENT_FOLDER)/www/index.js; done
+	while true; do inotifywait -e close_write --quiet --recursive ./$(CLIENT_FOLDER)/src; make typescript-build-and-typecheck; done
+
+typescript-build-and-typecheck: $(CLIENT_FOLDER)/www/index.js typescript-typecheck
 
 typescript-typecheck:
 	./$(CLIENT_FOLDER)/node_modules/typescript/bin/tsc -p ./$(CLIENT_FOLDER)/tsconfig.json --noEmit

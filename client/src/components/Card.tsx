@@ -9,23 +9,24 @@ import { INote, IPigment } from "../types";
 export default function Card({
     note,
     pigment,
-    resource,
     fullHeight,
     children,
     cardClass,
     editing,
     onFinishedEditing,
+    binned
 }: {
     note: INote;
     pigment: IPigment;
-    resource?: string;
     fullHeight?: boolean;
     children?: ComponentChildren;
     cardClass?: string;
     editing?: boolean;
     onFinishedEditing?: any;
+    binned?: boolean;
 }) {
-    const href = `/${resource}/${note.id}`;
+    //    const href = note.categoryId ? `/category/${note.categoryId}/notes/${note.id}` : `/notes/${note.id}`;
+    const href = `/notes/${note.id}`;
 
     interface LocalState {
         userContent: string;
@@ -50,7 +51,7 @@ export default function Card({
                 let selection = document.getSelection();
                 if (selection) {
                     let s: string = selection.toString();
-                    if (s.length === 0 && resource !== "bin") {
+                    if (s.length === 0 && !binned) {
                         route(href);
                     }
                 }

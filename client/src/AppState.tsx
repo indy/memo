@@ -9,7 +9,7 @@ import { plural } from "./JsUtils";
 const emptyUser: IUser = {
     username: "",
     email: "",
-    admin: { db_name: "" },
+    admin: { dbName: "" },
 };
 
 const state: IState = {
@@ -27,6 +27,7 @@ const state: IState = {
     listing: signal({
         notes: [],
         triaged: [],
+        category: {},
         bin: [],
     }),
 };
@@ -51,7 +52,7 @@ export const AppStateProvider = ({
 
 export const getAppState = () => useContext(AppStateContext);
 
-const DEBUG_APP_STATE = true;
+const DEBUG_APP_STATE = false;
 
 export const AppStateChange = {
     routeChanged: function (url: string) {
@@ -70,17 +71,19 @@ export const AppStateChange = {
         user: IUser,
         categories: Array<ICategory>,
         notes: Array<INote>,
-        triaged: Array<INote>,
         bin: Array<INote>
     ) {
         if (DEBUG_APP_STATE) {
             console.log("userLogin");
         }
 
+        let cats: { [key: string]: Array<INote> } = {};
+        categories.forEach((c) => (cats[c.id] = []));
+
         let listing: IListing = {
             bin: bin.map(calculateAge),
             notes: notes.map(calculateAge),
-            triaged: triaged.map(calculateAge),
+            category: cats,
         };
 
         state.user.value = user;
@@ -104,16 +107,37 @@ export const AppStateChange = {
 
         state.showTriageDrawer.value = show;
     },
+    loadedCategoryNotes: function (categoryId: number, notes: Array<INote>) {
+        if (DEBUG_APP_STATE) {
+            console.log("loadedCategoryNotes");
+        }
+        let listing: IListing = { ...state.listing.value };
+
+        listing.category[categoryId] = notes.map(calculateAge);
+
+        state.listing.value = listing;
+    },
     listingNoteAppended: function (note: INote) {
         if (DEBUG_APP_STATE) {
             console.log("listingNoteAppended");
         }
 
         let listing: IListing = { ...state.listing.value };
-        if (!listing.notes) {
-            listing.notes = [];
+
+        if (note.categoryId) {
+            if (!listing.category[note.categoryId]) {
+                listing.category[note.categoryId] = [];
+            }
+        } else {
+            if (!listing.notes) {
+                listing.notes = [];
+            }
         }
-        listing.notes.unshift(note);
+
+        let arr = note.categoryId
+            ? listing.category[note.categoryId]
+            : listing.notes;
+        arr.unshift(note);
 
         state.listing.value = listing;
     },
@@ -124,30 +148,33 @@ export const AppStateChange = {
 
         let listing = { ...state.listing.value };
 
-        let note = findNote(listing.notes, n.id);
-        if (note) {
-            note.pinned = n.pinned;
-        } else {
-            note = findNote(listing.triaged, n.id);
-            if (note) {
-                note.pinned = n.pinned;
-            } else {
-                note = findNote(listing.bin, n.id);
-                if (note) {
-                    note.pinned = n.pinned;
-                }
-            }
-        }
+        let note: INote = findNote(
+            n.categoryId ? listing.category[n.categoryId] : listing.notes,
+            n.id
+        )!;
+
+        note.pinned = n.pinned;
+
         state.listing.value = listing;
     },
     noteBinned: function (n: INote) {
+        // add a parameter to help find the array that the note is in
         if (DEBUG_APP_STATE) {
             console.log("noteBinned");
         }
+
         let listing = { ...state.listing.value };
 
-        listing.notes = removeNoteFromArray(listing.notes, n.id);
-        listing.triaged = removeNoteFromArray(listing.triaged, n.id);
+        if (n.categoryId) {
+            // binning a triaged note
+            listing.category[n.categoryId] = removeNoteFromArray(
+                listing.category[n.categoryId],
+                n.id
+            );
+        } else {
+            // binning a note from the inbox
+            listing.notes = removeNoteFromArray(listing.notes, n.id);
+        }
 
         if (listing.bin) {
             listing.bin.unshift(n);
@@ -156,21 +183,18 @@ export const AppStateChange = {
         state.listing.value = listing;
     },
     noteContentUpdated: function (n: INote) {
+        // maybe with another parameter showing which list the note is in
         if (DEBUG_APP_STATE) {
             console.log("noteContentUpdated");
         }
 
         let listing = { ...state.listing.value };
+        let arr = n.categoryId ? listing.category[n.categoryId] : listing.notes;
+        let note = findNote(arr, n.id)!;
 
-        let note =
-            findNote(listing.notes, n.id) ||
-            findNote(listing.triaged, n.id) ||
-            findNote(listing.bin, n.id);
-        if (note) {
-            note.content = n.content;
-            note.title = n.title;
-            note.pinned = n.pinned;
-        }
+        note.content = n.content;
+        note.title = n.title;
+        note.pinned = n.pinned;
 
         state.listing.value = listing;
     },
@@ -195,12 +219,16 @@ export const AppStateChange = {
 
         let listing = { ...state.listing.value };
 
-        listing.triaged = removeNoteFromArray(listing.triaged, note.id);
-
-        if (listing.notes) {
-            // todo: maybe insert this note in the correct position, not just at the beginning
-            listing.notes.unshift(note);
+        if (note.categoryId) {
+            listing.category[note.categoryId] = removeNoteFromArray(
+                listing.category[note.categoryId],
+                note.id
+            );
         }
+
+        note.categoryId = undefined;
+        note.triagedAt = undefined;
+        listing.notes.unshift(note);
 
         state.listing.value = listing;
     },
@@ -234,10 +262,20 @@ export const AppStateChange = {
         }
         let listing = { ...state.listing.value };
 
-        listing.notes = removeNoteFromArray(listing.notes, note.id);
+        if (note.categoryId) {
+            listing.notes = removeNoteFromArray(listing.notes, note.id);
 
-        if (listing.triaged) {
-            listing.triaged.unshift(note);
+            // only add this note to the appState's category array if
+            // it's already been loaded in. (Otherwise that category
+            // will only have this note in it, and since it won't be
+            // empty the app won't request the full list from the server.)
+            //
+            if (listing.category[note.categoryId].length > 0) {
+                listing.category[note.categoryId].unshift(note);
+            }
+        } else {
+            console.error("note should have a categoryId");
+            console.error(note);
         }
 
         state.listing.value = listing;
@@ -260,16 +298,12 @@ export const AppStateChange = {
         let listing = { ...state.listing.value };
         listing.bin = removeNoteFromArray(listing.bin, note.id);
 
-        // todo: make this more robust
-        if (note.category_id) {
-            if (listing.triaged) {
-                listing.triaged.unshift(note);
-            }
+        if (note.categoryId) {
+            listing.category[note.categoryId].unshift(note);
         } else {
-            if (listing.notes) {
-                listing.notes.unshift(note);
-            }
+            listing.notes.unshift(note);
         }
+
         state.listing.value = listing;
     },
     binEmptied: function () {
@@ -291,9 +325,9 @@ function removeNoteFromArray(
 }
 
 function calculateAge(note: INote) {
-    let created_at = new Date(Date.parse(note.created_at));
+    let createdAt = new Date(Date.parse(note.createdAt));
     let today = new Date();
-    let delta = today.getTime() - created_at.getTime();
+    let delta = today.getTime() - createdAt.getTime();
     let decimalPlaces = 2;
 
     note.age = humanReadableAge(delta, decimalPlaces);

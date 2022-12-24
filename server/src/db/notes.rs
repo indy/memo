@@ -31,18 +31,8 @@ fn from_row(row: &Row) -> Result<interop::Note> {
         id: row.get(0)?,
         title: row.get(1)?,
         content: row.get(2)?,
-        pinned: row.get(3)?,
-        created_at: row.get(4)?,
-    })
-}
-
-fn triaged_from_row(row: &Row) -> Result<interop::TriagedNote> {
-    Ok(interop::TriagedNote {
-        id: row.get(0)?,
-        title: row.get(1)?,
-        content: row.get(2)?,
-        triaged_at: row.get(3)?,
-        category_id: row.get(4)?,
+        triaged_at: row.get(3).ok(),
+        category_id: row.get(4).ok(),
         pinned: row.get(5)?,
         created_at: row.get(6)?,
     })
@@ -55,16 +45,29 @@ pub(crate) fn create(
 ) -> Result<interop::Note> {
     let conn = db_pool.get()?;
 
-    one::<interop::Note>(
-        &conn,
-        r#"
-           INSERT INTO notes (user_id, title, content)
-           VALUES(?1, ?2, ?3)
-           RETURNING id, title, content, pinned, created_at
-        "#,
-        params![user_id, &note.title, &note.content],
-        from_row,
-    )
+    if let Some(category_id) = note.category_id {
+        one::<interop::Note>(
+            &conn,
+            r#"
+               INSERT INTO notes (user_id, title, content, category_id, triaged_at)
+               VALUES(?1, ?2, ?3, ?4, datetime())
+               RETURNING id, title, content, triaged_at, category_id, pinned, created_at
+            "#,
+            params![user_id, &note.title, &note.content, &category_id],
+            from_row,
+        )
+    } else {
+        one::<interop::Note>(
+            &conn,
+            r#"
+               INSERT INTO notes (user_id, title, content)
+               VALUES(?1, ?2, ?3)
+               RETURNING id, title, content, triaged_at, category_id, pinned, created_at
+            "#,
+            params![user_id, &note.title, &note.content],
+            from_row,
+        )
+    }
 }
 
 pub(crate) fn all_non_triaged(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<interop::Note>> {
@@ -75,6 +78,8 @@ pub(crate) fn all_non_triaged(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<
         "SELECT id,
                 title,
                 content,
+                triaged_at,
+                category_id,
                 pinned,
                 created_at
          FROM   notes
@@ -93,6 +98,8 @@ pub(crate) fn all_binned(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<inter
         "SELECT id,
                 title,
                 content,
+                triaged_at,
+                category_id,
                 pinned,
                 created_at
          FROM   notes
@@ -103,10 +110,14 @@ pub(crate) fn all_binned(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<inter
     )
 }
 
-pub(crate) fn triaged_all(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<interop::TriagedNote>> {
+pub(crate) fn get_category(
+    db_pool: &SqlitePool,
+    user_id: Key,
+    category_id: Key,
+) -> Result<Vec<interop::Note>> {
     let conn = db_pool.get()?;
 
-    many::<interop::TriagedNote>(
+    many::<interop::Note>(
         &conn,
         "SELECT id,
                 title,
@@ -116,10 +127,10 @@ pub(crate) fn triaged_all(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<inte
                 pinned,
                 created_at
          FROM   notes
-         WHERE  user_id = ?1 and triaged_at is not null and deleted_at is null
+         WHERE  user_id = ?1 and category_id = ?2 and triaged_at is not null and deleted_at is null
          ORDER BY id desc",
-        params![&user_id],
-        triaged_from_row,
+        params![&user_id, &category_id],
+        from_row,
     )
 }
 
@@ -133,6 +144,8 @@ pub(crate) fn get(db_pool: &SqlitePool, user_id: Key, note_id: Key) -> Result<in
         "SELECT id,
                 title,
                 content,
+                triaged_at,
+                category_id,
                 pinned,
                 created_at
          FROM notes
@@ -142,35 +155,12 @@ pub(crate) fn get(db_pool: &SqlitePool, user_id: Key, note_id: Key) -> Result<in
     )
 }
 
-pub(crate) fn triaged_get(
-    db_pool: &SqlitePool,
-    user_id: Key,
-    note_id: Key,
-) -> Result<interop::TriagedNote> {
-    let conn = db_pool.get()?;
-
-    one::<interop::TriagedNote>(
-        &conn,
-        "SELECT id,
-                title,
-                content,
-                triaged_at,
-                category_id,
-                pinned,
-                created_at
-        FROM notes
-        WHERE id = ?2 AND user_id = ?1",
-        params![&user_id, &note_id],
-        triaged_from_row,
-    )
-}
-
 pub(crate) fn triage(
     db_pool: &SqlitePool,
     user_id: Key,
     note_id: Key,
     category: interop_categories::Category,
-) -> Result<interop::TriagedNote> {
+) -> Result<interop::Note> {
     // paranoid wrap in a transaction because if there's anything wrong with
     // the UPDATE it might succeed and the subsequent SELECT may end up failing
 
@@ -184,7 +174,7 @@ pub(crate) fn triage(
          WHERE id = ?2 and user_id = ?1"#,
         params![&user_id, &note_id, &category.id],
     )?;
-    let res = one::<interop::TriagedNote>(
+    let res = one::<interop::Note>(
         &tx,
         "SELECT id,
                 title,
@@ -196,7 +186,7 @@ pub(crate) fn triage(
         FROM notes
         WHERE id = ?2 AND user_id = ?1",
         params![&user_id, &note_id],
-        triaged_from_row,
+        from_row,
     )?;
 
     tx.commit()?;

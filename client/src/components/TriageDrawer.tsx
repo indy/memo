@@ -10,28 +10,26 @@ function TriageDrawer() {
 
         return (
             <div class="drawer">
-                { appState.categories.value.map(DrawerItem) }
+                {appState.categories.value.map(DrawerItem)}
             </div>
         );
     } else {
-        return (
-            <div>
-            </div>
-        );
+        return <div></div>;
     }
 }
 
-function DrawerItem({ id, title }: { id: number, title: string}) {
-
+function DrawerItem({ id, title }: { id: number; title: string }) {
     function onLinkClicked(e: MouseEvent) {
         AppStateChange.showTriageDrawer(false);
     }
 
     return (
         <div class="drawer-item">
-            <Link href={"/category/" + id} onClick={ onLinkClicked }>{ title }</Link>
+            <Link href={"/category/" + id} onClick={onLinkClicked}>
+                {title}
+            </Link>
         </div>
-    )
+    );
 }
 
 export { TriageDrawer };

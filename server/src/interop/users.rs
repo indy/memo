@@ -16,12 +16,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #[derive(Debug, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct LoginCredentials {
     pub email: String,
     pub password: String,
 }
 
 #[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Registration {
     pub username: String,
     pub email: String,
@@ -29,6 +31,7 @@ pub struct Registration {
 }
 
 #[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct User {
     pub username: String,
     pub email: String,
@@ -36,6 +39,7 @@ pub struct User {
 }
 
 #[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Admin {
     pub db_name: String,
 }

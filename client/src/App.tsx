@@ -2,12 +2,12 @@ import { h, Fragment, FunctionalComponent } from "preact";
 import { Router, route } from "preact-router";
 import { AppStateChange, AppStateProvider, getAppState } from "./AppState";
 
-import { Bin, BinnedNote } from "./components/Bin";
+import { Bin } from "./components/Bin";
 import { TopBarMenu } from "./components/TopBarMenu";
 import { Note, Notes } from "./components/Notes";
 import { Login, Logout } from "./components/Login";
 import { Settings } from "./components/Settings";
-import { TriagedNote, TriagedNotes } from "./components/TriagedNotes";
+import { TriagedNotes } from "./components/TriagedNotes";
 import { TriageDrawer } from "./components/TriageDrawer";
 
 import { IState } from "./types";
@@ -48,14 +48,12 @@ const AppUI = () => {
         <div id="memo-app">
             <TopBarMenu />
             <div id="app-content">
-                <TriageDrawer/>
+                <TriageDrawer />
                 <Router onChange={handleRoute}>
                     <Notes path="/" />
                     <Note path="/notes/:id" />
                     <TriagedNotes path="/category/:id" />
-                    <TriagedNote path="/triaged/:id" />
                     <Bin path="/bin" />
-                    <BinnedNote path="/bin/:id" />
                     <Login path="/login" />
                     <Logout path="/logout" />
                     <Settings path="/settings" />

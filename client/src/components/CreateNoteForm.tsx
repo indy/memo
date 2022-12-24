@@ -10,11 +10,12 @@ interface IProtoNote {
     title: string;
     content: string;
     pinned: boolean;
+    categoryId?: number;
 }
 
 const USER_TEXT = "user-text";
 
-function CreateNoteForm() {
+function CreateNoteForm({ categoryId }: { categoryId?: number }) {
     const [userText, setUserText] = useState(
         window.localStorage.getItem(USER_TEXT) || ""
     );
@@ -52,9 +53,14 @@ function CreateNoteForm() {
         */
         const protoNote = noteFromText(userText);
         if (protoNote) {
-            Net.post<IProtoNote, INote>(`/api/notes`, protoNote).then((note) => {
-                AppStateChange.listingNoteAppended(note);
-            });
+            if (categoryId) {
+                protoNote.categoryId = categoryId;
+            }
+            Net.post<IProtoNote, INote>(`/api/notes`, protoNote).then(
+                (note) => {
+                    AppStateChange.listingNoteAppended(note);
+                }
+            );
             setUserText("");
         }
     }

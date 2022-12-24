@@ -16,6 +16,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use crate::db::categories as db;
+use crate::db::notes as db_notes;
 use crate::db::sqlite::SqlitePool;
 use crate::error::Result;
 use crate::interop::categories as interop;
@@ -68,6 +69,21 @@ pub async fn get(
     let category_id = params.id;
 
     let category = db::get(&db_pool, user_id, category_id)?;
+
+    Ok(HttpResponse::Ok().json(category))
+}
+
+pub async fn get_notes(
+    db_pool: Data<SqlitePool>,
+    params: Path<IdParam>,
+    session: actix_session::Session,
+) -> Result<HttpResponse> {
+    info!("get category {:?}", params.id);
+
+    let user_id = session::user_id(&session)?;
+    let category_id = params.id;
+
+    let category = db_notes::get_category(&db_pool, user_id, category_id)?;
 
     Ok(HttpResponse::Ok().json(category))
 }

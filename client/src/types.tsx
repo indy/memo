@@ -3,7 +3,7 @@
 import { Signal } from "@preact/signals";
 
 export interface IAdmin {
-    db_name: string;
+    dbName: string;
 }
 
 export interface IUser {
@@ -20,18 +20,18 @@ export interface ICategory {
 export interface INote {
     age: string;
     content: string;
-    created_at: string;
+    createdAt: string;
     id: number;
     pinned: boolean;
     title: string;
-    triaged_at?: string;
-    category_id?: number;
+    triagedAt?: string;
+    categoryId?: number;
 }
 
 export interface IListing {
-    bin: Array<INote>;
     notes: Array<INote>;
-    triaged: Array<INote>;
+    category: { [key: number]: Array<INote> };
+    bin: Array<INote>;
 }
 
 export interface IState {

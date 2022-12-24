@@ -57,6 +57,7 @@ pub async fn bookmark(
         title: now.format("%F %T").to_string(),
         content: "".to_string(),
         pinned: false,
+        category_id: None,
     };
 
     // iterate over multipart stream

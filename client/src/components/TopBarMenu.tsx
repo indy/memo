@@ -12,7 +12,7 @@ function TopBarMenu() {
         if (user) {
             status += user.username;
             if (user.admin) {
-                status += ` (${user.admin.db_name})`;
+                status += ` (${user.admin.dbName})`;
             }
         } else {
             status = "Login";
@@ -58,7 +58,9 @@ function TopBarMenu() {
             <Link class={s1} href={"/"}>
                 Notes
             </Link>
-            <a class={s2} onClick={onTriagedClicked}>Triaged</a>
+            <a class={s2} onClick={onTriagedClicked}>
+                Triaged
+            </a>
             <Link class={s3} href={"/bin"}>
                 Bin
             </Link>

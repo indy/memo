@@ -1,8 +1,7 @@
 import { h } from "preact";
-import { useState } from "preact/hooks";
 
 import Net from "../Net";
-import { notePigment, getNoteById } from "../NoteUtils";
+import { notePigment } from "../NoteUtils";
 import { AppStateChange, getAppState } from "../AppState";
 
 import Card from "./Card";
@@ -40,7 +39,6 @@ function Bin({ path }: { path?: string }) {
 }
 
 function NoteListItem(note: INote) {
-    const resource = "bin";
     const pigment = notePigment(note.id);
 
     function onUndeleteClicked(e: MouseEvent) {
@@ -58,7 +56,7 @@ function NoteListItem(note: INote) {
     }
 
     return (
-        <Card note={note} resource={resource} pigment={pigment}>
+        <Card note={note} binned={true} pigment={pigment}>
             <button
                 class={`${pigment.classAlt} button card-action-cell`}
                 onClick={onUndeleteClicked}
@@ -75,36 +73,4 @@ function NoteListItem(note: INote) {
     );
 }
 
-function BinnedNote({ id, path }: { id?: string; path?: string }) {
-    const noteKind = "bin";
-
-    const appState = getAppState();
-    const editing = false;
-
-    if (!appState.listing.value.bin) {
-        // isg todo: fix this
-        return <div></div>;
-    }
-
-    // just to please the typescript checker
-    if (!id) {
-        return <div></div>;
-    }
-
-    const noteId = parseInt(id, 10);
-    const note = getNoteById(appState, noteKind, noteId);
-    const pigment = notePigment(noteId);
-
-    return (
-        <Card
-            editing={editing}
-            note={note}
-            resource={noteKind}
-            pigment={pigment}
-            fullHeight={true}
-            cardClass="wider-card"
-        ></Card>
-    );
-}
-
-export { Bin, BinnedNote };
+export { Bin };

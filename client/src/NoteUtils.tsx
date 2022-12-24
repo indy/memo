@@ -18,27 +18,32 @@ export function finishedEditingCallback(note: INote, setEditing: any) {
     };
 }
 
-export function getNoteById(
-    state: IState,
-    noteKind: string,
-    id: number
-): INote {
-    let notes: Array<INote> = [];
-    if (noteKind === "triaged") {
-        notes = state.listing.value.triaged;
-    } else if (noteKind === "bin") {
-        notes = state.listing.value.bin;
-    } else if (noteKind === "notes") {
-        notes = state.listing.value.notes;
+export function getNoteById(state: IState, id: number): INote | undefined {
+    function search(ns: Array<INote>): INote | undefined {
+        return ns.find((n: INote) => n.id === id);
     }
 
-    let res = notes.find((n: INote) => n.id === id);
-    if (!res) {
-        // isg hack: when triaging a note it may move from noteKind 'notes' to noteKind 'triaged', so look there
-        res = state.listing.value.triaged.find((n) => n.id === id);
+    let res: INote | undefined = search(state.listing.value.notes);
+    if (res) {
+        return res;
     }
 
-    return res!;
+    res = search(state.listing.value.bin);
+    if (res) {
+        return res;
+    }
+
+    for (const key in state.categories.value) {
+        let cat = state.categories.value[key];
+
+        let l: Array<INote> | undefined = state.listing.value.category[cat.id];
+        if (l != undefined) {
+            res = search(l);
+            if (res) {
+                return res;
+            }
+        }
+    };
 }
 
 export function partitionPinnedNotes(list: Array<INote>): Array<Array<INote>> {

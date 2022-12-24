@@ -243,7 +243,7 @@ function SampleCard({ pigment }: { pigment: string }) {
     const note: INote = {
         age: "test age",
         content: "test content",
-        created_at: "",
+        createdAt: "",
         id: 0,
         pinned: false,
         title: "test title",

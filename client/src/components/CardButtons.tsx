@@ -8,20 +8,18 @@ import { INote, IPigment } from "../types";
 
 function ButtonDelete({
     note,
-    noteKind,
     pigment,
 }: {
     note: INote;
-    noteKind: string;
     pigment: IPigment;
 }) {
     function onDeleteClicked(e: MouseEvent) {
         e.preventDefault();
 
-        Net.post(`/api/${noteKind}/${note.id}/bin`, {}).then(() => {
+        Net.post(`/api/notes/${note.id}/bin`, {}).then(() => {
             AppStateChange.noteBinned(note);
-            if (noteKind === "triaged") {
-                route("/triaged");
+            if (note.categoryId) {
+                route(`/category/${note.categoryId}`);
             } else {
                 route("/");
             }
@@ -42,13 +40,15 @@ function ButtonPinned({ note, pigment }: { note: INote; pigment: IPigment }) {
     function onPinnedClicked(e: MouseEvent) {
         e.preventDefault();
 
-        let data = {
+        let updatedNote: INote = {
             ...note,
             pinned: !note.pinned,
         };
-        Net.put<INote, INote>(`/api/notes/${note.id}`, data).then((n) => {
-            AppStateChange.notePinStateUpdated(n);
-        });
+        Net.put<INote, INote>(`/api/notes/${note.id}`, updatedNote).then(
+            (newNote: INote) => {
+                AppStateChange.notePinStateUpdated(updatedNote);
+            }
+        );
     }
 
     return (

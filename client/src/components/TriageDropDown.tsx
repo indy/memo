@@ -22,11 +22,12 @@ function TriageDropDown({
     const [showList, setShowList] = useState(false);
 
     function onTriageCategorySelected(category: ICategory) {
-        Net.post<ICategory, INote>(`/api/notes/${noteId}/triage`, category).then(
-            (triagedNote) => {
-                AppStateChange.noteTriaged(triagedNote);
-            }
-        );
+        Net.post<ICategory, INote>(
+            `/api/notes/${noteId}/triage`,
+            category
+        ).then((triagedNote) => {
+            AppStateChange.noteTriaged(triagedNote);
+        });
     }
 
     function onToggleShowList(e: MouseEvent) {

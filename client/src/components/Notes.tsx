@@ -19,6 +19,8 @@ import { INote, ICategory } from "../types";
 function Notes({ path }: { path?: string }) {
     const appState = getAppState();
     const notes = appState.listing.value.notes;
+
+    // partitionPinnedNotes also sorts by id
     const [pin, unpin] = notes ? partitionPinnedNotes(notes) : [[], []];
 
     const pinnedListing = pin.map((n) =>
@@ -44,13 +46,11 @@ function Notes({ path }: { path?: string }) {
 function NoteListItem(note: INote, categories: Array<ICategory>) {
     const [fullHeight, setFullHeight] = useState(false);
 
-    const resource = "notes";
     const pigment = notePigment(note.id);
 
     return (
         <Card
             note={note}
-            resource={resource}
             pigment={pigment}
             fullHeight={fullHeight}
         >
@@ -61,23 +61,16 @@ function NoteListItem(note: INote, categories: Array<ICategory>) {
                 cardFullHeightFn={setFullHeight}
             />
             <ButtonPinned note={note} pigment={pigment} />
-            <ButtonDelete note={note} pigment={pigment} noteKind={resource} />
+            <ButtonDelete note={note} pigment={pigment} />
         </Card>
     );
 }
 
 function Note({ id, path }: { id?: string; path?: string }) {
-    const noteKind = "notes";
-
     const appState = getAppState();
 
     const [editing, setEditing] = useState(false);
     const [fullHeight, setFullHeight] = useState(true);
-
-    if (!appState.listing.value[noteKind]) {
-        // isg todo: fix this
-        return <div></div>;
-    }
 
     // just to please the typescript checker
     if (!id) {
@@ -85,15 +78,26 @@ function Note({ id, path }: { id?: string; path?: string }) {
     }
 
     const noteId = parseInt(id, 10);
-    const note = getNoteById(appState, noteKind, noteId);
+    const note = getNoteById(appState, noteId)!;
     const pigment = notePigment(noteId);
+
+    if (note.categoryId) {
+        if (!appState.listing.value.category[note.categoryId]) {
+            // isg todo: fix this
+            return <div></div>;
+        }
+    } else {
+        if (!appState.listing.value.notes) {
+            // isg todo: fix this
+            return <div></div>;
+        }
+    }
 
     return (
         <Card
             onFinishedEditing={finishedEditingCallback(note, setEditing)}
             editing={editing}
             note={note}
-            resource={noteKind}
             pigment={pigment}
             fullHeight={fullHeight}
             cardClass="wider-card"
@@ -110,7 +114,7 @@ function Note({ id, path }: { id?: string; path?: string }) {
                 cardFullHeightFn={setFullHeight}
             />
             <ButtonPinned note={note} pigment={pigment} />
-            <ButtonDelete note={note} pigment={pigment} noteKind={noteKind} />
+            <ButtonDelete note={note} pigment={pigment} />
         </Card>
     );
 }

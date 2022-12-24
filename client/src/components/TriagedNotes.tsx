@@ -3,58 +3,57 @@ import { useState } from "preact/hooks";
 
 import Net from "../Net";
 import {
-    finishedEditingCallback,
-    getNoteById,
     notePigment,
     partitionPinnedNotes,
 } from "../NoteUtils";
-import {
-    SvgBin
-} from "../svgIcons";
+import { SvgBin } from "../svgIcons";
 import { AppStateChange, getAppState } from "../AppState";
 
 import Card from "./Card";
 import {
     ButtonUntriage,
     ButtonDelete,
-    ButtonEdit,
     ButtonPinned,
 } from "./CardButtons";
-import { TriageDropDown } from "./TriageDropDown";
 import { CreateNoteForm } from "./CreateNoteForm.jsx";
 
 import { INote, ICategory } from "../types";
 
-function TriagedNotes({ path, id }: { path?: string, id?: string }) {
+function TriagedNotes({ path, id }: { path?: string; id?: string }) {
     const appState = getAppState();
-
 
     // can't set id in the TriagedNotes arguments to be non-optional because
     // then the type-checker wrongly complains about the use of TriagedNotes
-    // in App.tsx's Router setup. So instead we have to have this useless
-    // check for id
+    // in App.tsx's Router setup
+
     let cid: number = parseInt(id ? id : "0", 10);
-    let categoryNotes: Array<INote> = appState.listing.value.triaged.filter((n: INote) => n.category_id === cid);
+
+    let categoryNotes: Array<INote> = appState.listing.value.category[cid];
+
+    if (categoryNotes.length === 0) {
+        Net.get<Array<INote>>(`/api/categories/${cid}/notes`).then(
+            async (notes: Array<INote>) => {
+                AppStateChange.loadedCategoryNotes(cid, notes);
+                categoryNotes = notes;
+            }
+        );
+    }
 
     const [pin, unpin] = partitionPinnedNotes(categoryNotes);
     const pinnedListing = pin.map((n) => NoteListItem(n));
     const unpinnedListing = unpin.map((n) => NoteListItem(n));
 
-    // const numNotes = (
-    //     <span class="category-num-notes">{categoryNotes.length}</span>
-    // );
-
-    return (<div>
-            <CreateNoteForm />
-            { pinnedListing.length > 0 && (
+    return (
+        <div>
+            <CreateNoteForm categoryId={cid} />
+            {pinnedListing.length > 0 && (
                 <div class="card-holder-pinned">
-                    <div class="card-holder-pinned-inner">
-                        {pinnedListing}
-                    </div>
+                    <div class="card-holder-pinned-inner">{pinnedListing}</div>
                 </div>
             )}
             <div class="card-holder">{unpinnedListing}</div>
-            </div>);
+        </div>
+    );
 }
 
 function DeletableCategory({ category }: { category: any }) {
@@ -107,12 +106,13 @@ function NewCategoryForm() {
         e.preventDefault();
 
         let protoCategory: IProtoCategory = { title: localState.text };
-        Net.post<IProtoCategory, Array<ICategory>>(`/api/categories`, protoCategory).then(
-            (latestCategories) => {
-                AppStateChange.categoriesSet(latestCategories);
-                setLocalState({ ...localState, text: "" });
-            }
-        );
+        Net.post<IProtoCategory, Array<ICategory>>(
+            `/api/categories`,
+            protoCategory
+        ).then((latestCategories) => {
+            AppStateChange.categoriesSet(latestCategories);
+            setLocalState({ ...localState, text: "" });
+        });
     }
 
     return (
@@ -139,64 +139,15 @@ function NewCategoryForm() {
 }
 
 function NoteListItem(note: INote) {
-    const resource = "triaged";
     const pigment = notePigment(note.id);
 
     return (
-        <Card note={note} resource={resource} pigment={pigment}>
+        <Card note={note} pigment={pigment}>
             <ButtonUntriage note={note} pigment={pigment} />
             <ButtonPinned note={note} pigment={pigment} />
-            <ButtonDelete note={note} pigment={pigment} noteKind={resource} />
+            <ButtonDelete note={note} pigment={pigment} />
         </Card>
     );
 }
 
-function TriagedNote({ id, path }: { id?: string; path?: string }) {
-    const noteKind = "triaged";
-
-    const appState = getAppState();
-    const [editing, setEditing] = useState(false);
-    const [fullHeight, setFullHeight] = useState(true);
-
-    if (!appState.listing.value.triaged) {
-        // isg todo: fix this
-        return <div></div>;
-    }
-
-    // just to please the typescript checker
-    if (!id) {
-        return <div></div>;
-    }
-
-    const noteId = parseInt(id, 10);
-    const note = getNoteById(appState, noteKind, noteId);
-    const pigment = notePigment(noteId);
-
-    return (
-        <Card
-            onFinishedEditing={finishedEditingCallback(note, setEditing)}
-            editing={editing}
-            note={note}
-            resource={noteKind}
-            pigment={pigment}
-            fullHeight={fullHeight}
-            cardClass="wider-card"
-        >
-            <ButtonEdit
-                pigment={pigment}
-                editing={editing}
-                callback={setEditing}
-            />
-            <TriageDropDown
-                noteId={note.id}
-                categories={appState.categories.value}
-                pigment={pigment}
-                cardFullHeightFn={setFullHeight}
-            />
-            <ButtonPinned note={note} pigment={pigment} />
-            <ButtonDelete note={note} pigment={pigment} noteKind={noteKind} />
-        </Card>
-    );
-}
-
-export { TriagedNotes, TriagedNote };
+export { TriagedNotes };

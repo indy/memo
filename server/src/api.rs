@@ -56,7 +56,6 @@ pub fn public_api(mount_point: &str) -> actix_web::Scope {
         // triaged notes
         .service(
             scope("/triaged")
-                .route("", get().to(triaged::get_all))
                 .route("/{id}", get().to(triaged::get))
                 .route("/{id}/untriage", post().to(triaged::untriage))
                 .route("/{id}/bin", post().to(triaged::bin)),
@@ -75,6 +74,7 @@ pub fn public_api(mount_point: &str) -> actix_web::Scope {
             scope("/categories")
                 .route("", post().to(categories::create))
                 .route("", get().to(categories::get_all))
+                .route("/{id}/notes", get().to(categories::get_notes))
                 .route("/{id}", get().to(categories::get))
                 .route("/{id}", put().to(categories::edit))
                 .route("/{id}", delete().to(categories::delete)),

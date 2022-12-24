@@ -26,19 +26,6 @@ use actix_web::HttpResponse;
 #[allow(unused_imports)]
 use tracing::info;
 
-pub async fn get_all(
-    db_pool: Data<SqlitePool>,
-    session: actix_session::Session,
-) -> Result<HttpResponse> {
-    info!("get_all");
-
-    let user_id = session::user_id(&session)?;
-
-    let triaged_notes = db::triaged_all(&db_pool, user_id)?;
-
-    Ok(HttpResponse::Ok().json(triaged_notes))
-}
-
 pub async fn get(
     db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
@@ -49,9 +36,9 @@ pub async fn get(
     let user_id = session::user_id(&session)?;
     let note_id = params.id;
 
-    let triaged_note = db::triaged_get(&db_pool, user_id, note_id)?;
+    let note = db::get(&db_pool, user_id, note_id)?;
 
-    Ok(HttpResponse::Ok().json(triaged_note))
+    Ok(HttpResponse::Ok().json(note))
 }
 
 pub async fn untriage(

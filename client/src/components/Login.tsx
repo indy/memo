@@ -55,10 +55,9 @@ function Login({ path }: { path?: string }) {
     async function loginCallback(user: any) {
         let categories = await Net.get<Array<ICategory>>("/api/categories");
         let notes = await Net.get<Array<INote>>(`/api/notes`);
-        let triaged = await Net.get<Array<INote>>(`/api/triaged`);
         let bin = await Net.get<Array<INote>>(`/api/bin`);
 
-        AppStateChange.userLogin(user, categories, notes, triaged, bin);
+        AppStateChange.userLogin(user, categories, notes, bin);
         // once the state has a user, the Login page will redirect to '/'
     }
 

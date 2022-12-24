@@ -29,13 +29,13 @@ wasm_bindgen("/wasm_colour_bg.wasm")
             if (user) {
                 // update initial state with user
                 //
-                let categories = await Net.get<Array<ICategory>>("/api/categories");
+                let categories = await Net.get<Array<ICategory>>(
+                    "/api/categories"
+                );
                 let notes = await Net.get<Array<INote>>(`/api/notes`);
-                let triaged = await Net.get<Array<INote>>(`/api/triaged`);
                 let bin = await Net.get<Array<INote>>(`/api/bin`);
 
-
-                AppStateChange.userLogin(user, categories, notes, triaged, bin);
+                AppStateChange.userLogin(user, categories, notes, bin);
             }
             declareCssVariables(state.settings.value, wasmInterface);
             let root = document.getElementById("root");

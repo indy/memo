@@ -1,19 +1,32 @@
 const Net = {
-    get: async function<TResp>(url: string): Promise<TResp> {
+    get: async function <TResp>(url: string): Promise<TResp> {
         return go<void, TResp>("GET", url);
     },
-    put: async function<TData, TResp>(url: string, data: TData): Promise<TResp> {
+    put: async function <TData, TResp>(
+        url: string,
+        data: TData
+    ): Promise<TResp> {
         return go<TData, TResp>("PUT", url, data);
     },
-    post: async function<TData, TResp>(url: string, data: TData): Promise<TResp> {
+    post: async function <TData, TResp>(
+        url: string,
+        data: TData
+    ): Promise<TResp> {
         return go<TData, TResp>("POST", url, data);
     },
-    delete: async function<TData, TResp>(url: string, data: TData): Promise<TResp> {
+    delete: async function <TData, TResp>(
+        url: string,
+        data: TData
+    ): Promise<TResp> {
         return go<TData, TResp>("DELETE", url, data);
-    }
+    },
 };
 
-async function go<TData, TResp>(method: string, url: string, data?: TData): Promise<TResp> {
+async function go<TData, TResp>(
+    method: string,
+    url: string,
+    data?: TData
+): Promise<TResp> {
     let options: RequestInit = {
         method,
         headers: {
