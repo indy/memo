@@ -11,8 +11,9 @@ import { getAppState } from "../AppState";
 
 import Card from "./Card";
 import { ButtonDelete, ButtonEdit, ButtonPinned } from "./CardButtons";
-import { TriageDropDown } from "./TriageDropDown.jsx";
-import { CreateNoteForm } from "./CreateNoteForm.jsx";
+import { TriageDropDown } from "./TriageDropDown";
+import { CreateNoteForm } from "./CreateNoteForm";
+import { PinnedListing, UnPinnedListing }  from "./Listing";
 
 import { INote, ICategory } from "../types";
 
@@ -24,26 +25,22 @@ function Notes({ path }: { path?: string }) {
     const [pin, unpin] = notes ? partitionPinnedNotes(notes) : [[], []];
 
     const pinnedListing = pin.map((n) =>
-        NoteListItem(n, appState.categories.value)
+        InboxCard(n, appState.categories.value)
     );
     const unpinnedListing = unpin.map((n) =>
-        NoteListItem(n, appState.categories.value)
+        InboxCard(n, appState.categories.value)
     );
 
     return (
         <div>
             <CreateNoteForm />
-            {pinnedListing.length > 0 && (
-                <div class="card-holder-pinned">
-                    <div class="card-holder-pinned-inner">{pinnedListing}</div>
-                </div>
-            )}
-            <div class="card-holder">{unpinnedListing}</div>
+            <PinnedListing>{pinnedListing}</PinnedListing>
+            <UnPinnedListing>{unpinnedListing}</UnPinnedListing>
         </div>
     );
 }
 
-function NoteListItem(note: INote, categories: Array<ICategory>) {
+function InboxCard(note: INote, categories: Array<ICategory>) {
     const [fullHeight, setFullHeight] = useState(false);
 
     const pigment = notePigment(note.id);

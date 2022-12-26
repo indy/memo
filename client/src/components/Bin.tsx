@@ -5,6 +5,7 @@ import { notePigment } from "../NoteUtils";
 import { AppStateChange, getAppState } from "../AppState";
 
 import Card from "./Card";
+import { UnPinnedListing }  from "./Listing";
 
 import { INote } from "../types";
 
@@ -12,7 +13,7 @@ function Bin({ path }: { path?: string }) {
     const appState = getAppState();
 
     const notes: Array<INote> = appState.listing.value.bin;
-    const listing = notes ? notes.map((n) => NoteListItem(n)) : [];
+    const listing = notes ? notes.map((n) => BinnedCard(n)) : [];
 
     function onDeleteClicked(e: MouseEvent) {
         e.preventDefault();
@@ -33,12 +34,12 @@ function Bin({ path }: { path?: string }) {
                 )}
             </div>
             <div class="hr" />
-            <div class="card-holder">{listing}</div>
+            <UnPinnedListing>{listing}</UnPinnedListing>
         </div>
     );
 }
 
-function NoteListItem(note: INote) {
+function BinnedCard(note: INote) {
     const pigment = notePigment(note.id);
 
     function onUndeleteClicked(e: MouseEvent) {

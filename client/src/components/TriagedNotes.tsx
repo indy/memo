@@ -15,7 +15,8 @@ import {
     ButtonDelete,
     ButtonPinned,
 } from "./CardButtons";
-import { CreateNoteForm } from "./CreateNoteForm.jsx";
+import { CreateNoteForm } from "./CreateNoteForm";
+import { PinnedListing, UnPinnedListing }  from "./Listing";
 
 import { INote, ICategory } from "../types";
 
@@ -40,18 +41,14 @@ function TriagedNotes({ path, id }: { path?: string; id?: string }) {
     }
 
     const [pin, unpin] = partitionPinnedNotes(categoryNotes);
-    const pinnedListing = pin.map((n) => NoteListItem(n));
-    const unpinnedListing = unpin.map((n) => NoteListItem(n));
+    const pinnedListing = pin.map((n) => TriagedCard(n));
+    const unpinnedListing = unpin.map((n) => TriagedCard(n));
 
     return (
         <div>
             <CreateNoteForm categoryId={cid} />
-            {pinnedListing.length > 0 && (
-                <div class="card-holder-pinned">
-                    <div class="card-holder-pinned-inner">{pinnedListing}</div>
-                </div>
-            )}
-            <div class="card-holder">{unpinnedListing}</div>
+            <PinnedListing>{pinnedListing}</PinnedListing>
+            <UnPinnedListing>{unpinnedListing}</UnPinnedListing>
         </div>
     );
 }
@@ -138,7 +135,7 @@ function NewCategoryForm() {
     );
 }
 
-function NoteListItem(note: INote) {
+function TriagedCard(note: INote) {
     const pigment = notePigment(note.id);
 
     return (
