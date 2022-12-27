@@ -30,11 +30,14 @@ function TopBarMenu() {
     let binExtraClass: string = "";
 
     if (appState.activeTopBarMenuItem.value === "notes") {
+        console.log("active: notes");
         notesExtraClass = "top-bar-menuitem-active";
-    } else if (appState.activeTopBarMenuItem.value === "triaged") {
-        triagedExtraClass = "top-bar-menuitem-active";
     } else if (appState.activeTopBarMenuItem.value === "bin") {
+        console.log("active: bin");
         binExtraClass = "top-bar-menuitem-active";
+    } else {
+        console.log("active: triaged");
+        triagedExtraClass = "top-bar-menuitem-active";
     }
 
     let s1: string = `top-bar-menuitem pigment-notes ${notesExtraClass}`;
@@ -56,13 +59,13 @@ function TopBarMenu() {
                 {loggedStatus()}
             </Link>
             <Link class={s1} href={"/"}>
-                Notes
+                notes
             </Link>
             <a class={s2} onClick={onTriagedClicked}>
-                Triaged
+                { appState.triageLabel.value }
             </a>
             <Link class={s3} href={"/bin"}>
-                Bin
+                bin
             </Link>
         </div>
     );

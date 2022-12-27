@@ -8,6 +8,7 @@ import {
 } from "../NoteUtils";
 import { SvgBin } from "../svgIcons";
 import { AppStateChange, getAppState } from "../AppState";
+import { getTriageLabel } from "../AppUtils";
 
 import Card from "./Card";
 import {
@@ -28,6 +29,9 @@ function TriagedNotes({ path, id }: { path?: string; id?: string }) {
     // in App.tsx's Router setup
 
     let cid: number = parseInt(id ? id : "0", 10);
+
+    let label = getTriageLabel(appState.categories.value, cid);
+    AppStateChange.triageMenuItemLabel(label);
 
     let categoryNotes: Array<INote> = appState.listing.value.category[cid];
 

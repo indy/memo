@@ -11,6 +11,7 @@ import { INote } from "../types";
 
 function Bin({ path }: { path?: string }) {
     const appState = getAppState();
+    AppStateChange.triageDrawerDefaultLabel();
 
     const notes: Array<INote> = appState.listing.value.bin;
     const listing = notes ? notes.map((n) => BinnedCard(n)) : [];

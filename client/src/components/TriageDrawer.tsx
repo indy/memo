@@ -24,11 +24,9 @@ function DrawerItem({ id, title }: { id: number; title: string }) {
     }
 
     return (
-        <div class="drawer-item">
-            <Link href={"/category/" + id} onClick={onLinkClicked}>
-                {title}
-            </Link>
-        </div>
+        <Link class="drawer-item" href={"/category/" + id} onClick={onLinkClicked}>
+            {title}
+        </Link>
     );
 }
 

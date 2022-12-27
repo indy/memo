@@ -23,6 +23,7 @@ const state: IState = {
     }),
     showTriageDrawer: signal(false),
     activeTopBarMenuItem: signal(""),
+    triageLabel: signal("triaged"),
     categories: signal([]),
     listing: signal({
         notes: [],
@@ -61,10 +62,10 @@ export const AppStateChange = {
         }
         if (url === "/") {
             state.activeTopBarMenuItem.value = "notes";
-        } else if (url === "/triaged") {
-            state.activeTopBarMenuItem.value = "triaged";
         } else if (url === "/bin") {
             state.activeTopBarMenuItem.value = "bin";
+        } else {
+            state.activeTopBarMenuItem.value = "triaged";
         }
     },
     userLogin: function (
@@ -106,6 +107,18 @@ export const AppStateChange = {
         }
 
         state.showTriageDrawer.value = show;
+    },
+    triageMenuItemLabel: function (title: string) {
+        if (DEBUG_APP_STATE) {
+            console.log("triageMenuItemLabel");
+        }
+        state.triageLabel.value = title;
+    },
+    triageDrawerDefaultLabel: function () {
+        if (DEBUG_APP_STATE) {
+            console.log("triageDrawerDefaultLabel");
+        }
+        state.triageLabel.value = "triaged";
     },
     loadedCategoryNotes: function (categoryId: number, notes: Array<INote>) {
         if (DEBUG_APP_STATE) {

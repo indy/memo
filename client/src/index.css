@@ -737,6 +737,19 @@ h3 {
     border-radius: var(--ui-element-border-radius);
 }
 
+.drawer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.drawer-item {
+  background: var(--bg2);
+  flex: 1;
+  padding: 1rem;
+  border-radius: var(--ui-element-border-radius);
+  margin: 0.5rem;
+}
+
 .card-action-row {
     display: flex;
 }

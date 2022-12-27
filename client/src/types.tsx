@@ -38,7 +38,8 @@ export interface IState {
     user: Signal<IUser>;
     wasmInterface: any;
     settings: Signal<any>;
-    activeTopBarMenuItem: Signal<string>;
+    activeTopBarMenuItem: Signal<string>; // "notes" | "triaged" | "bin"
+    triageLabel: Signal<string>;
     showTriageDrawer: Signal<boolean>;
     categories: Signal<Array<ICategory>>;
     listing: Signal<IListing>;

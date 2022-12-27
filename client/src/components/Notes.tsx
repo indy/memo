@@ -7,7 +7,7 @@ import {
     notePigment,
     partitionPinnedNotes,
 } from "../NoteUtils";
-import { getAppState } from "../AppState";
+import { getAppState, AppStateChange } from "../AppState";
 
 import Card from "./Card";
 import { ButtonDelete, ButtonEdit, ButtonPinned } from "./CardButtons";
@@ -19,9 +19,9 @@ import { INote, ICategory } from "../types";
 
 function Notes({ path }: { path?: string }) {
     const appState = getAppState();
-    const notes = appState.listing.value.notes;
+    AppStateChange.triageDrawerDefaultLabel();
 
-    // partitionPinnedNotes also sorts by id
+    const notes = appState.listing.value.notes;
     const [pin, unpin] = notes ? partitionPinnedNotes(notes) : [[], []];
 
     const pinnedListing = pin.map((n) =>
