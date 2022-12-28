@@ -1,12 +1,12 @@
 import { h } from "preact";
 import { useState } from "preact/hooks";
+import { route } from "preact-router";
 
 import Net from "../Net";
 import {
     notePigment,
     partitionPinnedNotes,
 } from "../NoteUtils";
-import { SvgBin } from "../svgIcons";
 import { AppStateChange, getAppState } from "../AppState";
 import { getTriageLabel } from "../AppUtils";
 
@@ -19,7 +19,7 @@ import {
 import { CreateNoteForm } from "./CreateNoteForm";
 import { PinnedListing, UnPinnedListing }  from "./Listing";
 
-import { INote, ICategory } from "../types";
+import { INote } from "../types";
 
 function TriagedNotes({ path, id }: { path?: string; id?: string }) {
     const appState = getAppState();
@@ -53,90 +53,39 @@ function TriagedNotes({ path, id }: { path?: string; id?: string }) {
             <CreateNoteForm categoryId={cid} />
             <PinnedListing>{pinnedListing}</PinnedListing>
             <UnPinnedListing>{unpinnedListing}</UnPinnedListing>
+            <DeletableCategory categoryId={cid} label={label}/>
         </div>
     );
 }
 
-function DeletableCategory({ category }: { category: any }) {
-    function onDeleteClicked(e: MouseEvent) {
-        e.preventDefault();
+function DeletableCategory({ categoryId, label }: { categoryId: number, label: string }) {
+    const [showToggle, setShowToggle] = useState(false);
 
-        Net.delete(`/api/categories/${category.id}`, {}).then(() => {
-            AppStateChange.categoryDeleted(category);
+    function buttonClicked(e: MouseEvent) {
+        e.preventDefault();
+        setShowToggle(true);
+    }
+
+    function noClicked(e: MouseEvent) {
+        e.preventDefault();
+        setShowToggle(false);
+    }
+
+    function yesClicked(e: MouseEvent) {
+        e.preventDefault();
+        setShowToggle(false);
+
+        Net.delete(`/api/categories/${categoryId}`, {}).then(() => {
+            AppStateChange.categoryDeleted(categoryId);
+            route("/");
         });
     }
 
-    return (
-        <div>
-            <button class="bg2 button" onClick={onDeleteClicked}>
-                <SvgBin fillColour="--fg" />{" "}
-            </button>
-            <span class="pad-left-1rem">Delete {category.title}</span>
-        </div>
-    );
-}
-
-interface IProtoCategory {
-    title: string;
-}
-
-function NewCategoryForm() {
-    const appState = getAppState();
-
-    const [localState, setLocalState] = useState({
-        text: "",
-        disabled: true,
-    });
-
-    function onInput(e: any) {
-        const value = e.target.value;
-        const found = appState.categories.value.find(
-            (c: ICategory) => c.title === value
-        );
-
-        const newState = {
-            ...localState,
-            disabled: !!found || value.length === 0,
-            text: value,
-        };
-
-        setLocalState(newState);
-    }
-
-    function newCategorySubmit(e: any) {
-        e.preventDefault();
-
-        let protoCategory: IProtoCategory = { title: localState.text };
-        Net.post<IProtoCategory, Array<ICategory>>(
-            `/api/categories`,
-            protoCategory
-        ).then((latestCategories) => {
-            AppStateChange.categoriesSet(latestCategories);
-            setLocalState({ ...localState, text: "" });
-        });
-    }
-
-    return (
-        <form class="form-inline" onSubmit={newCategorySubmit}>
-            <label class="form-inline-item" for="new-category">
-                New category:
-            </label>
-            <input
-                class="form-inline-item"
-                type="text"
-                id="new-category"
-                name="new-category"
-                value={localState.text}
-                onInput={onInput}
-            />
-            <input
-                class="triaged-note-create-button-bodge form-inline-item button save-button"
-                type="submit"
-                value="Create"
-                disabled={localState.disabled}
-            />
-        </form>
-    );
+    return (<div>
+                {!showToggle && <button onClick={ buttonClicked }>Delete {label}</button>}
+                {showToggle && <button onClick={ noClicked }>No, Cancel Delete</button>}
+                {showToggle && <button onClick={ yesClicked }>Yes, Really Delete</button>}
+            </div>)
 }
 
 function TriagedCard(note: INote) {

@@ -744,10 +744,15 @@ h3 {
 
 .drawer-item {
   background: var(--bg2);
+  color: var(--fg);
   flex: 1;
   padding: 1rem;
   border-radius: var(--ui-element-border-radius);
   margin: 0.5rem;
+}
+
+.drawer-item-new {
+  cursor: pointer;
 }
 
 .card-action-row {

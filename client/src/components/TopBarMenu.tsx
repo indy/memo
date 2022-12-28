@@ -30,13 +30,10 @@ function TopBarMenu() {
     let binExtraClass: string = "";
 
     if (appState.activeTopBarMenuItem.value === "notes") {
-        console.log("active: notes");
         notesExtraClass = "top-bar-menuitem-active";
     } else if (appState.activeTopBarMenuItem.value === "bin") {
-        console.log("active: bin");
         binExtraClass = "top-bar-menuitem-active";
     } else {
-        console.log("active: triaged");
         triagedExtraClass = "top-bar-menuitem-active";
     }
 

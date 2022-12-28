@@ -16,6 +16,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use crate::db::sqlite::{many, one, zero, SqlitePool};
+use crate::db::notes as db_notes;
 use crate::error::Result;
 use crate::interop::categories as interop;
 use crate::interop::Key;
@@ -102,6 +103,9 @@ pub(crate) fn edit(
 }
 
 pub(crate) fn delete(db_pool: &SqlitePool, user_id: Key, id: Key) -> Result<()> {
+
+    db_notes::delete_all_categorised(db_pool, user_id, id)?;
+
     let conn = db_pool.get()?;
     zero(
         &conn,
@@ -112,4 +116,6 @@ pub(crate) fn delete(db_pool: &SqlitePool, user_id: Key, id: Key) -> Result<()> 
         "#,
         params![user_id, id],
     )
+
+
 }

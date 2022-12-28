@@ -211,18 +211,32 @@ export const AppStateChange = {
 
         state.listing.value = listing;
     },
-    categoryDeleted: function (deletedCategory: ICategory) {
+    categoryDeleted: function (categoryId: number) {
         if (DEBUG_APP_STATE) {
             console.log("categoryDeleted");
         }
         state.categories.value = state.categories.value.filter(
-            (c: ICategory) => c.id !== deletedCategory.id
+            (c: ICategory) => c.id !== categoryId
         );
+        let listing = { ...state.listing.value };
+
+        delete listing.category[categoryId];
+
+        state.listing.value = listing;
     },
     categoriesSet: function (categories: Array<ICategory>) {
         if (DEBUG_APP_STATE) {
             console.log("categoriesSet");
         }
+
+        let listing = { ...state.listing.value };
+
+        for (let i: number = 0; i < categories.length; i++) {
+            if (!listing.category[categories[i].id]) {
+                listing.category[categories[i].id] = [];
+            }
+        }
+        state.listing.value = listing;
         state.categories.value = categories;
     },
     noteUntriaged: function (note: INote) {

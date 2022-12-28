@@ -1,15 +1,18 @@
 import { h } from "preact";
+import { useState } from "preact/hooks";
 import { Link } from "preact-router";
 import { getAppState, AppStateChange } from "../AppState";
+
+import Net from "../Net";
+import { ICategory } from "../types";
 
 function TriageDrawer() {
     const appState = getAppState();
 
     if (appState.showTriageDrawer.value) {
-        console.log(appState.categories.value);
-
         return (
             <div class="drawer">
+                <CreateNewCategory/>
                 {appState.categories.value.map(DrawerItem)}
             </div>
         );
@@ -18,8 +21,102 @@ function TriageDrawer() {
     }
 }
 
+interface IProtoCategory {
+    title: string;
+}
+
+function CreateNewCategory() {
+    const appState = getAppState();
+
+    const [localState, setLocalState] = useState({
+        activated: false,
+        text: "",
+        disabled: true,
+    });
+
+    function onClicked() {
+        setLocalState({
+            ...localState,
+            activated: true
+        });
+    }
+
+    function onInput(e: any) {
+        const value = e.target.value;
+        const found = appState.categories.value.find(
+            (c: ICategory) => c.title === value
+        );
+
+        const newState = {
+            ...localState,
+            disabled: !!found || value.length === 0,
+            text: value,
+        };
+
+        setLocalState(newState);
+    }
+
+    function newCategorySubmit(e: any) {
+        e.preventDefault();
+
+        let protoCategory: IProtoCategory = { title: localState.text };
+        Net.post<IProtoCategory, Array<ICategory>>(
+            `/api/categories`,
+            protoCategory
+        ).then((latestCategories) => {
+            AppStateChange.categoriesSet(latestCategories);
+            setLocalState({
+                ...localState,
+                text: "",
+                activated: false
+            });
+        });
+    }
+
+    function onCancelMouseDown() {
+        setLocalState({
+            ...localState,
+            activated: false
+        });
+    }
+
+    if (localState.activated) {
+        return (
+            <form class="form-inline" onSubmit={newCategorySubmit}>
+                <label class="form-inline-item" for="new-category">
+                    New category:
+                </label>
+                <input
+                    class="form-inline-item"
+                    type="text"
+                    id="new-category"
+                    name="new-category"
+                    value={localState.text}
+                    onInput={onInput}
+                />
+                <input
+                    class="triaged-note-create-button-bodge form-inline-item button save-button"
+                    type="submit"
+                    value="Create"
+                    disabled={localState.disabled}
+                />
+                <input
+                    class="triaged-note-create-button-bodge form-inline-item button save-button"
+                    onMouseDown={onCancelMouseDown}
+                    type="button"
+                    value="Cancel"
+                />
+            </form>
+        );
+    } else {
+        return (
+            <a class="drawer-item drawer-item-new" onClick={onClicked}>New Category...</a>
+        )
+    }
+}
+
 function DrawerItem({ id, title }: { id: number; title: string }) {
-    function onLinkClicked(e: MouseEvent) {
+    function onLinkClicked() {
         AppStateChange.showTriageDrawer(false);
     }
 

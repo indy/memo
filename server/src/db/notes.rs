@@ -258,6 +258,16 @@ pub(crate) fn delete(db_pool: &SqlitePool, user_id: Key, id: Key) -> Result<()> 
     )
 }
 
+pub(crate) fn delete_all_categorised(db_pool: &SqlitePool, user_id: Key, category_id: Key) -> Result<()> {
+    let conn = db_pool.get()?;
+    zero(
+        &conn,
+        "DELETE FROM notes
+         WHERE category_id = ?2 AND user_id = ?1",
+        params![&user_id, &category_id],
+    )
+}
+
 pub(crate) fn delete_all(db_pool: &SqlitePool, user_id: Key) -> Result<()> {
     let conn = db_pool.get()?;
     zero(
