@@ -1,5 +1,6 @@
 import { h, Fragment, FunctionalComponent } from "preact";
-import { Router, route } from "preact-router";
+
+import { Router, route, RouterOnChangeArgs } from "preact-router";
 import { AppStateChange, AppStateProvider, getAppState } from "./AppState";
 
 import { Bin } from "./components/Bin";
@@ -23,7 +24,7 @@ export const App = ({ state }: { state: IState }) => {
 const AppUI = () => {
     const state = getAppState();
 
-    function handleRoute(e: any) {
+    function handleRoute(e: RouterOnChangeArgs<Record<string, string | undefined> | null>): void {
         AppStateChange.routeChanged(e.url);
 
         if (e.url !== "/login") {

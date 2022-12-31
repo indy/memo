@@ -27,9 +27,11 @@ function CreateNoteForm({ categoryId }: { categoryId?: number }) {
         window.localStorage.setItem(USER_TEXT, userText);
     }, [userText]);
 
-    function handleChangeEvent(event: any) {
-        const newUserText = event.target.value;
-        setUserText(newUserText);
+    function handleChangeEvent(event: Event) {
+        if (event.target instanceof HTMLInputElement) {
+            const newUserText = event.target.value;
+            setUserText(newUserText);
+        }
     }
 
     const hasUserContent = userText.trim().length > 0;

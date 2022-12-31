@@ -72,7 +72,7 @@ function ButtonEdit({
 }: {
     pigment: IPigment;
     editing: boolean;
-    callback: any;
+    callback: Function;
 }) {
     function onEditClicked(e: MouseEvent) {
         e.preventDefault();

@@ -12,22 +12,32 @@ import { INote, IPigment } from "../types";
 function Settings({ path }: { path?: string }) {
     const appState = getAppState();
 
-    function updateColourScalar(e: any, id: string) {
-        e.preventDefault();
-        AppStateChange.settingsColourScalar(id, e.target.value);
+    function updateColourScalar(e: Event, id: string) {
+        if (e.target instanceof HTMLInputElement) {
+            e.preventDefault();
+            AppStateChange.settingsColourScalar(id, e.target.value);
+        }
     }
 
-    function updateColourTriple(e: any, index: number, id: string) {
-        e.preventDefault();
-        let value = settings[id];
-        value[index] = e.target.value;
-        AppStateChange.settingsColourTriple(id, value);
+    function updateColourTriple(e: Event, index: number, id: string) {
+        if (e.target instanceof HTMLInputElement) {
+            e.preventDefault();
+            let value = settings[id];
+            if (value !== undefined && Array.isArray(value) && value.length === 3) {
+                value[index] = parseInt(e.target.value, 10);
+                AppStateChange.settingsColourTriple(id, value);
+            }
+        }
     }
 
     const settings = appState.settings.value;
 
     const wasmInterface = appState.wasmInterface;
-    declareCssVariables(settings, wasmInterface);
+    if (wasmInterface) {
+        declareCssVariables(settings, wasmInterface);
+    } else {
+        console.error("require a valid wasmInterface");
+    }
 
     return (
         <div>
@@ -189,8 +199,8 @@ function ColourControl({
     value,
     id,
 }: {
-    onInput: any;
-    value: any;
+    onInput: Function;
+    value: [number, number, number] | undefined;
     id: string;
 }) {
     const labelH = `${id} h`;
@@ -201,42 +211,46 @@ function ColourControl({
     const idS = `${id}-s`;
     const idL = `${id}-l`;
 
-    return (
-        <div>
-            <label for={idH}>{labelH}</label>
-            <input
-                type="number"
-                value={value[0]}
-                id={idH}
-                name={idH}
-                min="0"
-                max="359"
-                onInput={(e) => onInput(e, 0, id)}
-            />
+    if (value !== undefined) {
+        return (
+            <div>
+                <label for={idH}>{labelH}</label>
+                <input
+            type="number"
+            value={value[0]}
+            id={idH}
+            name={idH}
+            min="0"
+            max="359"
+            onInput={(e) => onInput(e, 0, id)}
+                />
 
-            <label for={idS}>{labelS}</label>
-            <input
-                type="number"
-                value={value[1]}
-                id={idS}
-                name={idS}
-                min="0"
-                max="100"
-                onInput={(e) => onInput(e, 1, id)}
-            />
+                <label for={idS}>{labelS}</label>
+                <input
+            type="number"
+            value={value[1]}
+            id={idS}
+            name={idS}
+            min="0"
+            max="100"
+            onInput={(e) => onInput(e, 1, id)}
+                />
 
-            <label for={idL}>{labelL}</label>
-            <input
-                type="number"
-                value={value[2]}
-                id={idL}
-                name={idL}
-                min="0"
-                max="100"
-                onInput={(e) => onInput(e, 2, id)}
-            />
-        </div>
-    );
+                <label for={idL}>{labelL}</label>
+                <input
+            type="number"
+            value={value[2]}
+            id={idL}
+            name={idL}
+            min="0"
+            max="100"
+            onInput={(e) => onInput(e, 2, id)}
+                />
+                </div>
+        );
+    } else {
+        return (<div></div>);
+    }
 }
 
 function SampleCard({ pigment }: { pigment: string }) {

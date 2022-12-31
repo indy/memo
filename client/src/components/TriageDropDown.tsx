@@ -13,11 +13,10 @@ function TriageDropDown({
     pigment,
     cardFullHeightFn,
 }: {
-    dispatch?: any;
     noteId: string | number;
     categories: Array<ICategory>;
     pigment: IPigment;
-    cardFullHeightFn: any;
+    cardFullHeightFn: Function
 }) {
     const [showList, setShowList] = useState(false);
 

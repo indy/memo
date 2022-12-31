@@ -270,18 +270,15 @@ export const AppStateChange = {
     },
     settingsColourTriple: function (
         id: string,
-        value: [string, string, string]
+        value: [number, number, number]
     ) {
         if (DEBUG_APP_STATE) {
             console.log("settingsColourTriple");
         }
         let newSettings = { ...state.settings.value };
 
-        newSettings.value[id] = [
-            parseInt(value[0], 10),
-            parseInt(value[1], 10),
-            parseInt(value[2], 10),
-        ];
+        newSettings[id] = value;
+
         state.settings.value = newSettings;
     },
     noteTriaged: function (note: INote) {

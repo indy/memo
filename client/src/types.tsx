@@ -35,6 +35,8 @@ export interface IListing {
 }
 
 export interface ISettings {
+    [index: string]: number | [number, number, number] | undefined;
+
     hueOffset: number;
     hueDelta: number;
 
@@ -58,7 +60,10 @@ export interface ISettings {
     lightnessBg1?: number,
     lightnessBg2?: number,
     lightnessFg?: number,
-    lightnessFg1?: number
+    lightnessFg1?: number,
+
+    lightnessHi?: number,
+    lightnessHi2?: number
 }
 
 export interface WasmInterface {
@@ -68,26 +73,12 @@ export interface WasmInterface {
 export interface IState {
     user: Signal<IUser>;
     wasmInterface: WasmInterface | undefined;
-    settings: Signal<any>;
+    settings: Signal<ISettings>;
     activeTopBarMenuItem: Signal<string>; // "notes" | "triaged" | "bin"
     triageLabel: Signal<string>;
     showTriageDrawer: Signal<boolean>;
     categories: Signal<Array<ICategory>>;
     listing: Signal<IListing>;
-}
-
-export interface IAction {
-    type: string;
-    id?: any;
-    value?: any;
-    url?: string;
-    user?: any;
-    categories?: any;
-    notes?: any;
-    triaged?: any;
-    bin?: any;
-    deletedCategory?: any;
-    note?: any;
 }
 
 export interface IPigment {

@@ -41,22 +41,24 @@ function CreateNewCategory() {
         });
     }
 
-    function onInput(e: any) {
-        const value = e.target.value;
-        const found = appState.categories.value.find(
-            (c: ICategory) => c.title === value
-        );
+    function onInput(event: Event) {
+        if (event.target instanceof HTMLInputElement) {
+            const value = event.target.value;
+            const found = appState.categories.value.find(
+                (c: ICategory) => c.title === value
+            );
 
-        const newState = {
-            ...localState,
-            disabled: !!found || value.length === 0,
-            text: value,
-        };
+            const newState = {
+                ...localState,
+                disabled: !!found || value.length === 0,
+                text: value,
+            };
 
-        setLocalState(newState);
+            setLocalState(newState);
+        }
     }
 
-    function newCategorySubmit(e: any) {
+    function newCategorySubmit(e: Event) {
         e.preventDefault();
 
         let protoCategory: IProtoCategory = { title: localState.text };

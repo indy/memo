@@ -3,7 +3,7 @@ import { useState } from "preact/hooks";
 import { route } from "preact-router";
 import { AppStateChange, getAppState } from "../AppState";
 
-import { INote, ICategory } from "../types";
+import { IUser, INote, ICategory } from "../types";
 
 import Net from "../Net";
 
@@ -25,34 +25,36 @@ function Login({ path }: { path?: string }) {
         errorMessage: "",
     });
 
-    const handleChangeEvent = (event: any) => {
-        const target = event.target;
-        const name = target.name;
-        const value = target.value;
+    const handleChangeEvent = (event: Event) => {
+        if (event.target instanceof HTMLInputElement) {
+            const target = event.target;
+            const name = target.name;
+            const value = target.value;
 
-        const newState = { ...state };
-        // crappy code to please typescript type-checking
-        //
-        if (name === "login-email") {
-            newState["login-email"] = value;
-        } else if (name === "login-password") {
-            newState["login-password"] = value;
-        } else if (name === "register-username") {
-            newState["register-username"] = value;
-        } else if (name === "register-magic-word") {
-            newState["register-magic-word"] = value;
-        } else if (name === "register-email") {
-            newState["register-email"] = value;
-        } else if (name === "register-password") {
-            newState["register-password"] = value;
-        } else if (name === "register-password-2") {
-            newState["register-password-2"] = value;
+            const newState = { ...state };
+            // crappy code to please typescript type-checking
+            //
+            if (name === "login-email") {
+                newState["login-email"] = value;
+            } else if (name === "login-password") {
+                newState["login-password"] = value;
+            } else if (name === "register-username") {
+                newState["register-username"] = value;
+            } else if (name === "register-magic-word") {
+                newState["register-magic-word"] = value;
+            } else if (name === "register-email") {
+                newState["register-email"] = value;
+            } else if (name === "register-password") {
+                newState["register-password"] = value;
+            } else if (name === "register-password-2") {
+                newState["register-password-2"] = value;
+            }
+
+            setState(newState);
         }
-
-        setState(newState);
     };
 
-    async function loginCallback(user: any) {
+    async function loginCallback(user: IUser) {
         let categories = await Net.get<Array<ICategory>>("/api/categories");
         let notes = await Net.get<Array<INote>>(`/api/notes`);
         let bin = await Net.get<Array<INote>>(`/api/bin`);
@@ -61,10 +63,21 @@ function Login({ path }: { path?: string }) {
         // once the state has a user, the Login page will redirect to '/'
     }
 
-    function handleLoginSubmit(event: any) {
+    interface IAuthData {
+        email: string;
+        password: string;
+    }
+    interface IRegisterData {
+        username: string;
+        email: string;
+        password: string;
+        magic_word: string;
+    }
+
+    function handleLoginSubmit(event: Event) {
         event.preventDefault();
 
-        Net.post("api/auth", {
+        Net.post<IAuthData, IUser>("api/auth", {
             email: state["login-email"],
             password: state["login-password"],
         })
@@ -89,9 +102,9 @@ function Login({ path }: { path?: string }) {
         );
     }
 
-    function handleRegisterSubmit(event: any) {
+    function handleRegisterSubmit(event: Event) {
         if (okToSendRegistration()) {
-            Net.post("api/users", {
+            Net.post<IRegisterData, IUser>("api/users", {
                 username: state["register-username"],
                 email: state["register-email"],
                 password: state["register-password"],
@@ -202,7 +215,7 @@ function Login({ path }: { path?: string }) {
 }
 
 function Logout({ path }: { path?: string }) {
-    const handleLogout = (event: any) => {
+    const handleLogout = (event: Event) => {
         Net.delete("api/auth", {}).then(() => {
             AppStateChange.userLogout();
             route("/login", true);

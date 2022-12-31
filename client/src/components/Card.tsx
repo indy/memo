@@ -22,7 +22,7 @@ export default function Card({
     children?: ComponentChildren;
     cardClass?: string;
     editing?: boolean;
-    onFinishedEditing?: any;
+    onFinishedEditing?: Function;
     binned?: boolean;
 }) {
     //    const href = note.categoryId ? `/category/${note.categoryId}/notes/${note.id}` : `/notes/${note.id}`;
@@ -79,16 +79,18 @@ export default function Card({
         });
     }
 
-    function handleChangeTitle(event: any) {
-        const newUserText = event.target.value;
-        setLocalState({
-            ...localState,
-            userTitle: newUserText,
-        });
+    function handleChangeTitle(event: Event) {
+        if (event.target instanceof HTMLInputElement) {
+            const newUserText = event.target.value;
+            setLocalState({
+                ...localState,
+                userTitle: newUserText,
+            });
+        }
     }
 
-    function handleChangeContent(event: any) {
-        if (event) {
+    function handleChangeContent(event: Event) {
+        if (event.target instanceof HTMLInputElement) {
             const newUserText = event.target.value;
             setLocalState({
                 ...localState,
@@ -99,7 +101,9 @@ export default function Card({
 
     function onSaveClicked(e: MouseEvent) {
         e.preventDefault();
-        onFinishedEditing(localState.userTitle, localState.userContent);
+        if (onFinishedEditing) {
+            onFinishedEditing(localState.userTitle, localState.userContent);
+        }
     }
 
     let classes = cardClass ? cardClass + " " : "card ";

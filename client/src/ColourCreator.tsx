@@ -1,3 +1,5 @@
+import { WasmInterface, ISettings } from "./types";
+
 function buildColourConversionFn(wasm_bindgen_bg: InitOutput) {
     const {
         rgb_from_hsluv,
@@ -38,7 +40,11 @@ function buildColourConversionFn(wasm_bindgen_bg: InitOutput) {
     };
 }
 
-function augmentSettingsWithCssModifierParameters(settings: any) {
+function tuple(a: number, b: number, c: number): [number, number, number] {
+    return [a, b, c];
+}
+
+function augmentSettingsWithCssModifierParameters(settings: ISettings) {
     let root = document.body;
     let mode = getComputedStyle(root).getPropertyValue("--mode").trim();
 
@@ -48,20 +54,20 @@ function augmentSettingsWithCssModifierParameters(settings: any) {
         s = {
             ...settings,
 
-            bg: [46.5, 19.2, 95.7],
-            bg1: [85.9, 4.5, 93.9],
-            bg2: [46.2, 20.1, 92],
-            fg: [53.2, 17.4, 3.4],
-            fg1: [0, 0, 40.7],
+            bg: tuple(46.5, 19.2, 95.7),
+            bg1: tuple(85.9, 4.5, 93.9),
+            bg2: tuple(46.2, 20.1, 92),
+            fg: tuple(53.2, 17.4, 3.4),
+            fg1: tuple(0, 0, 40.7),
 
-            fg_inactive: [0, 0, 59.8],
-            textarea_bg: [85.9, 100, 99.8],
-            textarea_fg: [53.2, 17.4, 3.4],
+            fg_inactive: tuple(0, 0, 59.8),
+            textarea_bg: tuple(85.9, 100, 99.8),
+            textarea_fg: tuple(53.2, 17.4, 3.4),
 
-            save_on_bg: [127, 70, 80],
-            save_on_fg: [53.2, 17.4, 3.4],
+            save_on_bg: tuple(127, 70, 80),
+            save_on_fg: tuple(53.2, 17.4, 3.4),
 
-            divider: [0, 0, 77.7],
+            divider: tuple(0, 0, 77.7),
 
             saturation: 60.2,
             lightnessBg: 90.0,
@@ -78,20 +84,20 @@ function augmentSettingsWithCssModifierParameters(settings: any) {
         s = {
             ...settings,
 
-            bg: [bgh, bgs, bgl],
-            bg1: [bgh, bgs, bgl + 10],
-            bg2: [bgh, bgs, bgl + 17],
-            fg: [bgh, 100, 70],
-            fg1: [bgh, 100, 50],
+            bg: tuple(bgh, bgs, bgl),
+            bg1: tuple(bgh, bgs, bgl + 10),
+            bg2: tuple(bgh, bgs, bgl + 17),
+            fg: tuple(bgh, 100, 70),
+            fg1: tuple(bgh, 100, 50),
 
-            fg_inactive: [bgh, bgs + 40, 20],
-            textarea_bg: [0, 0, 12],
-            textarea_fg: [236, 2.7, 69],
+            fg_inactive: tuple(bgh, bgs + 40, 20),
+            textarea_bg: tuple(0, 0, 12),
+            textarea_fg: tuple(236, 2.7, 69),
 
-            save_on_fg: [220, 10, 80],
-            save_on_bg: [127, 90, 40],
+            save_on_fg: tuple(220, 10, 80),
+            save_on_bg: tuple(127, 90, 40),
 
-            divider: [bgh, bgs, bgl - 13],
+            divider: tuple(bgh, bgs, bgl - 13),
 
             saturation: 70,
             lightnessBg: 30.0,
@@ -114,10 +120,10 @@ function augmentSettingsWithCssModifierParameters(settings: any) {
   | bg2    | button background on hover | clock-05-bg2 |
 */
 
-function declareCssVariables(settings: any, wasmInterface: any) {
+function declareCssVariables(settings: ISettings, wasmInterface: WasmInterface) {
     let root = document.body;
 
-    function updateVariable(label: string, val: any[]) {
+    function updateVariable(label: string, val: [number, number, number]) {
         let cssName = "--" + label.replaceAll("_", "-");
 
         root.style.setProperty(cssName, wasmInterface.RgbFromHsl(val));
@@ -125,7 +131,7 @@ function declareCssVariables(settings: any, wasmInterface: any) {
 
     for (const [key, val] of Object.entries(settings)) {
         if (Array.isArray(val) && val.length === 3) {
-            updateVariable(key, val);
+            updateVariable(key, [val[0], val[1], val[2]]);
         }
     }
 
@@ -137,37 +143,37 @@ function declareCssVariables(settings: any, wasmInterface: any) {
 
         rgb = wasmInterface.RgbFromHsl([
             hue,
-            settings.saturation,
-            settings.lightnessFg,
+            settings.saturation!,
+            settings.lightnessFg!,
         ]);
 
         root.style.setProperty(`--clock-${index}-fg`, rgb);
 
         rgb = wasmInterface.RgbFromHsl([
             hue,
-            settings.saturation,
-            settings.lightnessFg1,
+            settings.saturation!,
+            settings.lightnessFg1!,
         ]);
         root.style.setProperty(`--clock-${index}-fg1`, rgb);
 
         rgb = wasmInterface.RgbFromHsl([
             hue,
-            settings.saturation,
-            settings.lightnessBg,
+            settings.saturation!,
+            settings.lightnessBg!,
         ]);
         root.style.setProperty(`--clock-${index}-bg`, rgb);
 
         rgb = wasmInterface.RgbFromHsl([
             hue,
-            settings.saturation,
-            settings.lightnessBg1,
+            settings.saturation!,
+            settings.lightnessBg1!,
         ]);
         root.style.setProperty(`--clock-${index}-bg1`, rgb);
 
         rgb = wasmInterface.RgbFromHsl([
             hue,
-            settings.saturation,
-            settings.lightnessBg2,
+            settings.saturation!,
+            settings.lightnessBg2!,
         ]);
         root.style.setProperty(`--clock-${index}-bg2`, rgb);
     }
