@@ -276,6 +276,7 @@ export const AppStateChange = {
             console.log("settingsColourTriple");
         }
         let newSettings = { ...state.settings.value };
+
         newSettings.value[id] = [
             parseInt(value[0], 10),
             parseInt(value[1], 10),

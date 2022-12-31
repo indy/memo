@@ -1,5 +1,11 @@
-function buildColourConversionFn(wasm_bindgen: any) {
-    const { rgb_from_hsluv } = wasm_bindgen;
+function buildColourConversionFn(wasm_bindgen_bg: InitOutput) {
+    const {
+        rgb_from_hsluv,
+        __wbg_transport3c_free,
+        transport3c_get_0,
+        transport3c_get_1,
+        transport3c_get_2
+    } = wasm_bindgen_bg;
 
     return (hsl: [number, number, number]) => {
         function clamp(value: number, min: number, max: number) {
@@ -14,13 +20,14 @@ function buildColourConversionFn(wasm_bindgen: any) {
             return hex;
         }
 
-        const transportRGB = rgb_from_hsluv(hsl[0], hsl[1], hsl[2]);
+        const res = rgb_from_hsluv(hsl[0], hsl[1], hsl[2]);
 
-        let r = Math.floor(clamp(transportRGB.get_0(), 0, 1) * 255);
-        let g = Math.floor(clamp(transportRGB.get_1(), 0, 1) * 255);
-        let b = Math.floor(clamp(transportRGB.get_2(), 0, 1) * 255);
+        let r = Math.floor(clamp(transport3c_get_0(res), 0, 1) * 255);
+        let g = Math.floor(clamp(transport3c_get_1(res), 0, 1) * 255);
+        let b = Math.floor(clamp(transport3c_get_2(res), 0, 1) * 255);
 
-        transportRGB.free();
+        __wbg_transport3c_free(res);
+        // transportRGB.free();
 
         return (
             "#" +

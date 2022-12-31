@@ -14,9 +14,9 @@ import {
 import { IUser, ICategory, INote } from "./types";
 
 wasm_bindgen("/wasm_colour_bg.wasm")
-    .then((wasm_colour_bg: any) => {
+    .then((wasm_colour_bg: InitOutput) => {
         const wasmInterface = {
-            RgbFromHsl: buildColourConversionFn(wasm_bindgen),
+            RgbFromHsl: buildColourConversionFn(wasm_colour_bg),
         };
 
         let state = initialState;

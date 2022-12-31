@@ -1,5 +1,4 @@
 {
-    "include": ["src", "www/wasm_colour.d.ts", "www/wasm_colour_bg.wasm.d.ts"],
     "compilerOptions": {
         "target": "es2021",
         "module": "commonjs",
@@ -10,5 +9,8 @@
         "esModuleInterop": true,
         "skipLibCheck": true,
         "lib": ["es2021", "dom"]
-    }
+    },
+    "include": ["src",
+                "www/wasm_colour.d.ts",
+                "www/wasm_colour_bg.wasm.d.ts"]
 }

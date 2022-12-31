@@ -34,6 +34,33 @@ export interface IListing {
     bin: Array<INote>;
 }
 
+export interface ISettings {
+    hueOffset: number;
+    hueDelta: number;
+
+    bg?: [number, number, number],
+    bg1?: [number, number, number],
+    bg2?: [number, number, number],
+    fg?: [number, number, number],
+    fg1?: [number, number, number],
+
+    fg_inactive?: [number, number, number],
+    textarea_bg?: [number, number, number],
+    textarea_fg?: [number, number, number],
+
+    save_on_bg?: [number, number, number],
+    save_on_fg?: [number, number, number],
+
+    divider?: [number, number, number],
+
+    saturation?: number,
+    lightnessBg?: number,
+    lightnessBg1?: number,
+    lightnessBg2?: number,
+    lightnessFg?: number,
+    lightnessFg1?: number
+}
+
 export interface IState {
     user: Signal<IUser>;
     wasmInterface: any;
