@@ -7,7 +7,7 @@ function buildColourConversionFn(wasm_bindgen_bg: InitOutput) {
         transport3c_get_2
     } = wasm_bindgen_bg;
 
-    return (hsl: [number, number, number]) => {
+    return (hsl: [number, number, number]): string => {
         function clamp(value: number, min: number, max: number) {
             return value < min ? min : value > max ? max : value;
         }

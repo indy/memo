@@ -61,9 +61,13 @@ export interface ISettings {
     lightnessFg1?: number
 }
 
+export interface WasmInterface {
+    RgbFromHsl(hsl: [number, number, number]): string
+}
+
 export interface IState {
     user: Signal<IUser>;
-    wasmInterface: any;
+    wasmInterface: WasmInterface | undefined;
     settings: Signal<any>;
     activeTopBarMenuItem: Signal<string>; // "notes" | "triaged" | "bin"
     triageLabel: Signal<string>;
