@@ -96,7 +96,7 @@ function CreateNoteForm({ categoryId }: { categoryId?: number }) {
     );
 }
 
-function noteFromText(text: string): IProtoNote | undefined | null {
+function noteFromText(text: string): IProtoNote | null {
     const lines = text.split("\n");
 
     const title = lines.shift();
@@ -115,6 +115,8 @@ function noteFromText(text: string): IProtoNote | undefined | null {
 
         return protoNote;
     }
+
+    return null;
 }
 
 export { CreateNoteForm };

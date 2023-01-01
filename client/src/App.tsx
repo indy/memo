@@ -1,4 +1,4 @@
-import { h, Fragment, FunctionalComponent } from "preact";
+import { h } from "preact";
 
 import { Router, route, RouterOnChangeArgs } from "preact-router";
 import { AppStateChange, AppStateProvider, getAppState } from "./AppState";

@@ -44,6 +44,7 @@ export function getNoteById(state: IState, id: number): INote | undefined {
             }
         }
     };
+    return undefined;
 }
 
 export function partitionPinnedNotes(list: Array<INote>): Array<Array<INote>> {
