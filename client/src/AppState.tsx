@@ -27,7 +27,6 @@ const state: IState = {
     categories: signal([]),
     listing: signal({
         notes: [],
-        triaged: [],
         category: {},
         bin: [],
     }),
@@ -239,23 +238,24 @@ export const AppStateChange = {
         state.listing.value = listing;
         state.categories.value = categories;
     },
-    noteUntriaged: function (note: INote) {
+    noteUntriaged: function (noteId: number, categoryId: number) {
         if (DEBUG_APP_STATE) {
             console.log("noteUntriaged");
         }
 
         let listing = { ...state.listing.value };
 
-        if (note.categoryId) {
-            listing.category[note.categoryId] = removeNoteFromArray(
-                listing.category[note.categoryId],
-                note.id
+        let note = findNote(listing.category[categoryId], noteId);
+        if (note) {
+            listing.category[categoryId] = removeNoteFromArray(
+                listing.category[categoryId],
+                noteId
             );
-        }
 
-        note.categoryId = undefined;
-        note.triagedAt = undefined;
-        listing.notes.unshift(note);
+            note.categoryId = undefined;
+            note.triagedAt = undefined;
+            listing.notes.unshift(note);
+        }
 
         state.listing.value = listing;
     },
@@ -281,14 +281,22 @@ export const AppStateChange = {
 
         state.settings.value = newSettings;
     },
-    noteTriaged: function (note: INote) {
+    noteTriaged: function (note: INote, currentCategoryId?: number) {
         if (DEBUG_APP_STATE) {
             console.log("noteTriaged");
         }
         let listing = { ...state.listing.value };
 
         if (note.categoryId) {
-            listing.notes = removeNoteFromArray(listing.notes, note.id);
+            // if we're moving a note from one category to another, remove
+            // it from the previous category
+            //
+
+            if (currentCategoryId) {
+                listing.category[currentCategoryId] = removeNoteFromArray(listing.category[currentCategoryId], note.id);
+            } else {
+                listing.notes = removeNoteFromArray(listing.notes, note.id);
+            }
 
             // only add this note to the appState's category array if
             // it's already been loaded in. (Otherwise that category

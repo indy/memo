@@ -91,22 +91,4 @@ function ButtonEdit({
     );
 }
 
-function ButtonUntriage({ note, pigment }: { note: INote; pigment: IPigment }) {
-    function onUntriageClicked(e: MouseEvent) {
-        e.preventDefault();
-        Net.post(`/api/triaged/${note.id}/untriage`, {}).then(() => {
-            AppStateChange.noteUntriaged(note);
-        });
-    }
-
-    return (
-        <button
-            class={`${pigment.classAlt} button card-action-cell`}
-            onClick={onUntriageClicked}
-        >
-            Untriage
-        </button>
-    );
-}
-
-export { ButtonDelete, ButtonPinned, ButtonEdit, ButtonUntriage };
+export { ButtonDelete, ButtonPinned, ButtonEdit };

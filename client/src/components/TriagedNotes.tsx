@@ -12,14 +12,14 @@ import { getTriageLabel } from "../AppUtils";
 
 import Card from "./Card";
 import {
-    ButtonUntriage,
     ButtonDelete,
     ButtonPinned,
 } from "./CardButtons";
 import { CreateNoteForm } from "./CreateNoteForm";
 import { PinnedListing, UnPinnedListing }  from "./Listing";
+import { TriageDropDown } from "./TriageDropDown";
 
-import { INote } from "../types";
+import { INote, ICategory } from "../types";
 
 function TriagedNotes({ path, id }: { path?: string; id?: string }) {
     const appState = getAppState();
@@ -44,9 +44,11 @@ function TriagedNotes({ path, id }: { path?: string; id?: string }) {
         );
     }
 
+    let categories = appState.categories.value;
+
     const [pin, unpin] = partitionPinnedNotes(categoryNotes);
-    const pinnedListing = pin.map((n) => TriagedCard(n));
-    const unpinnedListing = unpin.map((n) => TriagedCard(n));
+    const pinnedListing = pin.map((n) => TriagedCard(n, categories, cid));
+    const unpinnedListing = unpin.map((n) => TriagedCard(n, categories, cid));
 
     return (
         <div>
@@ -88,12 +90,22 @@ function DeletableCategory({ categoryId, label }: { categoryId: number, label: s
             </div>)
 }
 
-function TriagedCard(note: INote) {
+function TriagedCard(note: INote, categories: Array<ICategory>, categoryId: number) {
+    const [fullHeight, setFullHeight] = useState(false);
     const pigment = notePigment(note.id);
 
     return (
-        <Card note={note} pigment={pigment}>
-            <ButtonUntriage note={note} pigment={pigment} />
+        <Card note={note}
+              pigment={pigment}
+              fullHeight={fullHeight}>
+            <TriageDropDown
+                noteId={note.id}
+                categories={categories}
+                pigment={pigment}
+                cardFullHeightFn={setFullHeight}
+                currentCategoryId={ categoryId }
+            />
+
             <ButtonPinned note={note} pigment={pigment} />
             <ButtonDelete note={note} pigment={pigment} />
         </Card>

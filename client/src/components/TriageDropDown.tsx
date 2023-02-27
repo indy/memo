@@ -12,11 +12,13 @@ function TriageDropDown({
     categories,
     pigment,
     cardFullHeightFn,
+    currentCategoryId,
 }: {
-    noteId: string | number;
+    noteId: number;
     categories: Array<ICategory>;
     pigment: IPigment;
-    cardFullHeightFn: Function
+    cardFullHeightFn: Function;
+    currentCategoryId?: number;
 }) {
     const [showList, setShowList] = useState(false);
 
@@ -25,7 +27,7 @@ function TriageDropDown({
             `/api/notes/${noteId}/triage`,
             category
         ).then((triagedNote) => {
-            AppStateChange.noteTriaged(triagedNote);
+            AppStateChange.noteTriaged(triagedNote, currentCategoryId);
         });
     }
 
@@ -50,6 +52,18 @@ function TriageDropDown({
         }
     }
 
+    function onUnTriageDropDownSelect(e: MouseEvent) {
+        e.preventDefault();
+
+        if (currentCategoryId && e.target && e.target instanceof HTMLElement) {
+            setShowList(!showList);
+
+            Net.post(`/api/triaged/${noteId}/untriage`, {}).then(() => {
+                AppStateChange.noteUntriaged(noteId, currentCategoryId);
+            });
+        }
+    }
+
     function buildTriageButton() {
         return (
             <button
@@ -62,14 +76,27 @@ function TriageDropDown({
     }
 
     function buildTriageList() {
-        let categoryOptions = categories.map((c) => (
-            <li
-                class={`triage-dropdown-item ${pigment.classAlt}`}
-                onClick={onTriageDropDownSelect}
-            >
-                {c.title}
-            </li>
-        ));
+
+        let categoryOptions = [];
+        if (currentCategoryId) {
+            categoryOptions.push(
+                <li class={`triage-dropdown-item ${pigment.classAlt}`}
+                    onClick={onUnTriageDropDownSelect}>
+                    UnTriage
+                </li>);
+        }
+
+        categories.forEach((c) => {
+            if (currentCategoryId && c.id === currentCategoryId) {
+                // skip
+            } else {
+                categoryOptions.push(<li class={`triage-dropdown-item ${pigment.classAlt}`}
+                                         onClick={onTriageDropDownSelect}>
+                                         {c.title}
+                                     </li>);
+            }
+        });
+
         return (
             <div>
                 <button
