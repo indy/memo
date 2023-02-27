@@ -53,9 +53,9 @@ SYSTEMD_FILES = $(wildcard misc/systemd/*)
 WASM_FILES = $(wildcard $(WASM_FOLDER)/src/*) $(WASM_FOLDER)/Cargo.toml
 CLIENT_FILES = $(call rwildcard,$(CLIENT_FOLDER)/src,*)
 
-.PHONY: run clean-staging download-db typescript-watch typescript-typecheck typescript-format init
+.PHONY: run clean-staging download-db typescript-watch typescript-typecheck typescript-format deps
 
-init:
+deps:
 	cd client; yarn install
 
 typescript-watch:
