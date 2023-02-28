@@ -5,10 +5,9 @@ import { AppStateChange, AppStateProvider, getAppState } from "./AppState";
 
 import { Bin } from "./components/Bin";
 import { TopBarMenu } from "./components/TopBarMenu";
-import { Note, Notes } from "./components/Notes";
+import { Notes, Note } from "./components/Notes";
 import { Login, Logout } from "./components/Login";
 import { Settings } from "./components/Settings";
-import { TriagedNotes } from "./components/TriagedNotes";
 import { TriageDrawer } from "./components/TriageDrawer";
 
 import { IState } from "./types";
@@ -52,8 +51,8 @@ const AppUI = () => {
                 <TriageDrawer />
                 <Router onChange={handleRoute}>
                     <Notes path="/" />
+                    <Notes path="/category/:categoryId" />
                     <Note path="/notes/:id" />
-                    <TriagedNotes path="/category/:categoryId" />
                     <Bin path="/bin" />
                     <Login path="/login" />
                     <Logout path="/logout" />

@@ -1,6 +1,8 @@
 import { h } from "preact";
 import { useState } from "preact/hooks";
 
+import Net from "../Net";
+import { getTriageLabel } from "../AppUtils";
 import {
     finishedEditingCallback,
     getNoteById,
@@ -9,6 +11,7 @@ import {
 } from "../NoteUtils";
 import { getAppState, AppStateChange } from "../AppState";
 
+import DeletableCategory from "./DeletableCategory";
 import Postit from "./Postit";
 import Card from "./Card";
 import { ButtonDelete, ButtonEdit, ButtonPinned } from "./CardButtons";
@@ -16,11 +19,41 @@ import { TriageDropDown } from "./TriageDropDown";
 import { CreateNoteForm } from "./CreateNoteForm";
 import { PinnedListing, UnPinnedListing }  from "./Listing";
 
-function Notes({ path }: { path?: string }) {
-    const appState = getAppState();
-    AppStateChange.triageDrawerDefaultLabel();
 
-    const notes = appState.listing.value.notes;
+import { INote } from "../types";
+
+function Notes({ path, categoryId }: { path?: string; categoryId?: string }) {
+    const appState = getAppState();
+
+    let notes: Array<INote> = [];
+    let cid: undefined | number = undefined;
+    let label: string = "";
+
+    if (categoryId) {
+        // can't set id in the TriagedNotes arguments to be non-optional because
+        // then the type-checker wrongly complains about the use of TriagedNotes
+        // in App.tsx's Router setup
+
+        cid = parseInt(categoryId ? categoryId : "0", 10);
+
+        label = getTriageLabel(appState.categories.value, cid);
+        AppStateChange.triageMenuItemLabel(label);
+
+        notes = appState.listing.value.category[cid];
+
+        if (notes.length === 0) {
+            Net.get<Array<INote>>(`/api/categories/${cid}/notes`).then(
+                async (newnotes: Array<INote>) => {
+                    AppStateChange.loadedCategoryNotes(cid!, newnotes);
+                    notes = newnotes;
+                }
+            );
+        }
+
+    } else {
+        notes = appState.listing.value.notes;
+        AppStateChange.triageDrawerDefaultLabel();
+    }
 
 
     let categories = appState.categories.value;
@@ -28,15 +61,14 @@ function Notes({ path }: { path?: string }) {
 
     return (
         <div>
-            <CreateNoteForm />
-
+            <CreateNoteForm categoryId={cid} />
             <PinnedListing>
-                { pin.map((n) => (<Postit note={n} categories={categories}/>)) }
+                { pin.map((n) => (<Postit note={n} categories={categories} categoryId={cid}/>)) }
             </PinnedListing>
             <UnPinnedListing>
-                { unpin.map((n) => (<Postit note={n} categories={categories}/>)) }
+                { unpin.map((n) => (<Postit note={n} categories={categories} categoryId={cid}/>)) }
             </UnPinnedListing>
-
+            {categoryId && <DeletableCategory categoryId={cid!} label={label}/>}
         </div>
     );
 }
