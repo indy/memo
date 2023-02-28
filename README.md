@@ -4,7 +4,7 @@ A note keeping app. Developed at git.indy.io for my own use and mirrored on Gith
 
 ## Server
 
-rename .env.example to .env and update it for your environment. The database tables can be created by running the misc/schema.psql file into a Postgres database.
+rename .env.example to .env and update it for your environment
 
 one time initialisation with:
 ```sh

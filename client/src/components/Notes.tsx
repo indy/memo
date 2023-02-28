@@ -9,57 +9,35 @@ import {
 } from "../NoteUtils";
 import { getAppState, AppStateChange } from "../AppState";
 
+import Postit from "./Postit";
 import Card from "./Card";
 import { ButtonDelete, ButtonEdit, ButtonPinned } from "./CardButtons";
 import { TriageDropDown } from "./TriageDropDown";
 import { CreateNoteForm } from "./CreateNoteForm";
 import { PinnedListing, UnPinnedListing }  from "./Listing";
 
-import { INote, ICategory } from "../types";
-
 function Notes({ path }: { path?: string }) {
     const appState = getAppState();
     AppStateChange.triageDrawerDefaultLabel();
 
     const notes = appState.listing.value.notes;
-    const [pin, unpin] = notes ? partitionPinnedNotes(notes) : [[], []];
 
-    const pinnedListing = pin.map((n) =>
-        InboxCard(n, appState.categories.value)
-    );
-    const unpinnedListing = unpin.map((n) =>
-        InboxCard(n, appState.categories.value)
-    );
+
+    let categories = appState.categories.value;
+    const [pin, unpin] = partitionPinnedNotes(notes);
 
     return (
         <div>
             <CreateNoteForm />
-            <PinnedListing>{pinnedListing}</PinnedListing>
-            <UnPinnedListing>{unpinnedListing}</UnPinnedListing>
+
+            <PinnedListing>
+                { pin.map((n) => (<Postit note={n} categories={categories}/>)) }
+            </PinnedListing>
+            <UnPinnedListing>
+                { unpin.map((n) => (<Postit note={n} categories={categories}/>)) }
+            </UnPinnedListing>
+
         </div>
-    );
-}
-
-function InboxCard(note: INote, categories: Array<ICategory>) {
-    const [fullHeight, setFullHeight] = useState(false);
-
-    const pigment = notePigment(note.id);
-
-    return (
-        <Card
-            note={note}
-            pigment={pigment}
-            fullHeight={fullHeight}
-        >
-            <TriageDropDown
-                noteId={note.id}
-                categories={categories}
-                pigment={pigment}
-                cardFullHeightFn={setFullHeight}
-            />
-            <ButtonPinned note={note} pigment={pigment} />
-            <ButtonDelete note={note} pigment={pigment} />
-        </Card>
     );
 }
 

@@ -53,7 +53,7 @@ const AppUI = () => {
                 <Router onChange={handleRoute}>
                     <Notes path="/" />
                     <Note path="/notes/:id" />
-                    <TriagedNotes path="/category/:id" />
+                    <TriagedNotes path="/category/:categoryId" />
                     <Bin path="/bin" />
                     <Login path="/login" />
                     <Logout path="/logout" />

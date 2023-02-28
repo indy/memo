@@ -47,9 +47,13 @@ export function getNoteById(state: IState, id: number): INote | undefined {
     return undefined;
 }
 
-export function partitionPinnedNotes(list: Array<INote>): Array<Array<INote>> {
+export function partitionPinnedNotes(list?: Array<INote>): Array<Array<INote>> {
     let pinned: Array<INote> = [];
     let unpinned: Array<INote> = [];
+
+    if (!list) {
+        return [[], []];
+    }
 
     list.forEach((n) => {
         if (n.pinned) {

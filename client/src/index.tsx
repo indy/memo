@@ -11,7 +11,7 @@ import {
     buildColourConversionFn,
     declareCssVariables,
     augmentSettingsWithCssModifierParameters,
-} from "./ColourCreator.js";
+} from "./ColourCreator";
 
 import { IUser, ICategory, INote } from "./types";
 
