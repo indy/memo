@@ -2,29 +2,19 @@ import { h } from "preact";
 import { useEffect } from "preact/hooks";
 
 import Net from "../Net";
-import { notePigment } from "../Utils";
+import { ensureLoaded, notePigment } from "../Utils";
 import { AppStateChange, getAppState } from "../AppState";
 
 import Card from "./Card";
 import { UnPinnedListing } from "./Listing";
 
-import { Note, NoteKind, LoadState } from "../types";
+import { Note, NoteKind } from "../types";
 
 function Bin({ path }: { path?: string }) {
     const appState = getAppState();
 
     useEffect(() => {
-        if (appState.loaded.value.bin === LoadState.NotLoaded) {
-            let loadingState = {
-                ...appState.loaded.value,
-                bin: LoadState.Loading,
-            };
-            AppStateChange.setLoadingState(loadingState);
-
-            Net.get<Array<Note>>(`/api/bin`).then((notes) => {
-                AppStateChange.loadedNotes(notes, NoteKind.Bin);
-            });
-        }
+        ensureLoaded(appState, NoteKind.Bin);
     }, []);
 
     AppStateChange.triageDrawerDefaultLabel();

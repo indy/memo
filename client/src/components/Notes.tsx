@@ -2,7 +2,7 @@ import { h } from "preact";
 import { useState, useEffect } from "preact/hooks";
 
 import Net from "../Net";
-import { notePigment } from "../Utils";
+import { ensureLoaded, notePigment } from "../Utils";
 import { getAppState, AppStateChange } from "../AppState";
 
 import DeletableCategory from "./DeletableCategory";
@@ -13,44 +13,16 @@ import { TriageDropDown } from "./TriageDropDown";
 import { CreateNoteForm } from "./CreateNoteForm";
 import { PinnedListing, UnPinnedListing } from "./Listing";
 
-import { State, Note, NoteKind, LoadState, Category } from "../types";
+import { State, Note, NoteKind, Category } from "../types";
 
 function Notes({ path, categoryId }: { path?: string; categoryId?: string }) {
     const appState = getAppState();
 
     useEffect(() => {
         if (categoryId) {
-            let cid = parseInt(categoryId, 10);
-            if (
-                !appState.loaded.value.category[cid] ||
-                appState.loaded.value.category[cid] === LoadState.NotLoaded
-            ) {
-                let loadingState = { ...appState.loaded.value };
-                loadingState.category[cid] = LoadState.Loading;
-                AppStateChange.setLoadingState(loadingState);
-
-                Net.get<Array<Note>>(`/api/categories/${cid}/notes`).then(
-                    (notes) => {
-                        AppStateChange.loadedNotes(
-                            notes,
-                            NoteKind.Category,
-                            cid
-                        );
-                    }
-                );
-            }
+            ensureLoaded(appState, NoteKind.Category, cid);
         } else {
-            if (appState.loaded.value.notes === LoadState.NotLoaded) {
-                let loadingState = {
-                    ...appState.loaded.value,
-                    notes: LoadState.Loading,
-                };
-                AppStateChange.setLoadingState(loadingState);
-
-                Net.get<Array<Note>>(`/api/notes`).then((notes) => {
-                    AppStateChange.loadedNotes(notes, NoteKind.Inbox);
-                });
-            }
+            ensureLoaded(appState, NoteKind.Inbox);
         }
     }, [categoryId]);
 

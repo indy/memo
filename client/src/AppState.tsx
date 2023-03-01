@@ -9,7 +9,6 @@ import {
     Listing,
     Category,
     LoadState,
-    LoadedListing,
     NoteKind,
 } from "./types";
 
@@ -115,11 +114,31 @@ export const AppStateChange = {
         state.listing.value = listing;
         state.loaded.value = loaded;
     },
-    // generic loading function
-    setLoadingState: function (loaded: LoadedListing) {
+    setToLoading: function (kind: NoteKind, categoryId?: number) {
         if (DEBUG_APP_STATE) {
-            console.log("setLoadingState");
+            console.log("setToLoading");
         }
+
+        let loaded = { ...state.loaded.value };
+
+        switch (kind) {
+            case NoteKind.Inbox:
+                loaded.notes = LoadState.Loading;
+                break;
+            case NoteKind.Category:
+                if (categoryId) {
+                    loaded.category[categoryId] = LoadState.Loading;
+                } else {
+                    console.error(
+                        `setToLoading given a NoteKind.Category without a categoryId`
+                    );
+                }
+                break;
+            case NoteKind.Bin:
+                loaded.bin = LoadState.Loading;
+                break;
+        }
+
         state.loaded.value = loaded;
     },
     loadedNotes: function (
@@ -135,8 +154,8 @@ export const AppStateChange = {
 
         switch (kind) {
             case NoteKind.Inbox:
-                (loaded.notes = LoadState.Loaded),
-                    (listing.notes = notes.map(calculateAge));
+                loaded.notes = LoadState.Loaded;
+                listing.notes = notes.map(calculateAge);
                 break;
             case NoteKind.Category:
                 if (categoryId) {
@@ -149,8 +168,8 @@ export const AppStateChange = {
                 }
                 break;
             case NoteKind.Bin:
-                (loaded.bin = LoadState.Loaded),
-                    (listing.bin = notes.map(calculateAge));
+                loaded.bin = LoadState.Loaded;
+                listing.bin = notes.map(calculateAge);
                 break;
         }
 
