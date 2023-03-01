@@ -21,9 +21,9 @@ function TriageDrawer() {
     }
 }
 
-interface IProtoCategory {
+type ProtoCategory = {
     title: string;
-}
+};
 
 function CreateNewCategory() {
     const appState = getAppState();
@@ -61,8 +61,8 @@ function CreateNewCategory() {
     function newCategorySubmit(e: Event) {
         e.preventDefault();
 
-        let protoCategory: IProtoCategory = { title: localState.text };
-        Net.post<IProtoCategory, Array<Category>>(
+        let protoCategory: ProtoCategory = { title: localState.text };
+        Net.post<ProtoCategory, Array<Category>>(
             `/api/categories`,
             protoCategory
         ).then((latestCategories) => {

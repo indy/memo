@@ -66,7 +66,7 @@ function ButtonEdit({
 }: {
     pigment: Pigment;
     editing: boolean;
-    callback: Function;
+    callback: (b: boolean) => void;
 }) {
     function onEditClicked(e: MouseEvent) {
         e.preventDefault();

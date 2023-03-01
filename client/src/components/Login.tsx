@@ -60,21 +60,21 @@ function Login({ path }: { path?: string }) {
         // once the state has a user, the Login page will redirect to '/'
     }
 
-    interface IAuthData {
+    type AuthData = {
         email: string;
         password: string;
-    }
-    interface IRegisterData {
+    };
+    type RegisterData = {
         username: string;
         email: string;
         password: string;
         magic_word: string;
-    }
+    };
 
     function handleLoginSubmit(event: Event) {
         event.preventDefault();
 
-        Net.post<IAuthData, User>("api/auth", {
+        Net.post<AuthData, User>("api/auth", {
             email: state["login-email"],
             password: state["login-password"],
         })
@@ -101,7 +101,7 @@ function Login({ path }: { path?: string }) {
 
     function handleRegisterSubmit(event: Event) {
         if (okToSendRegistration()) {
-            Net.post<IRegisterData, User>("api/users", {
+            Net.post<RegisterData, User>("api/users", {
                 username: state["register-username"],
                 email: state["register-email"],
                 password: state["register-password"],

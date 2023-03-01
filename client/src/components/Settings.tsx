@@ -203,7 +203,7 @@ function ColourControl({
     value,
     id,
 }: {
-    onInput: Function;
+    onInput: (e: Event, index: number, id: string) => void;
     value: [number, number, number] | undefined;
     id: string;
 }) {

@@ -6,12 +6,12 @@ import { AppStateChange } from "../AppState";
 
 import { Note } from "../types";
 
-interface IProtoNote {
+type ProtoNote = {
     title: string;
     content: string;
     pinned: boolean;
     categoryId?: number;
-}
+};
 
 const USER_TEXT = "user-text";
 
@@ -58,7 +58,7 @@ function CreateNoteForm({ categoryId }: { categoryId?: number }) {
             if (categoryId) {
                 protoNote.categoryId = categoryId;
             }
-            Net.post<IProtoNote, Note>(`/api/notes`, protoNote).then((note) => {
+            Net.post<ProtoNote, Note>(`/api/notes`, protoNote).then((note) => {
                 AppStateChange.listingNoteAppended(note);
             });
             setUserText("");
@@ -94,7 +94,7 @@ function CreateNoteForm({ categoryId }: { categoryId?: number }) {
     );
 }
 
-function noteFromText(text: string): IProtoNote | null {
+function noteFromText(text: string): ProtoNote | null {
     const lines = text.split("\n");
 
     const title = lines.shift();
@@ -105,7 +105,7 @@ function noteFromText(text: string): IProtoNote | null {
             return null;
         }
 
-        let protoNote: IProtoNote = {
+        let protoNote: ProtoNote = {
             title,
             content,
             pinned: false,

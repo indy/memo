@@ -2,7 +2,16 @@ import { h, createContext, ComponentChildren } from "preact";
 import { signal } from "@preact/signals";
 import { useContext } from "preact/hooks";
 
-import { User, State, Note, Listing, Category, LoadState, LoadedListing, NoteKind } from "./types";
+import {
+    User,
+    State,
+    Note,
+    Listing,
+    Category,
+    LoadState,
+    LoadedListing,
+    NoteKind,
+} from "./types";
 
 import { plural } from "./JsUtils";
 
@@ -74,7 +83,7 @@ export const AppStateChange = {
     },
     userLogin: function (
         user: User,
-        categories: Array<Category>,
+        categories: Array<Category>
         // notes: Array<Note>,
         // bin: Array<Note>
     ) {
@@ -85,7 +94,7 @@ export const AppStateChange = {
         let cats: { [key: string]: Array<Note> } = {};
         let catsLoaded: { [key: string]: LoadState } = {};
         categories.forEach((c) => {
-            cats[c.id] = []
+            cats[c.id] = [];
             catsLoaded[c.id] = LoadState.NotLoaded;
         });
 
@@ -96,7 +105,7 @@ export const AppStateChange = {
         let loaded = {
             ...state.loaded.value,
             category: catsLoaded,
-        }
+        };
         // let listing: Listing = {
         //     bin: bin.map(calculateAge),
         //     notes: notes.map(calculateAge),
@@ -109,35 +118,41 @@ export const AppStateChange = {
         state.loaded.value = loaded;
     },
     // generic loading function
-    setLoadingState: function(loaded: LoadedListing) {
+    setLoadingState: function (loaded: LoadedListing) {
         if (DEBUG_APP_STATE) {
             console.log("setLoadingState");
         }
         state.loaded.value = loaded;
     },
-    loadedNotes: function(notes: Array<Note>, kind: NoteKind, categoryId?: number) {
+    loadedNotes: function (
+        notes: Array<Note>,
+        kind: NoteKind,
+        categoryId?: number
+    ) {
         if (DEBUG_APP_STATE) {
             console.log("loadedNotes");
         }
         let loaded = { ...state.loaded.value };
-        let listing = { ...state.listing.value }
+        let listing = { ...state.listing.value };
 
-        switch(kind) {
+        switch (kind) {
             case NoteKind.Inbox:
-                loaded.notes = LoadState.Loaded,
-                listing.notes = notes.map(calculateAge);
+                (loaded.notes = LoadState.Loaded),
+                    (listing.notes = notes.map(calculateAge));
                 break;
             case NoteKind.Category:
                 if (categoryId) {
                     loaded.category[categoryId] = LoadState.Loaded;
                     listing.category[categoryId] = notes.map(calculateAge);
                 } else {
-                    console.error(`loadedNotes given a NoteKind.Category without a categoryId`);
+                    console.error(
+                        `loadedNotes given a NoteKind.Category without a categoryId`
+                    );
                 }
                 break;
             case NoteKind.Bin:
-                loaded.bin = LoadState.Loaded,
-                listing.bin = notes.map(calculateAge);
+                (loaded.bin = LoadState.Loaded),
+                    (listing.bin = notes.map(calculateAge));
                 break;
         }
 

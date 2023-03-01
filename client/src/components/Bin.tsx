@@ -18,7 +18,7 @@ function Bin({ path }: { path?: string }) {
             let loadingState = {
                 ...appState.loaded.value,
                 bin: LoadState.Loading,
-            }
+            };
             AppStateChange.setLoadingState(loadingState);
 
             Net.get<Array<Note>>(`/api/bin`).then((notes) => {

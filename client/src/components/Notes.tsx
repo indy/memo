@@ -27,22 +27,30 @@ function Notes({ path, categoryId }: { path?: string; categoryId?: string }) {
     useEffect(() => {
         if (categoryId) {
             let cid = parseInt(categoryId, 10);
-            if (!appState.loaded.value.category[cid]
-                || appState.loaded.value.category[cid] === LoadState.NotLoaded) {
+            if (
+                !appState.loaded.value.category[cid] ||
+                appState.loaded.value.category[cid] === LoadState.NotLoaded
+            ) {
                 let loadingState = { ...appState.loaded.value };
                 loadingState.category[cid] = LoadState.Loading;
                 AppStateChange.setLoadingState(loadingState);
 
-                Net.get<Array<Note>>(`/api/categories/${cid}/notes`).then((notes) => {
-                    AppStateChange.loadedNotes(notes, NoteKind.Category, cid);
-                });
+                Net.get<Array<Note>>(`/api/categories/${cid}/notes`).then(
+                    (notes) => {
+                        AppStateChange.loadedNotes(
+                            notes,
+                            NoteKind.Category,
+                            cid
+                        );
+                    }
+                );
             }
         } else {
             if (appState.loaded.value.notes === LoadState.NotLoaded) {
                 let loadingState = {
                     ...appState.loaded.value,
                     notes: LoadState.Loading,
-                }
+                };
                 AppStateChange.setLoadingState(loadingState);
 
                 Net.get<Array<Note>>(`/api/notes`).then((notes) => {
@@ -67,7 +75,6 @@ function Notes({ path, categoryId }: { path?: string; categoryId?: string }) {
         AppStateChange.triageMenuItemLabel(label);
 
         notes = appState.listing.value.category[cid];
-
     } else {
         notes = appState.listing.value.notes;
         AppStateChange.triageDrawerDefaultLabel();

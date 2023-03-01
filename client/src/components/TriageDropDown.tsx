@@ -17,7 +17,7 @@ function TriageDropDown({
     noteId: number;
     categories: Array<Category>;
     pigment: Pigment;
-    cardFullHeightFn: Function;
+    cardFullHeightFn: (b: boolean) => void;
     currentCategoryId?: number;
 }) {
     const [showList, setShowList] = useState(false);

@@ -22,16 +22,16 @@ export default function Card({
     children?: ComponentChildren;
     cardClass?: string;
     editing?: boolean;
-    onFinishedEditing?: Function;
+    onFinishedEditing?: (updatedTitle: string, updatedContent: string) => void;
     binned?: boolean;
 }) {
     //    const href = note.categoryId ? `/category/${note.categoryId}/notes/${note.id}` : `/notes/${note.id}`;
     const href = `/notes/${note.id}`;
 
-    interface LocalState {
+    type LocalState = {
         userContent: string;
         userTitle: string;
-    }
+    };
 
     let ls: LocalState = {
         userContent: note.content,

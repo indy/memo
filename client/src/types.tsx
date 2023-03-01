@@ -37,14 +37,14 @@ export type Listing = {
 export enum NoteKind {
     Inbox,
     Category,
-    Bin
-};
+    Bin,
+}
 
 export enum LoadState {
     NotLoaded = 1,
     Loading,
     Loaded,
-};
+}
 
 export type LoadedListing = {
     notes: LoadState;

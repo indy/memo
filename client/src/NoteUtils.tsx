@@ -4,7 +4,10 @@ import Net from "./Net";
 import { State, Note, Pigment } from "./types";
 import { AppStateChange } from "./AppState";
 
-export function finishedEditingCallback(note: Note, setEditing: Function) {
+export function finishedEditingCallback(
+    note: Note,
+    setEditing: (b: boolean) => void
+) {
     return function (updatedTitle: string, updatedContent: string) {
         let data = {
             ...note,
