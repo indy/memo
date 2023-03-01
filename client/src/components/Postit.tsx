@@ -1,7 +1,7 @@
 import { h } from "preact";
 import { useState } from "preact/hooks";
 
-import { notePigment } from "../NoteUtils";
+import { notePigment } from "../Utils";
 import Card from "./Card";
 import { ButtonDelete, ButtonPinned } from "./CardButtons";
 

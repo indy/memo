@@ -2,7 +2,7 @@ import { h, ComponentChildren } from "preact";
 import { useState } from "preact/hooks";
 import { route } from "preact-router";
 
-import { parseNoteContent, parseCardTitle } from "../NoteUtils";
+import { notePigment } from "../Utils";
 
 import { Note, Pigment } from "../types";
 
@@ -189,4 +189,68 @@ function clickedOnCardUI(n: HTMLElement): boolean {
 
 function clickedOnInCardHyperlink(n: HTMLElement) {
     return n.className.includes("in-note-link");
+}
+
+function parseNoteContent(note: Note) {
+    return parseNoteText(note.content, "p", note.id);
+}
+
+function parseCardTitle(note: Note) {
+    return parseNoteText(note.title, "h3", note.id);
+}
+
+function parseNoteText(text: string, parentTag: string, noteId: number) {
+    const lines = text.split("\n");
+    const elems: Array<any> = [];
+    const pigment = notePigment(noteId);
+
+    lines.forEach((line, i) => {
+        splitLineByHyperlinks(line).forEach((seg) => {
+            if (isHyperlinkSegment(seg)) {
+                elems.push(
+                    h(
+                        "a",
+                        {
+                            href: ensureLinkable(seg),
+                            class: `in-note-link ${pigment.class}`,
+                        },
+                        seg
+                    )
+                );
+            } else {
+                elems.push(seg);
+            }
+        });
+        if (i < lines.length - 1) {
+            elems.push(h("br", {}));
+        }
+    });
+
+    return h(parentTag, {}, elems);
+}
+
+function splitLineByHyperlinks(line: string): Array<string> {
+    // put space at the end of the line for the split regexp  to work with a regexp that ends a line
+    let lineWithSpace = line + " ";
+
+    let segs = lineWithSpace
+        .split(/(https:\/\/.*?|http:\/\/.*?|www\..*?)(\s+)/)
+        .filter((seg) => seg.length > 0);
+
+    // remove space at end of the last seg
+    segs[segs.length - 1] = segs[segs.length - 1].trim();
+
+    return segs;
+}
+
+function isHyperlinkSegment(seg: string): boolean {
+    return (
+        seg.startsWith("https://") ||
+        seg.startsWith("http://") ||
+        seg.startsWith("www.")
+    );
+}
+
+function ensureLinkable(seg: string): string {
+    return seg.startsWith("www.") ? "//" + seg : seg;
 }

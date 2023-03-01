@@ -2,13 +2,7 @@ import { h } from "preact";
 import { useState, useEffect } from "preact/hooks";
 
 import Net from "../Net";
-import { getTriageLabel } from "../AppUtils";
-import {
-    finishedEditingCallback,
-    getNoteById,
-    notePigment,
-    partitionPinnedNotes,
-} from "../NoteUtils";
+import { notePigment } from "../Utils";
 import { getAppState, AppStateChange } from "../AppState";
 
 import DeletableCategory from "./DeletableCategory";
@@ -19,7 +13,7 @@ import { TriageDropDown } from "./TriageDropDown";
 import { CreateNoteForm } from "./CreateNoteForm";
 import { PinnedListing, UnPinnedListing } from "./Listing";
 
-import { Note, NoteKind, LoadState } from "../types";
+import { State, Note, NoteKind, LoadState, Category } from "../types";
 
 function Notes({ path, categoryId }: { path?: string; categoryId?: string }) {
     const appState = getAppState();
@@ -154,6 +148,76 @@ function NoteView({ id, path }: { id?: string; path?: string }) {
             <ButtonDelete note={note} pigment={pigment} />
         </Card>
     );
+}
+
+function getTriageLabel(categories: Category[], id: number): string {
+    let cat: Category = categories.find((c) => c.id === id)!;
+    return cat.title;
+}
+
+function finishedEditingCallback(note: Note, setEditing: (b: boolean) => void) {
+    return function (updatedTitle: string, updatedContent: string) {
+        let data = {
+            ...note,
+            content: updatedContent,
+            title: updatedTitle,
+        };
+        Net.put<Note, Note>(`/api/notes/${note.id}`, data).then((newNote) => {
+            AppStateChange.noteContentUpdated(newNote);
+            setEditing(false);
+        });
+    };
+}
+
+function getNoteById(state: State, id: number): Note | undefined {
+    function search(ns: Array<Note>): Note | undefined {
+        return ns.find((n: Note) => n.id === id);
+    }
+
+    let res: Note | undefined = search(state.listing.value.notes);
+    if (res) {
+        return res;
+    }
+
+    res = search(state.listing.value.bin);
+    if (res) {
+        return res;
+    }
+
+    for (const key in state.categories.value) {
+        let cat = state.categories.value[key];
+
+        let l: Array<Note> | undefined = state.listing.value.category[cat.id];
+        if (l != undefined) {
+            res = search(l);
+            if (res) {
+                return res;
+            }
+        }
+    }
+    return undefined;
+}
+
+function partitionPinnedNotes(list?: Array<Note>): Array<Array<Note>> {
+    let pinned: Array<Note> = [];
+    let unpinned: Array<Note> = [];
+
+    if (!list) {
+        return [[], []];
+    }
+
+    list.forEach((n) => {
+        if (n.pinned) {
+            pinned.push(n);
+        } else {
+            unpinned.push(n);
+        }
+    });
+
+    pinned.sort((a, b) => b.id - a.id);
+    unpinned.sort((a, b) => b.id - a.id);
+
+    return [pinned, unpinned];
 }
 
 export { Notes, NoteView };

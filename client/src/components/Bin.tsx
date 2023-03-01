@@ -2,7 +2,7 @@ import { h } from "preact";
 import { useEffect } from "preact/hooks";
 
 import Net from "../Net";
-import { notePigment } from "../NoteUtils";
+import { notePigment } from "../Utils";
 import { AppStateChange, getAppState } from "../AppState";
 
 import Card from "./Card";

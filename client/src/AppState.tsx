@@ -13,8 +13,6 @@ import {
     NoteKind,
 } from "./types";
 
-import { plural } from "./JsUtils";
-
 const emptyUser: User = {
     username: "",
     email: "",
@@ -454,4 +452,14 @@ function humanReadableAge(deltaMS: number, decimalPlaces: number) {
 
     let years = deltaMS / (1000 * 60 * 60 * 24 * 365.25);
     return plural(years, decimalPlaces, "year", "s");
+}
+
+function plural(
+    num: number,
+    decimalPlaces: number,
+    phrase: string,
+    suffix: string
+) {
+    let showNum = num.toFixed(decimalPlaces);
+    return num === 1 ? `${showNum} ${phrase}` : `${showNum} ${phrase}${suffix}`;
 }
