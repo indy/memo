@@ -1,16 +1,16 @@
 import { h } from "preact";
 
+import { State } from "./types";
+
 import { Router, route, RouterOnChangeArgs } from "preact-router";
 import { AppStateChange, AppStateProvider, getAppState } from "./AppState";
 
-import { Bin } from "./components/Bin";
+import NoteView from "./components/NoteView";
 import { TopBarMenu } from "./components/TopBarMenu";
-import { Notes, NoteView } from "./components/Notes";
+import { InboxNotes, CategoryNotes, BinNotes } from "./components/Notes";
 import { Login, Logout } from "./components/Login";
 import { Settings } from "./components/Settings";
 import { TriageDrawer } from "./components/TriageDrawer";
-
-import { State } from "./types";
 
 export const App = ({ state }: { state: State }) => {
     return (
@@ -52,10 +52,10 @@ const AppUI = () => {
             <div id="app-content">
                 <TriageDrawer />
                 <Router onChange={handleRoute}>
-                    <Notes path="/" />
-                    <Notes path="/category/:categoryId" />
+                    <InboxNotes path="/" />
+                    <CategoryNotes path="/category/:categoryId" />
+                    <BinNotes path="/bin" />
                     <NoteView path="/notes/:id" />
-                    <Bin path="/bin" />
                     <Login path="/login" />
                     <Logout path="/logout" />
                     <Settings path="/settings" />

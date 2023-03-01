@@ -1,10 +1,11 @@
 import { h } from "preact";
 import { useState } from "preact/hooks";
 import { Link } from "preact-router";
-import { getAppState, AppStateChange } from "../AppState";
+
+import { Category } from "../types";
 
 import Net from "../Net";
-import { Category } from "../types";
+import { getAppState, AppStateChange } from "../AppState";
 
 function TriageDrawer() {
     const appState = getAppState();

@@ -1,13 +1,13 @@
 import { h } from "preact";
 import { AppStateChange, getAppState } from "../AppState";
 
+import { Note, Pigment } from "../types";
+
 import { declareCssVariables } from "../ColourCreator";
 
-import { Logout } from "./Login";
 import Card from "./Card";
 import { ButtonEdit } from "./CardButtons";
-
-import { Note, Pigment } from "../types";
+import { Logout } from "./Login";
 
 function Settings({ path }: { path?: string }) {
     const appState = getAppState();

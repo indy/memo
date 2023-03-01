@@ -2,9 +2,9 @@ import { h, ComponentChildren } from "preact";
 import { useState } from "preact/hooks";
 import { route } from "preact-router";
 
-import { notePigment } from "../Utils";
-
 import { Note, Pigment } from "../types";
+
+import { notePigment } from "../Utils";
 
 export default function Card({
     note,

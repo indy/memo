@@ -1,13 +1,12 @@
 import { h } from "preact";
 import { useState } from "preact/hooks";
 
-import Net from "../Net";
-
-import { AppStateChange } from "../AppState";
-
 import { Category, Note, Pigment } from "../types";
 
-function TriageDropDown({
+import Net from "../Net";
+import { AppStateChange } from "../AppState";
+
+export default function TriageDropDown({
     noteId,
     categories,
     pigment,
@@ -122,5 +121,3 @@ function TriageDropDown({
         </div>
     );
 }
-
-export { TriageDropDown };

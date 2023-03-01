@@ -1,5 +1,6 @@
 import { h } from "preact";
 import { Link } from "preact-router";
+
 import { getAppState, AppStateChange } from "../AppState";
 
 function TopBarMenu() {

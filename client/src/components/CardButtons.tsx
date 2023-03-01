@@ -1,10 +1,11 @@
 import { h } from "preact";
 import { route } from "preact-router";
 
-import Net from "../Net";
-import { SvgBin, SvgPinned, SvgUnpinned } from "../svgIcons";
-import { AppStateChange } from "../AppState";
 import { Note, Pigment } from "../types";
+
+import Net from "../Net";
+import { AppStateChange } from "../AppState";
+import { SvgBin, SvgPinned, SvgUnpinned } from "../svgIcons";
 
 function ButtonDelete({ note, pigment }: { note: Note; pigment: Pigment }) {
     function onDeleteClicked(e: MouseEvent) {

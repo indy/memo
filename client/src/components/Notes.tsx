@@ -1,28 +1,62 @@
 import { h } from "preact";
-import { useState, useEffect } from "preact/hooks";
+import { useEffect } from "preact/hooks";
+
+import { Note, NoteKind, Category } from "../types";
 
 import Net from "../Net";
 import { ensureLoaded, notePigment } from "../Utils";
 import { getAppState, AppStateChange } from "../AppState";
 
+import Card from "./Card";
 import DeletableCategory from "./DeletableCategory";
 import Postit from "./Postit";
-import Card from "./Card";
-import { ButtonDelete, ButtonEdit, ButtonPinned } from "./CardButtons";
-import { TriageDropDown } from "./TriageDropDown";
 import { CreateNoteForm } from "./CreateNoteForm";
 import { PinnedListing, UnPinnedListing } from "./Listing";
 
-import { State, Note, NoteKind, Category } from "../types";
+function InboxNotes({ path }: { path?: string }) {
+    const appState = getAppState();
 
-function Notes({ path, categoryId }: { path?: string; categoryId?: string }) {
+    useEffect(() => {
+        ensureLoaded(appState, NoteKind.Inbox);
+    }, []);
+
+    let notes: Array<Note> = [];
+
+    notes = appState.listing.value.notes;
+    AppStateChange.triageDrawerDefaultLabel();
+
+    let categories = appState.categories.value;
+    const [pin, unpin] = partitionPinnedNotes(notes);
+
+    return (
+        <div>
+            <CreateNoteForm />
+            <PinnedListing>
+                {pin.map((n) => (
+                    <Postit note={n} categories={categories} />
+                ))}
+            </PinnedListing>
+            <UnPinnedListing>
+                {unpin.map((n) => (
+                    <Postit note={n} categories={categories} />
+                ))}
+            </UnPinnedListing>
+        </div>
+    );
+}
+
+function CategoryNotes({
+    path,
+    categoryId,
+}: {
+    path?: string;
+    categoryId?: string;
+}) {
     const appState = getAppState();
 
     useEffect(() => {
         if (categoryId) {
             ensureLoaded(appState, NoteKind.Category, cid);
-        } else {
-            ensureLoaded(appState, NoteKind.Inbox);
         }
     }, [categoryId]);
 
@@ -41,9 +75,6 @@ function Notes({ path, categoryId }: { path?: string; categoryId?: string }) {
         AppStateChange.triageMenuItemLabel(label);
 
         notes = appState.listing.value.category[cid];
-    } else {
-        notes = appState.listing.value.notes;
-        AppStateChange.triageDrawerDefaultLabel();
     }
 
     let categories = appState.categories.value;
@@ -62,62 +93,78 @@ function Notes({ path, categoryId }: { path?: string; categoryId?: string }) {
                     <Postit note={n} categories={categories} categoryId={cid} />
                 ))}
             </UnPinnedListing>
-            {categoryId && (
-                <DeletableCategory categoryId={cid!} label={label} />
-            )}
+            <DeletableCategory categoryId={cid!} label={label} />
         </div>
     );
 }
 
-function NoteView({ id, path }: { id?: string; path?: string }) {
+function BinNotes({ path }: { path?: string }) {
     const appState = getAppState();
 
-    const [editing, setEditing] = useState(false);
-    const [fullHeight, setFullHeight] = useState(true);
+    useEffect(() => {
+        ensureLoaded(appState, NoteKind.Bin);
+    }, []);
 
-    // just to please the typescript checker
-    if (!id) {
-        return <div></div>;
-    }
+    AppStateChange.triageDrawerDefaultLabel();
 
-    const noteId = parseInt(id, 10);
-    const note = getNoteById(appState, noteId)!;
-    const pigment = notePigment(noteId);
+    const notes: Array<Note> = appState.listing.value.bin;
+    const listing = notes ? notes.map((n) => BinnedCard(n)) : [];
 
-    if (note.categoryId) {
-        if (!appState.listing.value.category[note.categoryId]) {
-            // isg todo: fix this
-            return <div></div>;
-        }
-    } else {
-        if (!appState.listing.value.notes) {
-            // isg todo: fix this
-            return <div></div>;
-        }
+    function onDeleteClicked(e: MouseEvent) {
+        e.preventDefault();
+
+        Net.delete(`/api/bin`, {}).then(() => {
+            AppStateChange.binEmptied();
+        });
     }
 
     return (
-        <Card
-            onFinishedEditing={finishedEditingCallback(note, setEditing)}
-            editing={editing}
-            note={note}
-            pigment={pigment}
-            fullHeight={fullHeight}
-            cardClass="wider-card"
-        >
-            <ButtonEdit
-                pigment={pigment}
-                editing={editing}
-                callback={setEditing}
-            />
-            <TriageDropDown
-                noteId={note.id}
-                categories={appState.categories.value}
-                pigment={pigment}
-                cardFullHeightFn={setFullHeight}
-            />
-            <ButtonPinned note={note} pigment={pigment} />
-            <ButtonDelete note={note} pigment={pigment} />
+        <div>
+            <div class="button-container darken-border">
+                {listing.length == 0 && <div>Bin is Empty</div>}
+                {listing.length > 0 && (
+                    <div class="button button-delete" onClick={onDeleteClicked}>
+                        Permanently Delete
+                    </div>
+                )}
+            </div>
+            <div class="hr" />
+            <UnPinnedListing>{listing}</UnPinnedListing>
+        </div>
+    );
+}
+
+function BinnedCard(note: Note) {
+    const pigment = notePigment(note.id);
+
+    function onUndeleteClicked(e: MouseEvent) {
+        e.preventDefault();
+        Net.post(`/api/bin/${note.id}/unbin`, note).then(() => {
+            AppStateChange.noteUnbinned(note);
+        });
+    }
+
+    function onDeleteClicked(e: MouseEvent) {
+        e.preventDefault();
+        Net.delete(`/api/bin/${note.id}`, {}).then(() => {
+            AppStateChange.noteDeleted(note);
+        });
+    }
+
+    return (
+        <Card note={note} binned={true} pigment={pigment}>
+            <button
+                class={`${pigment.classAlt} button card-action-cell`}
+                onClick={onUndeleteClicked}
+            >
+                Undelete
+            </button>
+            <button
+                class={`${pigment.classAlt} button card-action-cell`}
+                onClick={onDeleteClicked}
+            >
+                Really Delete
+            </button>
         </Card>
     );
 }
@@ -125,49 +172,6 @@ function NoteView({ id, path }: { id?: string; path?: string }) {
 function getTriageLabel(categories: Category[], id: number): string {
     let cat: Category = categories.find((c) => c.id === id)!;
     return cat.title;
-}
-
-function finishedEditingCallback(note: Note, setEditing: (b: boolean) => void) {
-    return function (updatedTitle: string, updatedContent: string) {
-        let data = {
-            ...note,
-            content: updatedContent,
-            title: updatedTitle,
-        };
-        Net.put<Note, Note>(`/api/notes/${note.id}`, data).then((newNote) => {
-            AppStateChange.noteContentUpdated(newNote);
-            setEditing(false);
-        });
-    };
-}
-
-function getNoteById(state: State, id: number): Note | undefined {
-    function search(ns: Array<Note>): Note | undefined {
-        return ns.find((n: Note) => n.id === id);
-    }
-
-    let res: Note | undefined = search(state.listing.value.notes);
-    if (res) {
-        return res;
-    }
-
-    res = search(state.listing.value.bin);
-    if (res) {
-        return res;
-    }
-
-    for (const key in state.categories.value) {
-        let cat = state.categories.value[key];
-
-        let l: Array<Note> | undefined = state.listing.value.category[cat.id];
-        if (l != undefined) {
-            res = search(l);
-            if (res) {
-                return res;
-            }
-        }
-    }
-    return undefined;
 }
 
 function partitionPinnedNotes(list?: Array<Note>): Array<Array<Note>> {
@@ -192,4 +196,4 @@ function partitionPinnedNotes(list?: Array<Note>): Array<Array<Note>> {
     return [pinned, unpinned];
 }
 
-export { Notes, NoteView };
+export { InboxNotes, CategoryNotes, BinNotes };

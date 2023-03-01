@@ -1,12 +1,11 @@
 import { render, h } from "preact";
-import "./index.css";
-
-import { App } from "./App";
-import { AppStateChange, initialState } from "./AppState";
-import Net from "./Net.js";
 
 import { WasmInterface } from "./types";
 
+import "./index.css";
+import Net from "./Net.js";
+import { App } from "./App";
+import { AppStateChange, initialState } from "./AppState";
 import {
     buildColourConversionFn,
     declareCssVariables,

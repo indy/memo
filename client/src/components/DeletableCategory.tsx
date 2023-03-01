@@ -3,7 +3,6 @@ import { useState } from "preact/hooks";
 import { route } from "preact-router";
 
 import Net from "../Net";
-
 import { AppStateChange } from "../AppState";
 
 export default function DeletableCategory({

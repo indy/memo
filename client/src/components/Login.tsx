@@ -1,11 +1,11 @@
 import { h } from "preact";
 import { useState } from "preact/hooks";
 import { route } from "preact-router";
-import { AppStateChange, getAppState } from "../AppState";
 
 import { User, Category } from "../types";
 
 import Net from "../Net";
+import { AppStateChange, getAppState } from "../AppState";
 
 function Login({ path }: { path?: string }) {
     const appState = getAppState();

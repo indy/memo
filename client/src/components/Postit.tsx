@@ -1,13 +1,13 @@
 import { h } from "preact";
 import { useState } from "preact/hooks";
 
+import { Note, Category } from "../types";
+
 import { notePigment } from "../Utils";
+
 import Card from "./Card";
 import { ButtonDelete, ButtonPinned } from "./CardButtons";
-
-import { TriageDropDown } from "./TriageDropDown";
-
-import { Note, Category } from "../types";
+import TriageDropDown from "./TriageDropDown";
 
 type PostitTypes = {
     note: Note;
