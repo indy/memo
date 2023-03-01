@@ -5,8 +5,8 @@ import { Note, Pigment } from "../types";
 
 import { declareCssVariables } from "../ColourCreator";
 
-import Card from "./Card";
 import { ButtonEdit } from "./CardButtons";
+import { CardBase } from "./Card";
 import { Logout } from "./Login";
 
 function Settings({ path }: { path?: string }) {
@@ -279,9 +279,9 @@ function SampleCard({ pigment }: { pigment: string }) {
     function callback() {}
 
     return (
-        <Card note={note} pigment={pig} editing={editing}>
+        <CardBase note={note} pigment={pig} editing={editing}>
             <ButtonEdit pigment={pig} editing={editing} callback={callback} />
-        </Card>
+        </CardBase>
     );
 }
 

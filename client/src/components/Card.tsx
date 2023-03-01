@@ -2,11 +2,16 @@ import { h, ComponentChildren } from "preact";
 import { useState } from "preact/hooks";
 import { route } from "preact-router";
 
-import { Note, Pigment } from "../types";
+import { Note, Pigment, Category } from "../types";
 
+import Net from "../Net";
+import { AppStateChange } from "../AppState";
 import { notePigment } from "../Utils";
 
-export default function Card({
+import TriageDropDown from "./TriageDropDown";
+import { ButtonPinned, ButtonDelete } from "./CardButtons";
+
+function CardBase({
     note,
     pigment,
     fullHeight,
@@ -164,6 +169,67 @@ export default function Card({
     );
 }
 
+function BinnedCard(note: Note) {
+    const pigment = notePigment(note.id);
+
+    function onUndeleteClicked(e: MouseEvent) {
+        e.preventDefault();
+        Net.post(`/api/bin/${note.id}/unbin`, note).then(() => {
+            AppStateChange.noteUnbinned(note);
+        });
+    }
+
+    function onDeleteClicked(e: MouseEvent) {
+        e.preventDefault();
+        Net.delete(`/api/bin/${note.id}`, {}).then(() => {
+            AppStateChange.noteDeleted(note);
+        });
+    }
+
+    return (
+        <CardBase note={note} binned={true} pigment={pigment}>
+            <button
+                class={`${pigment.classAlt} button card-action-cell`}
+                onClick={onUndeleteClicked}
+            >
+                Undelete
+            </button>
+            <button
+                class={`${pigment.classAlt} button card-action-cell`}
+                onClick={onDeleteClicked}
+            >
+                Really Delete
+            </button>
+        </CardBase>
+    );
+}
+
+type CardTypes = {
+    note: Note;
+    categories: Array<Category>;
+    categoryId?: number;
+};
+
+function Card({ note, categories, categoryId }: CardTypes) {
+    const [fullHeight, setFullHeight] = useState(false);
+    const pigment = notePigment(note.id);
+
+    return (
+        <CardBase note={note} pigment={pigment} fullHeight={fullHeight}>
+            <TriageDropDown
+                noteId={note.id}
+                categories={categories}
+                pigment={pigment}
+                cardFullHeightFn={setFullHeight}
+                currentCategoryId={categoryId}
+            />
+
+            <ButtonPinned note={note} pigment={pigment} />
+            <ButtonDelete note={note} pigment={pigment} />
+        </CardBase>
+    );
+}
+
 function clickedOnCardUI(n: HTMLElement): boolean {
     if (!n) {
         return false;
@@ -254,3 +320,6 @@ function isHyperlinkSegment(seg: string): boolean {
 function ensureLinkable(seg: string): string {
     return seg.startsWith("www.") ? "//" + seg : seg;
 }
+
+
+export { Card, BinnedCard, CardBase };

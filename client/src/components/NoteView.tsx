@@ -7,9 +7,9 @@ import Net from "../Net";
 import { notePigment } from "../Utils";
 import { getAppState, AppStateChange } from "../AppState";
 
-import Card from "./Card";
 import TriageDropDown from "./TriageDropDown";
 import { ButtonDelete, ButtonEdit, ButtonPinned } from "./CardButtons";
+import { CardBase } from "./Card";
 
 export default function NoteView({ id, path }: { id?: string; path?: string }) {
     const appState = getAppState();
@@ -39,7 +39,7 @@ export default function NoteView({ id, path }: { id?: string; path?: string }) {
     }
 
     return (
-        <Card
+        <CardBase
             onFinishedEditing={finishedEditingCallback(note, setEditing)}
             editing={editing}
             note={note}
@@ -60,7 +60,7 @@ export default function NoteView({ id, path }: { id?: string; path?: string }) {
             />
             <ButtonPinned note={note} pigment={pigment} />
             <ButtonDelete note={note} pigment={pigment} />
-        </Card>
+        </CardBase>
     );
 }
 

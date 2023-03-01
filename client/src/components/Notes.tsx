@@ -4,12 +4,11 @@ import { useEffect } from "preact/hooks";
 import { Note, NoteKind, Category } from "../types";
 
 import Net from "../Net";
-import { ensureLoaded, notePigment } from "../Utils";
+import { ensureLoaded } from "../Utils";
 import { getAppState, AppStateChange } from "../AppState";
 
-import Card from "./Card";
+import { BinnedCard, Card } from "./Card";
 import DeletableCategory from "./DeletableCategory";
-import Postit from "./Postit";
 import { CreateNoteForm } from "./CreateNoteForm";
 import { PinnedListing, UnPinnedListing } from "./Listing";
 
@@ -33,12 +32,12 @@ function InboxNotes({ path }: { path?: string }) {
             <CreateNoteForm />
             <PinnedListing>
                 {pin.map((n) => (
-                    <Postit note={n} categories={categories} />
+                    <Card note={n} categories={categories} />
                 ))}
             </PinnedListing>
             <UnPinnedListing>
                 {unpin.map((n) => (
-                    <Postit note={n} categories={categories} />
+                    <Card note={n} categories={categories} />
                 ))}
             </UnPinnedListing>
         </div>
@@ -85,12 +84,12 @@ function CategoryNotes({
             <CreateNoteForm categoryId={cid} />
             <PinnedListing>
                 {pin.map((n) => (
-                    <Postit note={n} categories={categories} categoryId={cid} />
+                    <Card note={n} categories={categories} categoryId={cid} />
                 ))}
             </PinnedListing>
             <UnPinnedListing>
                 {unpin.map((n) => (
-                    <Postit note={n} categories={categories} categoryId={cid} />
+                    <Card note={n} categories={categories} categoryId={cid} />
                 ))}
             </UnPinnedListing>
             <DeletableCategory categoryId={cid!} label={label} />
@@ -131,41 +130,6 @@ function BinNotes({ path }: { path?: string }) {
             <div class="hr" />
             <UnPinnedListing>{listing}</UnPinnedListing>
         </div>
-    );
-}
-
-function BinnedCard(note: Note) {
-    const pigment = notePigment(note.id);
-
-    function onUndeleteClicked(e: MouseEvent) {
-        e.preventDefault();
-        Net.post(`/api/bin/${note.id}/unbin`, note).then(() => {
-            AppStateChange.noteUnbinned(note);
-        });
-    }
-
-    function onDeleteClicked(e: MouseEvent) {
-        e.preventDefault();
-        Net.delete(`/api/bin/${note.id}`, {}).then(() => {
-            AppStateChange.noteDeleted(note);
-        });
-    }
-
-    return (
-        <Card note={note} binned={true} pigment={pigment}>
-            <button
-                class={`${pigment.classAlt} button card-action-cell`}
-                onClick={onUndeleteClicked}
-            >
-                Undelete
-            </button>
-            <button
-                class={`${pigment.classAlt} button card-action-cell`}
-                onClick={onDeleteClicked}
-            >
-                Really Delete
-            </button>
-        </Card>
     );
 }
 
