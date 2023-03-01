@@ -5,7 +5,7 @@ import Net from "../Net";
 
 import { AppStateChange } from "../AppState";
 
-import { ICategory, INote, IPigment } from "../types";
+import { Category, Note, Pigment } from "../types";
 
 function TriageDropDown({
     noteId,
@@ -15,20 +15,19 @@ function TriageDropDown({
     currentCategoryId,
 }: {
     noteId: number;
-    categories: Array<ICategory>;
-    pigment: IPigment;
+    categories: Array<Category>;
+    pigment: Pigment;
     cardFullHeightFn: Function;
     currentCategoryId?: number;
 }) {
     const [showList, setShowList] = useState(false);
 
-    function onTriageCategorySelected(category: ICategory) {
-        Net.post<ICategory, INote>(
-            `/api/notes/${noteId}/triage`,
-            category
-        ).then((triagedNote) => {
-            AppStateChange.noteTriaged(triagedNote, currentCategoryId);
-        });
+    function onTriageCategorySelected(category: Category) {
+        Net.post<Category, Note>(`/api/notes/${noteId}/triage`, category).then(
+            (triagedNote) => {
+                AppStateChange.noteTriaged(triagedNote, currentCategoryId);
+            }
+        );
     }
 
     function onToggleShowList(e: MouseEvent) {
@@ -76,24 +75,30 @@ function TriageDropDown({
     }
 
     function buildTriageList() {
-
         let categoryOptions = [];
         if (currentCategoryId) {
             categoryOptions.push(
-                <li class={`triage-dropdown-item ${pigment.classAlt}`}
-                    onClick={onUnTriageDropDownSelect}>
+                <li
+                    class={`triage-dropdown-item ${pigment.classAlt}`}
+                    onClick={onUnTriageDropDownSelect}
+                >
                     UnTriage
-                </li>);
+                </li>
+            );
         }
 
         categories.forEach((c) => {
             if (currentCategoryId && c.id === currentCategoryId) {
                 // skip
             } else {
-                categoryOptions.push(<li class={`triage-dropdown-item ${pigment.classAlt}`}
-                                         onClick={onTriageDropDownSelect}>
-                                         {c.title}
-                                     </li>);
+                categoryOptions.push(
+                    <li
+                        class={`triage-dropdown-item ${pigment.classAlt}`}
+                        onClick={onTriageDropDownSelect}
+                    >
+                        {c.title}
+                    </li>
+                );
             }
         });
 

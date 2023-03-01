@@ -4,7 +4,7 @@ import { Link } from "preact-router";
 import { getAppState, AppStateChange } from "../AppState";
 
 import Net from "../Net";
-import { ICategory } from "../types";
+import { Category } from "../types";
 
 function TriageDrawer() {
     const appState = getAppState();
@@ -12,7 +12,7 @@ function TriageDrawer() {
     if (appState.showTriageDrawer.value) {
         return (
             <div class="drawer">
-                <CreateNewCategory/>
+                <CreateNewCategory />
                 {appState.categories.value.map(DrawerItem)}
             </div>
         );
@@ -37,7 +37,7 @@ function CreateNewCategory() {
     function onClicked() {
         setLocalState({
             ...localState,
-            activated: true
+            activated: true,
         });
     }
 
@@ -45,7 +45,7 @@ function CreateNewCategory() {
         if (event.target instanceof HTMLInputElement) {
             const value = event.target.value;
             const found = appState.categories.value.find(
-                (c: ICategory) => c.title === value
+                (c: Category) => c.title === value
             );
 
             const newState = {
@@ -62,7 +62,7 @@ function CreateNewCategory() {
         e.preventDefault();
 
         let protoCategory: IProtoCategory = { title: localState.text };
-        Net.post<IProtoCategory, Array<ICategory>>(
+        Net.post<IProtoCategory, Array<Category>>(
             `/api/categories`,
             protoCategory
         ).then((latestCategories) => {
@@ -70,7 +70,7 @@ function CreateNewCategory() {
             setLocalState({
                 ...localState,
                 text: "",
-                activated: false
+                activated: false,
             });
         });
     }
@@ -78,7 +78,7 @@ function CreateNewCategory() {
     function onCancelMouseDown() {
         setLocalState({
             ...localState,
-            activated: false
+            activated: false,
         });
     }
 
@@ -112,8 +112,10 @@ function CreateNewCategory() {
         );
     } else {
         return (
-            <a class="drawer-item drawer-item-new" onClick={onClicked}>New Category...</a>
-        )
+            <a class="drawer-item drawer-item-new" onClick={onClicked}>
+                New Category...
+            </a>
+        );
     }
 }
 
@@ -123,7 +125,11 @@ function DrawerItem({ id, title }: { id: number; title: string }) {
     }
 
     return (
-        <Link class="drawer-item" href={"/category/" + id} onClick={onLinkClicked}>
+        <Link
+            class="drawer-item"
+            href={"/category/" + id}
+            onClick={onLinkClicked}
+        >
             {title}
         </Link>
     );

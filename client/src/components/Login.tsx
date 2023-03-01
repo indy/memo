@@ -3,7 +3,7 @@ import { useState } from "preact/hooks";
 import { route } from "preact-router";
 import { AppStateChange, getAppState } from "../AppState";
 
-import { IUser, INote, ICategory } from "../types";
+import { User, Note, Category } from "../types";
 
 import Net from "../Net";
 
@@ -54,10 +54,10 @@ function Login({ path }: { path?: string }) {
         }
     };
 
-    async function loginCallback(user: IUser) {
-        let categories = await Net.get<Array<ICategory>>("/api/categories");
-        let notes = await Net.get<Array<INote>>(`/api/notes`);
-        let bin = await Net.get<Array<INote>>(`/api/bin`);
+    async function loginCallback(user: User) {
+        let categories = await Net.get<Array<Category>>("/api/categories");
+        let notes = await Net.get<Array<Note>>(`/api/notes`);
+        let bin = await Net.get<Array<Note>>(`/api/bin`);
 
         AppStateChange.userLogin(user, categories, notes, bin);
         // once the state has a user, the Login page will redirect to '/'
@@ -77,7 +77,7 @@ function Login({ path }: { path?: string }) {
     function handleLoginSubmit(event: Event) {
         event.preventDefault();
 
-        Net.post<IAuthData, IUser>("api/auth", {
+        Net.post<IAuthData, User>("api/auth", {
             email: state["login-email"],
             password: state["login-password"],
         })
@@ -104,7 +104,7 @@ function Login({ path }: { path?: string }) {
 
     function handleRegisterSubmit(event: Event) {
         if (okToSendRegistration()) {
-            Net.post<IRegisterData, IUser>("api/users", {
+            Net.post<IRegisterData, User>("api/users", {
                 username: state["register-username"],
                 email: state["register-email"],
                 password: state["register-password"],

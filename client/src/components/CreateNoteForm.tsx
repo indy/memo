@@ -4,7 +4,7 @@ import { useState, useEffect } from "preact/hooks";
 import Net from "../Net";
 import { AppStateChange } from "../AppState";
 
-import { INote } from "../types";
+import { Note } from "../types";
 
 interface IProtoNote {
     title: string;
@@ -58,11 +58,9 @@ function CreateNoteForm({ categoryId }: { categoryId?: number }) {
             if (categoryId) {
                 protoNote.categoryId = categoryId;
             }
-            Net.post<IProtoNote, INote>(`/api/notes`, protoNote).then(
-                (note) => {
-                    AppStateChange.listingNoteAppended(note);
-                }
-            );
+            Net.post<IProtoNote, Note>(`/api/notes`, protoNote).then((note) => {
+                AppStateChange.listingNoteAppended(note);
+            });
             setUserText("");
         }
     }

@@ -4,7 +4,7 @@ import { route } from "preact-router";
 
 import { parseNoteContent, parseCardTitle } from "../NoteUtils";
 
-import { INote, IPigment } from "../types";
+import { Note, Pigment } from "../types";
 
 export default function Card({
     note,
@@ -14,10 +14,10 @@ export default function Card({
     cardClass,
     editing,
     onFinishedEditing,
-    binned
+    binned,
 }: {
-    note: INote;
-    pigment: IPigment;
+    note: Note;
+    pigment: Pigment;
     fullHeight?: boolean;
     children?: ComponentChildren;
     cardClass?: string;

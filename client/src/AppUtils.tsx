@@ -1,4 +1,4 @@
-import { ICategory } from "./types";
+import { Category } from "./types";
 
 export function cssColourBg(numString: string): string {
     return `var(--clock-${numString}-bg)`;
@@ -12,7 +12,7 @@ export function cssColourFg1(numString: string): string {
     return `var(--clock-${numString}-fg1)`;
 }
 
-export function getTriageLabel(categories: ICategory[], id: number): string {
-    let cat: ICategory = categories.find(c => c.id === id)!;
+export function getTriageLabel(categories: Category[], id: number): string {
+    let cat: Category = categories.find((c) => c.id === id)!;
     return cat.title;
 }

@@ -4,15 +4,9 @@ import { route } from "preact-router";
 import Net from "../Net";
 import { SvgBin, SvgPinned, SvgUnpinned } from "../svgIcons";
 import { AppStateChange } from "../AppState";
-import { INote, IPigment } from "../types";
+import { Note, Pigment } from "../types";
 
-function ButtonDelete({
-    note,
-    pigment,
-}: {
-    note: INote;
-    pigment: IPigment;
-}) {
+function ButtonDelete({ note, pigment }: { note: Note; pigment: Pigment }) {
     function onDeleteClicked(e: MouseEvent) {
         e.preventDefault();
 
@@ -36,16 +30,16 @@ function ButtonDelete({
     );
 }
 
-function ButtonPinned({ note, pigment }: { note: INote; pigment: IPigment }) {
+function ButtonPinned({ note, pigment }: { note: Note; pigment: Pigment }) {
     function onPinnedClicked(e: MouseEvent) {
         e.preventDefault();
 
-        let updatedNote: INote = {
+        let updatedNote: Note = {
             ...note,
             pinned: !note.pinned,
         };
-        Net.put<INote, INote>(`/api/notes/${note.id}`, updatedNote).then(
-            (newNote: INote) => {
+        Net.put<Note, Note>(`/api/notes/${note.id}`, updatedNote).then(
+            (newNote: Note) => {
                 AppStateChange.notePinStateUpdated(updatedNote);
             }
         );
@@ -70,7 +64,7 @@ function ButtonEdit({
     editing,
     callback,
 }: {
-    pigment: IPigment;
+    pigment: Pigment;
     editing: boolean;
     callback: Function;
 }) {

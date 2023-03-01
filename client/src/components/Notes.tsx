@@ -17,15 +17,14 @@ import Card from "./Card";
 import { ButtonDelete, ButtonEdit, ButtonPinned } from "./CardButtons";
 import { TriageDropDown } from "./TriageDropDown";
 import { CreateNoteForm } from "./CreateNoteForm";
-import { PinnedListing, UnPinnedListing }  from "./Listing";
+import { PinnedListing, UnPinnedListing } from "./Listing";
 
-
-import { INote } from "../types";
+import { Note } from "../types";
 
 function Notes({ path, categoryId }: { path?: string; categoryId?: string }) {
     const appState = getAppState();
 
-    let notes: Array<INote> = [];
+    let notes: Array<Note> = [];
     let cid: undefined | number = undefined;
     let label: string = "";
 
@@ -42,19 +41,17 @@ function Notes({ path, categoryId }: { path?: string; categoryId?: string }) {
         notes = appState.listing.value.category[cid];
 
         if (notes.length === 0) {
-            Net.get<Array<INote>>(`/api/categories/${cid}/notes`).then(
-                async (newnotes: Array<INote>) => {
+            Net.get<Array<Note>>(`/api/categories/${cid}/notes`).then(
+                async (newnotes: Array<Note>) => {
                     AppStateChange.loadedCategoryNotes(cid!, newnotes);
                     notes = newnotes;
                 }
             );
         }
-
     } else {
         notes = appState.listing.value.notes;
         AppStateChange.triageDrawerDefaultLabel();
     }
-
 
     let categories = appState.categories.value;
     const [pin, unpin] = partitionPinnedNotes(notes);
@@ -63,17 +60,23 @@ function Notes({ path, categoryId }: { path?: string; categoryId?: string }) {
         <div>
             <CreateNoteForm categoryId={cid} />
             <PinnedListing>
-                { pin.map((n) => (<Postit note={n} categories={categories} categoryId={cid}/>)) }
+                {pin.map((n) => (
+                    <Postit note={n} categories={categories} categoryId={cid} />
+                ))}
             </PinnedListing>
             <UnPinnedListing>
-                { unpin.map((n) => (<Postit note={n} categories={categories} categoryId={cid}/>)) }
+                {unpin.map((n) => (
+                    <Postit note={n} categories={categories} categoryId={cid} />
+                ))}
             </UnPinnedListing>
-            {categoryId && <DeletableCategory categoryId={cid!} label={label}/>}
+            {categoryId && (
+                <DeletableCategory categoryId={cid!} label={label} />
+            )}
         </div>
     );
 }
 
-function Note({ id, path }: { id?: string; path?: string }) {
+function NoteView({ id, path }: { id?: string; path?: string }) {
     const appState = getAppState();
 
     const [editing, setEditing] = useState(false);
@@ -126,4 +129,4 @@ function Note({ id, path }: { id?: string; path?: string }) {
     );
 }
 
-export { Notes, Note };
+export { Notes, NoteView };

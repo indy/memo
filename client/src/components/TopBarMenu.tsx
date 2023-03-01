@@ -59,7 +59,7 @@ function TopBarMenu() {
                 notes
             </Link>
             <a class={s2} onClick={onTriagedClicked}>
-                { appState.triageLabel.value }
+                {appState.triageLabel.value}
             </a>
             <Link class={s3} href={"/bin"}>
                 bin

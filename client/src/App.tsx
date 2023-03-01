@@ -5,14 +5,14 @@ import { AppStateChange, AppStateProvider, getAppState } from "./AppState";
 
 import { Bin } from "./components/Bin";
 import { TopBarMenu } from "./components/TopBarMenu";
-import { Notes, Note } from "./components/Notes";
+import { Notes, NoteView } from "./components/Notes";
 import { Login, Logout } from "./components/Login";
 import { Settings } from "./components/Settings";
 import { TriageDrawer } from "./components/TriageDrawer";
 
-import { IState } from "./types";
+import { State } from "./types";
 
-export const App = ({ state }: { state: IState }) => {
+export const App = ({ state }: { state: State }) => {
     return (
         <AppStateProvider state={state}>
             <AppUI />
@@ -23,7 +23,9 @@ export const App = ({ state }: { state: IState }) => {
 const AppUI = () => {
     const state = getAppState();
 
-    function handleRoute(e: RouterOnChangeArgs<Record<string, string | undefined> | null>): void {
+    function handleRoute(
+        e: RouterOnChangeArgs<Record<string, string | undefined> | null>
+    ): void {
         AppStateChange.routeChanged(e.url);
 
         if (e.url !== "/login") {
@@ -52,7 +54,7 @@ const AppUI = () => {
                 <Router onChange={handleRoute}>
                     <Notes path="/" />
                     <Notes path="/category/:categoryId" />
-                    <Note path="/notes/:id" />
+                    <NoteView path="/notes/:id" />
                     <Bin path="/bin" />
                     <Login path="/login" />
                     <Logout path="/logout" />

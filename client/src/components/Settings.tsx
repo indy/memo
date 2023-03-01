@@ -7,7 +7,7 @@ import { Logout } from "./Login";
 import Card from "./Card";
 import { ButtonEdit } from "./CardButtons";
 
-import { INote, IPigment } from "../types";
+import { Note, Pigment } from "../types";
 
 function Settings({ path }: { path?: string }) {
     const appState = getAppState();
@@ -23,7 +23,11 @@ function Settings({ path }: { path?: string }) {
         if (e.target instanceof HTMLInputElement) {
             e.preventDefault();
             let value = settings[id];
-            if (value !== undefined && Array.isArray(value) && value.length === 3) {
+            if (
+                value !== undefined &&
+                Array.isArray(value) &&
+                value.length === 3
+            ) {
                 value[index] = parseInt(e.target.value, 10);
                 AppStateChange.settingsColourTriple(id, value);
             }
@@ -216,45 +220,45 @@ function ColourControl({
             <div>
                 <label for={idH}>{labelH}</label>
                 <input
-            type="number"
-            value={value[0]}
-            id={idH}
-            name={idH}
-            min="0"
-            max="359"
-            onInput={(e) => onInput(e, 0, id)}
+                    type="number"
+                    value={value[0]}
+                    id={idH}
+                    name={idH}
+                    min="0"
+                    max="359"
+                    onInput={(e) => onInput(e, 0, id)}
                 />
 
                 <label for={idS}>{labelS}</label>
                 <input
-            type="number"
-            value={value[1]}
-            id={idS}
-            name={idS}
-            min="0"
-            max="100"
-            onInput={(e) => onInput(e, 1, id)}
+                    type="number"
+                    value={value[1]}
+                    id={idS}
+                    name={idS}
+                    min="0"
+                    max="100"
+                    onInput={(e) => onInput(e, 1, id)}
                 />
 
                 <label for={idL}>{labelL}</label>
                 <input
-            type="number"
-            value={value[2]}
-            id={idL}
-            name={idL}
-            min="0"
-            max="100"
-            onInput={(e) => onInput(e, 2, id)}
+                    type="number"
+                    value={value[2]}
+                    id={idL}
+                    name={idL}
+                    min="0"
+                    max="100"
+                    onInput={(e) => onInput(e, 2, id)}
                 />
-                </div>
+            </div>
         );
     } else {
-        return (<div></div>);
+        return <div></div>;
     }
 }
 
 function SampleCard({ pigment }: { pigment: string }) {
-    const note: INote = {
+    const note: Note = {
         age: "test age",
         content: "test content",
         createdAt: "",
@@ -263,7 +267,7 @@ function SampleCard({ pigment }: { pigment: string }) {
         title: "test title",
     };
 
-    const pig: IPigment = {
+    const pig: Pigment = {
         num: parseInt(pigment, 10),
         numString: pigment,
         class: `pigment-clock-${pigment}`,

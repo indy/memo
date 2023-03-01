@@ -2,22 +2,22 @@
 
 import { Signal } from "@preact/signals";
 
-export interface IAdmin {
+export type Admin = {
     dbName: string;
-}
+};
 
-export interface IUser {
+export type User = {
     username: string;
     email: string;
-    admin?: IAdmin;
-}
+    admin?: Admin;
+};
 
-export interface ICategory {
+export type Category = {
     id: number;
     title: string;
-}
+};
 
-export interface INote {
+export type Note = {
     age: string;
     content: string;
     createdAt: string;
@@ -26,64 +26,66 @@ export interface INote {
     title: string;
     triagedAt?: string;
     categoryId?: number;
-}
+};
 
-export interface IListing {
-    notes: Array<INote>;
-    category: { [key: number]: Array<INote> };
-    bin: Array<INote>;
-}
+export type Listing = {
+    notes: Array<Note>;
+    category: { [key: number]: Array<Note> };
+    bin: Array<Note>;
+};
 
-export interface ISettings {
-    [index: string]: number | [number, number, number] | undefined;
+export type ColourTriple = [number, number, number];
+
+export type Settings = {
+    [index: string]: number | ColourTriple | undefined;
 
     hueOffset: number;
     hueDelta: number;
 
-    bg?: [number, number, number],
-    bg1?: [number, number, number],
-    bg2?: [number, number, number],
-    fg?: [number, number, number],
-    fg1?: [number, number, number],
+    bg?: ColourTriple;
+    bg1?: ColourTriple;
+    bg2?: ColourTriple;
+    fg?: ColourTriple;
+    fg1?: ColourTriple;
 
-    fg_inactive?: [number, number, number],
-    textarea_bg?: [number, number, number],
-    textarea_fg?: [number, number, number],
+    fg_inactive?: ColourTriple;
+    textarea_bg?: ColourTriple;
+    textarea_fg?: ColourTriple;
 
-    save_on_bg?: [number, number, number],
-    save_on_fg?: [number, number, number],
+    save_on_bg?: ColourTriple;
+    save_on_fg?: ColourTriple;
 
-    divider?: [number, number, number],
+    divider?: ColourTriple;
 
-    saturation?: number,
-    lightnessBg?: number,
-    lightnessBg1?: number,
-    lightnessBg2?: number,
-    lightnessFg?: number,
-    lightnessFg1?: number,
+    saturation?: number;
+    lightnessBg?: number;
+    lightnessBg1?: number;
+    lightnessBg2?: number;
+    lightnessFg?: number;
+    lightnessFg1?: number;
 
-    lightnessHi?: number,
-    lightnessHi2?: number
-}
+    lightnessHi?: number;
+    lightnessHi2?: number;
+};
 
-export interface WasmInterface {
-    RgbFromHsl(hsl: [number, number, number]): string
-}
+export type WasmInterface = {
+    RgbFromHsl(hsl: ColourTriple): string;
+};
 
-export interface IState {
-    user: Signal<IUser>;
+export type State = {
+    user: Signal<User>;
     wasmInterface: WasmInterface | undefined;
-    settings: Signal<ISettings>;
-    activeTopBarMenuItem: Signal<string>; // "notes" | "triaged" | "bin"
+    settings: Signal<Settings>;
+    activeTopBarMenuItem: Signal<"notes" | "triaged" | "bin">;
     triageLabel: Signal<string>;
     showTriageDrawer: Signal<boolean>;
-    categories: Signal<Array<ICategory>>;
-    listing: Signal<IListing>;
-}
+    categories: Signal<Array<Category>>;
+    listing: Signal<Listing>;
+};
 
-export interface IPigment {
+export type Pigment = {
     num: number;
     numString: string;
     class: string;
     classAlt: string;
-}
+};

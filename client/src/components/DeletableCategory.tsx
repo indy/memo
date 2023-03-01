@@ -6,7 +6,13 @@ import Net from "../Net";
 
 import { AppStateChange } from "../AppState";
 
-export default function DeletableCategory({ categoryId, label }: { categoryId: number, label: string }) {
+export default function DeletableCategory({
+    categoryId,
+    label,
+}: {
+    categoryId: number;
+    label: string;
+}) {
     const [showToggle, setShowToggle] = useState(false);
 
     function buttonClicked(e: MouseEvent) {
@@ -29,9 +35,17 @@ export default function DeletableCategory({ categoryId, label }: { categoryId: n
         });
     }
 
-    return (<div>
-                {!showToggle && <button onClick={ buttonClicked }>Delete {label}</button>}
-                {showToggle && <button onClick={ noClicked }>No, Cancel Delete</button>}
-                {showToggle && <button onClick={ yesClicked }>Yes, Really Delete</button>}
-            </div>)
+    return (
+        <div>
+            {!showToggle && (
+                <button onClick={buttonClicked}>Delete {label}</button>
+            )}
+            {showToggle && (
+                <button onClick={noClicked}>No, Cancel Delete</button>
+            )}
+            {showToggle && (
+                <button onClick={yesClicked}>Yes, Really Delete</button>
+            )}
+        </div>
+    );
 }

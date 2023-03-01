@@ -5,15 +5,15 @@ import { notePigment } from "../NoteUtils";
 import { AppStateChange, getAppState } from "../AppState";
 
 import Card from "./Card";
-import { UnPinnedListing }  from "./Listing";
+import { UnPinnedListing } from "./Listing";
 
-import { INote } from "../types";
+import { Note } from "../types";
 
 function Bin({ path }: { path?: string }) {
     const appState = getAppState();
     AppStateChange.triageDrawerDefaultLabel();
 
-    const notes: Array<INote> = appState.listing.value.bin;
+    const notes: Array<Note> = appState.listing.value.bin;
     const listing = notes ? notes.map((n) => BinnedCard(n)) : [];
 
     function onDeleteClicked(e: MouseEvent) {
@@ -40,7 +40,7 @@ function Bin({ path }: { path?: string }) {
     );
 }
 
-function BinnedCard(note: INote) {
+function BinnedCard(note: Note) {
     const pigment = notePigment(note.id);
 
     function onUndeleteClicked(e: MouseEvent) {

@@ -1,4 +1,4 @@
-import { WasmInterface, ISettings } from "./types";
+import { WasmInterface, Settings, ColourTriple } from "./types";
 
 function buildColourConversionFn(wasm_bindgen_bg: InitOutput) {
     const {
@@ -6,10 +6,10 @@ function buildColourConversionFn(wasm_bindgen_bg: InitOutput) {
         __wbg_transport3c_free,
         transport3c_get_0,
         transport3c_get_1,
-        transport3c_get_2
+        transport3c_get_2,
     } = wasm_bindgen_bg;
 
-    return (hsl: [number, number, number]): string => {
+    return (hsl: ColourTriple): string => {
         function clamp(value: number, min: number, max: number) {
             return value < min ? min : value > max ? max : value;
         }
@@ -40,11 +40,11 @@ function buildColourConversionFn(wasm_bindgen_bg: InitOutput) {
     };
 }
 
-function tuple(a: number, b: number, c: number): [number, number, number] {
+function tuple(a: number, b: number, c: number): ColourTriple {
     return [a, b, c];
 }
 
-function augmentSettingsWithCssModifierParameters(settings: ISettings) {
+function augmentSettingsWithCssModifierParameters(settings: Settings) {
     let root = document.body;
     let mode = getComputedStyle(root).getPropertyValue("--mode").trim();
 
@@ -120,10 +120,10 @@ function augmentSettingsWithCssModifierParameters(settings: ISettings) {
   | bg2    | button background on hover | clock-05-bg2 |
 */
 
-function declareCssVariables(settings: ISettings, wasmInterface: WasmInterface) {
+function declareCssVariables(settings: Settings, wasmInterface: WasmInterface) {
     let root = document.body;
 
-    function updateVariable(label: string, val: [number, number, number]) {
+    function updateVariable(label: string, val: ColourTriple) {
         let cssName = "--" + label.replaceAll("_", "-");
 
         root.style.setProperty(cssName, wasmInterface.RgbFromHsl(val));

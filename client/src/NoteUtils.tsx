@@ -1,29 +1,29 @@
 import { h } from "preact";
 import Net from "./Net";
 
-import { IState, INote, IPigment } from "./types";
+import { State, Note, Pigment } from "./types";
 import { AppStateChange } from "./AppState";
 
-export function finishedEditingCallback(note: INote, setEditing: Function) {
+export function finishedEditingCallback(note: Note, setEditing: Function) {
     return function (updatedTitle: string, updatedContent: string) {
         let data = {
             ...note,
             content: updatedContent,
             title: updatedTitle,
         };
-        Net.put<INote, INote>(`/api/notes/${note.id}`, data).then((newNote) => {
+        Net.put<Note, Note>(`/api/notes/${note.id}`, data).then((newNote) => {
             AppStateChange.noteContentUpdated(newNote);
             setEditing(false);
         });
     };
 }
 
-export function getNoteById(state: IState, id: number): INote | undefined {
-    function search(ns: Array<INote>): INote | undefined {
-        return ns.find((n: INote) => n.id === id);
+export function getNoteById(state: State, id: number): Note | undefined {
+    function search(ns: Array<Note>): Note | undefined {
+        return ns.find((n: Note) => n.id === id);
     }
 
-    let res: INote | undefined = search(state.listing.value.notes);
+    let res: Note | undefined = search(state.listing.value.notes);
     if (res) {
         return res;
     }
@@ -36,20 +36,20 @@ export function getNoteById(state: IState, id: number): INote | undefined {
     for (const key in state.categories.value) {
         let cat = state.categories.value[key];
 
-        let l: Array<INote> | undefined = state.listing.value.category[cat.id];
+        let l: Array<Note> | undefined = state.listing.value.category[cat.id];
         if (l != undefined) {
             res = search(l);
             if (res) {
                 return res;
             }
         }
-    };
+    }
     return undefined;
 }
 
-export function partitionPinnedNotes(list?: Array<INote>): Array<Array<INote>> {
-    let pinned: Array<INote> = [];
-    let unpinned: Array<INote> = [];
+export function partitionPinnedNotes(list?: Array<Note>): Array<Array<Note>> {
+    let pinned: Array<Note> = [];
+    let unpinned: Array<Note> = [];
 
     if (!list) {
         return [[], []];
@@ -69,7 +69,7 @@ export function partitionPinnedNotes(list?: Array<INote>): Array<Array<INote>> {
     return [pinned, unpinned];
 }
 
-export function notePigment(noteId: number): IPigment {
+export function notePigment(noteId: number): Pigment {
     const pigmentNum = (noteId % 12) + 1;
     const pigmentNumString =
         pigmentNum < 10 ? `0${pigmentNum}` : `${pigmentNum}`;
@@ -87,15 +87,15 @@ export function notePigment(noteId: number): IPigment {
 // simple parsing for urls and newlines only. A stupid regexp approach will do here,
 // but write an actual lexer+parser+compiler if other markup is required
 //
-export function parseNoteContent(note: INote) {
+export function parseNoteContent(note: Note) {
     return parseNoteText(note.content, "p", note.id);
 }
 
-export function parseNoteTitle(note: INote) {
+export function parseNoteTitle(note: Note) {
     return parseNoteText(note.title, "h1", note.id);
 }
 
-export function parseCardTitle(note: INote) {
+export function parseCardTitle(note: Note) {
     return parseNoteText(note.title, "h3", note.id);
 }
 

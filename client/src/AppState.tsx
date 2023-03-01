@@ -2,17 +2,17 @@ import { h, createContext, ComponentChildren } from "preact";
 import { signal } from "@preact/signals";
 import { useContext } from "preact/hooks";
 
-import { IUser, IState, INote, IListing, ICategory } from "./types";
+import { User, State, Note, Listing, Category } from "./types";
 
 import { plural } from "./JsUtils";
 
-const emptyUser: IUser = {
+const emptyUser: User = {
     username: "",
     email: "",
     admin: { dbName: "" },
 };
 
-const state: IState = {
+const state: State = {
     user: signal(emptyUser),
     wasmInterface: undefined,
     settings: signal({
@@ -22,7 +22,7 @@ const state: IState = {
         hueDelta: 30,
     }),
     showTriageDrawer: signal(false),
-    activeTopBarMenuItem: signal(""),
+    activeTopBarMenuItem: signal("notes"),
     triageLabel: signal("triaged"),
     categories: signal([]),
     listing: signal({
@@ -40,7 +40,7 @@ export const AppStateProvider = ({
     state,
     children,
 }: {
-    state: IState;
+    state: State;
     children: ComponentChildren;
 }) => {
     return (
@@ -68,19 +68,19 @@ export const AppStateChange = {
         }
     },
     userLogin: function (
-        user: IUser,
-        categories: Array<ICategory>,
-        notes: Array<INote>,
-        bin: Array<INote>
+        user: User,
+        categories: Array<Category>,
+        notes: Array<Note>,
+        bin: Array<Note>
     ) {
         if (DEBUG_APP_STATE) {
             console.log("userLogin");
         }
 
-        let cats: { [key: string]: Array<INote> } = {};
+        let cats: { [key: string]: Array<Note> } = {};
         categories.forEach((c) => (cats[c.id] = []));
 
-        let listing: IListing = {
+        let listing: Listing = {
             bin: bin.map(calculateAge),
             notes: notes.map(calculateAge),
             category: cats,
@@ -95,7 +95,7 @@ export const AppStateChange = {
             console.log("userLogout");
         }
 
-        let user: IUser = { ...state.user.value };
+        let user: User = { ...state.user.value };
         user.username = "";
 
         state.user.value = user;
@@ -119,22 +119,22 @@ export const AppStateChange = {
         }
         state.triageLabel.value = "triaged";
     },
-    loadedCategoryNotes: function (categoryId: number, notes: Array<INote>) {
+    loadedCategoryNotes: function (categoryId: number, notes: Array<Note>) {
         if (DEBUG_APP_STATE) {
             console.log("loadedCategoryNotes");
         }
-        let listing: IListing = { ...state.listing.value };
+        let listing: Listing = { ...state.listing.value };
 
         listing.category[categoryId] = notes.map(calculateAge);
 
         state.listing.value = listing;
     },
-    listingNoteAppended: function (note: INote) {
+    listingNoteAppended: function (note: Note) {
         if (DEBUG_APP_STATE) {
             console.log("listingNoteAppended");
         }
 
-        let listing: IListing = { ...state.listing.value };
+        let listing: Listing = { ...state.listing.value };
 
         if (note.categoryId) {
             if (!listing.category[note.categoryId]) {
@@ -153,14 +153,14 @@ export const AppStateChange = {
 
         state.listing.value = listing;
     },
-    notePinStateUpdated: function (n: INote) {
+    notePinStateUpdated: function (n: Note) {
         if (DEBUG_APP_STATE) {
             console.log("notePinStateUpdated");
         }
 
         let listing = { ...state.listing.value };
 
-        let note: INote = findNote(
+        let note: Note = findNote(
             n.categoryId ? listing.category[n.categoryId] : listing.notes,
             n.id
         )!;
@@ -169,7 +169,7 @@ export const AppStateChange = {
 
         state.listing.value = listing;
     },
-    noteBinned: function (n: INote) {
+    noteBinned: function (n: Note) {
         // add a parameter to help find the array that the note is in
         if (DEBUG_APP_STATE) {
             console.log("noteBinned");
@@ -194,7 +194,7 @@ export const AppStateChange = {
 
         state.listing.value = listing;
     },
-    noteContentUpdated: function (n: INote) {
+    noteContentUpdated: function (n: Note) {
         // maybe with another parameter showing which list the note is in
         if (DEBUG_APP_STATE) {
             console.log("noteContentUpdated");
@@ -215,7 +215,7 @@ export const AppStateChange = {
             console.log("categoryDeleted");
         }
         state.categories.value = state.categories.value.filter(
-            (c: ICategory) => c.id !== categoryId
+            (c: Category) => c.id !== categoryId
         );
         let listing = { ...state.listing.value };
 
@@ -223,7 +223,7 @@ export const AppStateChange = {
 
         state.listing.value = listing;
     },
-    categoriesSet: function (categories: Array<ICategory>) {
+    categoriesSet: function (categories: Array<Category>) {
         if (DEBUG_APP_STATE) {
             console.log("categoriesSet");
         }
@@ -281,7 +281,7 @@ export const AppStateChange = {
 
         state.settings.value = newSettings;
     },
-    noteTriaged: function (note: INote, currentCategoryId?: number) {
+    noteTriaged: function (note: Note, currentCategoryId?: number) {
         if (DEBUG_APP_STATE) {
             console.log("noteTriaged");
         }
@@ -293,7 +293,10 @@ export const AppStateChange = {
             //
 
             if (currentCategoryId) {
-                listing.category[currentCategoryId] = removeNoteFromArray(listing.category[currentCategoryId], note.id);
+                listing.category[currentCategoryId] = removeNoteFromArray(
+                    listing.category[currentCategoryId],
+                    note.id
+                );
             } else {
                 listing.notes = removeNoteFromArray(listing.notes, note.id);
             }
@@ -313,7 +316,7 @@ export const AppStateChange = {
 
         state.listing.value = listing;
     },
-    noteDeleted: function (note: INote) {
+    noteDeleted: function (note: Note) {
         if (DEBUG_APP_STATE) {
             console.log("noteDeleted");
         }
@@ -323,7 +326,7 @@ export const AppStateChange = {
 
         state.listing.value = listing;
     },
-    noteUnbinned: function (note: INote) {
+    noteUnbinned: function (note: Note) {
         if (DEBUG_APP_STATE) {
             console.log("noteUnbinned");
         }
@@ -346,18 +349,15 @@ export const AppStateChange = {
         state.listing.value.bin = [];
     },
 };
-function findNote(array: Array<INote>, noteId: number): INote | undefined {
+function findNote(array: Array<Note>, noteId: number): Note | undefined {
     return array && array.find((n) => n.id === noteId);
 }
 
-function removeNoteFromArray(
-    array: Array<INote>,
-    noteId: number
-): Array<INote> {
+function removeNoteFromArray(array: Array<Note>, noteId: number): Array<Note> {
     return array ? array.filter((n) => n.id !== noteId) : array;
 }
 
-function calculateAge(note: INote) {
+function calculateAge(note: Note) {
     let createdAt = new Date(Date.parse(note.createdAt));
     let today = new Date();
     let delta = today.getTime() - createdAt.getTime();
