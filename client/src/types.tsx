@@ -34,6 +34,24 @@ export type Listing = {
     bin: Array<Note>;
 };
 
+export enum NoteKind {
+    Inbox,
+    Category,
+    Bin
+};
+
+export enum LoadState {
+    NotLoaded = 1,
+    Loading,
+    Loaded,
+};
+
+export type LoadedListing = {
+    notes: LoadState;
+    category: { [key: number]: LoadState };
+    bin: LoadState;
+};
+
 export type ColourTriple = [number, number, number];
 
 export type Settings = {
@@ -81,6 +99,7 @@ export type State = {
     showTriageDrawer: Signal<boolean>;
     categories: Signal<Array<Category>>;
     listing: Signal<Listing>;
+    loaded: Signal<LoadedListing>;
 };
 
 export type Pigment = {

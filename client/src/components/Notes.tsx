@@ -1,5 +1,5 @@
 import { h } from "preact";
-import { useState } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 
 import Net from "../Net";
 import { getTriageLabel } from "../AppUtils";
@@ -19,10 +19,38 @@ import { TriageDropDown } from "./TriageDropDown";
 import { CreateNoteForm } from "./CreateNoteForm";
 import { PinnedListing, UnPinnedListing } from "./Listing";
 
-import { Note } from "../types";
+import { Note, NoteKind, LoadState } from "../types";
 
 function Notes({ path, categoryId }: { path?: string; categoryId?: string }) {
     const appState = getAppState();
+
+    useEffect(() => {
+        if (categoryId) {
+            let cid = parseInt(categoryId, 10);
+            if (!appState.loaded.value.category[cid]
+                || appState.loaded.value.category[cid] === LoadState.NotLoaded) {
+                let loadingState = { ...appState.loaded.value };
+                loadingState.category[cid] = LoadState.Loading;
+                AppStateChange.setLoadingState(loadingState);
+
+                Net.get<Array<Note>>(`/api/categories/${cid}/notes`).then((notes) => {
+                    AppStateChange.loadedNotes(notes, NoteKind.Category, cid);
+                });
+            }
+        } else {
+            if (appState.loaded.value.notes === LoadState.NotLoaded) {
+                let loadingState = {
+                    ...appState.loaded.value,
+                    notes: LoadState.Loading,
+                }
+                AppStateChange.setLoadingState(loadingState);
+
+                Net.get<Array<Note>>(`/api/notes`).then((notes) => {
+                    AppStateChange.loadedNotes(notes, NoteKind.Inbox);
+                });
+            }
+        }
+    }, [categoryId]);
 
     let notes: Array<Note> = [];
     let cid: undefined | number = undefined;
@@ -40,14 +68,6 @@ function Notes({ path, categoryId }: { path?: string; categoryId?: string }) {
 
         notes = appState.listing.value.category[cid];
 
-        if (notes.length === 0) {
-            Net.get<Array<Note>>(`/api/categories/${cid}/notes`).then(
-                async (newnotes: Array<Note>) => {
-                    AppStateChange.loadedCategoryNotes(cid!, newnotes);
-                    notes = newnotes;
-                }
-            );
-        }
     } else {
         notes = appState.listing.value.notes;
         AppStateChange.triageDrawerDefaultLabel();

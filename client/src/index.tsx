@@ -13,7 +13,7 @@ import {
     augmentSettingsWithCssModifierParameters,
 } from "./ColourCreator";
 
-import { User, Category, Note } from "./types";
+import { User, Category } from "./types";
 
 wasm_bindgen("/wasm_colour_bg.wasm")
     .then((wasm_colour_bg: InitOutput) => {
@@ -34,10 +34,8 @@ wasm_bindgen("/wasm_colour_bg.wasm")
                 let categories = await Net.get<Array<Category>>(
                     "/api/categories"
                 );
-                let notes = await Net.get<Array<Note>>(`/api/notes`);
-                let bin = await Net.get<Array<Note>>(`/api/bin`);
 
-                AppStateChange.userLogin(user, categories, notes, bin);
+                AppStateChange.userLogin(user, categories);
             }
             declareCssVariables(state.settings.value, wasmInterface);
             let root = document.getElementById("root");

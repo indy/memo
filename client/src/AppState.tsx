@@ -2,7 +2,7 @@ import { h, createContext, ComponentChildren } from "preact";
 import { signal } from "@preact/signals";
 import { useContext } from "preact/hooks";
 
-import { User, State, Note, Listing, Category } from "./types";
+import { User, State, Note, Listing, Category, LoadState, LoadedListing, NoteKind } from "./types";
 
 import { plural } from "./JsUtils";
 
@@ -29,6 +29,11 @@ const state: State = {
         notes: [],
         category: {},
         bin: [],
+    }),
+    loaded: signal({
+        notes: LoadState.NotLoaded,
+        category: {},
+        bin: LoadState.NotLoaded,
     }),
 };
 
@@ -70,25 +75,74 @@ export const AppStateChange = {
     userLogin: function (
         user: User,
         categories: Array<Category>,
-        notes: Array<Note>,
-        bin: Array<Note>
+        // notes: Array<Note>,
+        // bin: Array<Note>
     ) {
         if (DEBUG_APP_STATE) {
             console.log("userLogin");
         }
 
         let cats: { [key: string]: Array<Note> } = {};
-        categories.forEach((c) => (cats[c.id] = []));
+        let catsLoaded: { [key: string]: LoadState } = {};
+        categories.forEach((c) => {
+            cats[c.id] = []
+            catsLoaded[c.id] = LoadState.NotLoaded;
+        });
 
-        let listing: Listing = {
-            bin: bin.map(calculateAge),
-            notes: notes.map(calculateAge),
+        let listing = {
+            ...state.listing.value,
             category: cats,
         };
+        let loaded = {
+            ...state.loaded.value,
+            category: catsLoaded,
+        }
+        // let listing: Listing = {
+        //     bin: bin.map(calculateAge),
+        //     notes: notes.map(calculateAge),
+
+        // };
 
         state.user.value = user;
         state.categories.value = categories;
         state.listing.value = listing;
+        state.loaded.value = loaded;
+    },
+    // generic loading function
+    setLoadingState: function(loaded: LoadedListing) {
+        if (DEBUG_APP_STATE) {
+            console.log("setLoadingState");
+        }
+        state.loaded.value = loaded;
+    },
+    loadedNotes: function(notes: Array<Note>, kind: NoteKind, categoryId?: number) {
+        if (DEBUG_APP_STATE) {
+            console.log("loadedNotes");
+        }
+        let loaded = { ...state.loaded.value };
+        let listing = { ...state.listing.value }
+
+        switch(kind) {
+            case NoteKind.Inbox:
+                loaded.notes = LoadState.Loaded,
+                listing.notes = notes.map(calculateAge);
+                break;
+            case NoteKind.Category:
+                if (categoryId) {
+                    loaded.category[categoryId] = LoadState.Loaded;
+                    listing.category[categoryId] = notes.map(calculateAge);
+                } else {
+                    console.error(`loadedNotes given a NoteKind.Category without a categoryId`);
+                }
+                break;
+            case NoteKind.Bin:
+                loaded.bin = LoadState.Loaded,
+                listing.bin = notes.map(calculateAge);
+                break;
+        }
+
+        state.listing.value = listing;
+        state.loaded.value = loaded;
     },
     userLogout: function () {
         if (DEBUG_APP_STATE) {
@@ -118,16 +172,6 @@ export const AppStateChange = {
             console.log("triageDrawerDefaultLabel");
         }
         state.triageLabel.value = "triaged";
-    },
-    loadedCategoryNotes: function (categoryId: number, notes: Array<Note>) {
-        if (DEBUG_APP_STATE) {
-            console.log("loadedCategoryNotes");
-        }
-        let listing: Listing = { ...state.listing.value };
-
-        listing.category[categoryId] = notes.map(calculateAge);
-
-        state.listing.value = listing;
     },
     listingNoteAppended: function (note: Note) {
         if (DEBUG_APP_STATE) {
