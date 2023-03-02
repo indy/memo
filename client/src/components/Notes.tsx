@@ -1,7 +1,7 @@
 import { h } from "preact";
 import { useEffect } from "preact/hooks";
 
-import { Note, NoteLocation, Category } from "../types";
+import { Note, NoteLocation, Category, LoadState } from "../types";
 
 import Net from "../Net";
 import { ensureLoaded } from "../Utils";
@@ -12,7 +12,7 @@ import DeletableCategory from "./DeletableCategory";
 import { CreateNoteForm } from "./CreateNoteForm";
 import { PinnedListing, UnPinnedListing } from "./Listing";
 
-function InboxNotes({ path }: { path?: string }) {
+function InboxedNotes({ path }: { path?: string }) {
     const appState = getAppState();
 
     useEffect(() => {
@@ -62,10 +62,11 @@ function GroupedNotes({
     let notes: Array<Note> = [];
     let cid: undefined | number = undefined;
     let label: string = "";
+    let showDelete = false;
 
     if (categoryId) {
-        // can't set id in the TriagedNotes arguments to be non-optional because
-        // then the type-checker wrongly complains about the use of TriagedNotes
+        // can't set id in the GroupedNotes arguments to be non-optional because
+        // then the type-checker wrongly complains about the use of GroupedNotes
         // in App.tsx's Router setup
 
         cid = parseInt(categoryId ? categoryId : "0", 10);
@@ -74,6 +75,12 @@ function GroupedNotes({
         AppStateChange.groupMenuItemLabel(label);
 
         notes = appState.listing.value.group[cid];
+
+        // only show the delete button after the group has been loaded
+        // otherwise there's an annoying brief view of the button whilst
+        // the note data is being fetched
+        //
+        showDelete = appState.loaded.value.group[cid] === LoadState.Loaded;
     }
 
     let categories = appState.categories.value;
@@ -92,12 +99,12 @@ function GroupedNotes({
                     <Card note={n} categories={categories} categoryId={cid} />
                 ))}
             </UnPinnedListing>
-            <DeletableCategory categoryId={cid!} label={label} />
+            {showDelete && <DeletableCategory categoryId={cid!} label={label} />}
         </div>
     );
 }
 
-function BinNotes({ path }: { path?: string }) {
+function BinnedNotes({ path }: { path?: string }) {
     const appState = getAppState();
 
     useEffect(() => {
@@ -160,4 +167,4 @@ function partitionPinnedNotes(list?: Array<Note>): Array<Array<Note>> {
     return [pinned, unpinned];
 }
 
-export { InboxNotes, GroupedNotes, BinNotes };
+export { InboxedNotes, GroupedNotes, BinnedNotes };

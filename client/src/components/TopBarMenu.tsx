@@ -5,7 +5,7 @@ import { NoteLocation } from "../types";
 
 import { getAppState, AppStateChange } from "../AppState";
 
-function TopBarMenu() {
+export default function TopBarMenu() {
     const appState = getAppState();
 
     function loggedStatus() {
@@ -61,5 +61,3 @@ function TopBarMenu() {
         </div>
     );
 }
-
-export { TopBarMenu };

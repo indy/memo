@@ -5,12 +5,12 @@ import { State } from "./types";
 import { Router, route, RouterOnChangeArgs } from "preact-router";
 import { AppStateChange, AppStateProvider, getAppState } from "./AppState";
 
+import CategoryDrawer from "./components/CategoryDrawer";
 import NoteView from "./components/NoteView";
-import { TopBarMenu } from "./components/TopBarMenu";
-import { InboxNotes, GroupedNotes, BinNotes } from "./components/Notes";
+import Settings from "./components/Settings";
+import TopBarMenu from "./components/TopBarMenu";
+import { InboxedNotes, GroupedNotes, BinnedNotes } from "./components/Notes";
 import { Login, Logout } from "./components/Login";
-import { Settings } from "./components/Settings";
-import { TriageDrawer } from "./components/TriageDrawer";
 
 export const App = ({ state }: { state: State }) => {
     return (
@@ -50,11 +50,11 @@ const AppUI = () => {
         <div id="memo-app">
             <TopBarMenu />
             <div id="app-content">
-                <TriageDrawer />
+                <CategoryDrawer />
                 <Router onChange={handleRoute}>
-                    <InboxNotes path="/" />
+                    <InboxedNotes path="/" />
                     <GroupedNotes path="/category/:categoryId" />
-                    <BinNotes path="/bin" />
+                    <BinnedNotes path="/bin" />
                     <NoteView path="/notes/:id" />
                     <Login path="/login" />
                     <Logout path="/logout" />

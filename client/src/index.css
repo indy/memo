@@ -738,8 +738,20 @@ h3 {
 }
 
 .drawer {
-    display: flex;
-    flex-wrap: wrap;
+  overflow: hidden;
+  transition: all 0.3s;
+
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.drawer-visible {
+  overflow: scroll;
+  height: 6rem;
+}
+
+.drawer-invisible {
+  height: 0;
 }
 
 .drawer-item {
@@ -842,6 +854,11 @@ h3 {
 }
 
 @media (max-width: 700px) {
+  .drawer-visible {
+    overflow: scroll;
+    height: 15rem;
+  }
+
     .wider-card {
         width: 100%;
         margin-left: 0;

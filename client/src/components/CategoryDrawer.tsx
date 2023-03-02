@@ -7,26 +7,29 @@ import { Category } from "../types";
 import Net from "../Net";
 import { getAppState, AppStateChange } from "../AppState";
 
-function TriageDrawer() {
+export default function CategoryDrawer() {
     const appState = getAppState();
 
-    if (appState.showCategoryDrawer.value) {
-        return (
-            <div class="drawer">
-                <CreateNewCategory />
-                {appState.categories.value.map(DrawerItem)}
-            </div>
-        );
-    } else {
-        return <div></div>;
-    }
+    let showing = appState.showCategoryDrawer.value;
+
+    let cl = "drawer ";
+    cl += showing ? "drawer-visible" : "drawer-invisible";
+
+    return (
+        <div class={ cl }>
+            <CreateNewCategory/>
+            {appState.categories.value.map(c => {
+                return <DrawerItem id={c.id} title={c.title}/>
+            })}
+        </div>
+    );
 }
 
 type ProtoCategory = {
     title: string;
 };
 
-function CreateNewCategory() {
+function CreateNewCategory({ }) {
     const appState = getAppState();
 
     const [localState, setLocalState] = useState({
@@ -112,8 +115,10 @@ function CreateNewCategory() {
             </form>
         );
     } else {
+
+        let extra = "drawer-item drawer-item-new";
         return (
-            <a class="drawer-item drawer-item-new" onClick={onClicked}>
+            <a class={extra} onClick={onClicked}>
                 New Category...
             </a>
         );
@@ -125,15 +130,12 @@ function DrawerItem({ id, title }: { id: number; title: string }) {
         AppStateChange.showCategoryDrawer(false);
     }
 
+
+    let extra = "drawer-item";
+
     return (
-        <Link
-            class="drawer-item"
-            href={"/category/" + id}
-            onClick={onLinkClicked}
-        >
+        <Link class={ extra } href={"/category/" + id} onClick={onLinkClicked}>
             {title}
         </Link>
     );
 }
-
-export { TriageDrawer };

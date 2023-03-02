@@ -9,7 +9,7 @@ import { ButtonEdit } from "./CardButtons";
 import { CardBase } from "./Card";
 import { Logout } from "./Login";
 
-function Settings({ path }: { path?: string }) {
+export default function Settings({ path }: { path?: string }) {
     const appState = getAppState();
 
     function updateColourScalar(e: Event, id: string) {
@@ -284,5 +284,3 @@ function SampleCard({ pigment }: { pigment: string }) {
         </CardBase>
     );
 }
-
-export { Settings };
