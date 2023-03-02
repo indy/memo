@@ -333,24 +333,24 @@ a:visited.pigment-inherit {
     color: inherit;
 }
 
-.pigment-notes {
-    color: var(--fg-notes);
-    background: var(--bg-notes);
+.pigment-inbox {
+    color: var(--fg-inbox);
+    background: var(--bg-inbox);
 }
-.pigment-triaged {
-    color: var(--fg-triaged);
-    background: var(--bg-triaged);
+.pigment-group {
+    color: var(--fg-group);
+    background: var(--bg-group);
 }
 .pigment-bin {
     color: var(--fg-bin);
     background: var(--bg-bin);
 }
 
-.pigment-fg-notes {
-    color: var(--fg-notes);
+.pigment-fg-inbox {
+    color: var(--fg-inbox);
 }
-.pigment-fg-triaged {
-    color: var(--fg-triaged);
+.pigment-fg-group {
+    color: var(--fg-group);
 }
 .pigment-fg-bin {
     color: var(--fg-bin);

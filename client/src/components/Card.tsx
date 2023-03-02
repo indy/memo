@@ -321,5 +321,4 @@ function ensureLinkable(seg: string): string {
     return seg.startsWith("www.") ? "//" + seg : seg;
 }
 
-
 export { Card, BinnedCard, CardBase };

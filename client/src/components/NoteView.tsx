@@ -27,12 +27,12 @@ export default function NoteView({ id, path }: { id?: string; path?: string }) {
     const pigment = notePigment(noteId);
 
     if (note.categoryId) {
-        if (!appState.listing.value.category[note.categoryId]) {
+        if (!appState.listing.value.group[note.categoryId]) {
             // isg todo: fix this
             return <div></div>;
         }
     } else {
-        if (!appState.listing.value.notes) {
+        if (!appState.listing.value.inbox) {
             // isg todo: fix this
             return <div></div>;
         }
@@ -83,7 +83,7 @@ function getNoteById(state: State, id: number): Note | undefined {
         return ns.find((n: Note) => n.id === id);
     }
 
-    let res: Note | undefined = search(state.listing.value.notes);
+    let res: Note | undefined = search(state.listing.value.inbox);
     if (res) {
         return res;
     }
@@ -96,7 +96,7 @@ function getNoteById(state: State, id: number): Note | undefined {
     for (const key in state.categories.value) {
         let cat = state.categories.value[key];
 
-        let l: Array<Note> | undefined = state.listing.value.category[cat.id];
+        let l: Array<Note> | undefined = state.listing.value.group[cat.id];
         if (l != undefined) {
             res = search(l);
             if (res) {

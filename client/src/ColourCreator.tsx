@@ -183,12 +183,12 @@ function declareCssVariables(settings: Settings, wasmInterface: WasmInterface) {
         root.style.setProperty(cssLabel, source);
     }
 
-    updateDerivedVariable("--bg-notes", "--clock-06-bg");
-    updateDerivedVariable("--bg-triaged", "--clock-12-bg");
+    updateDerivedVariable("--bg-inbox", "--clock-06-bg");
+    updateDerivedVariable("--bg-group", "--clock-12-bg");
     updateDerivedVariable("--bg-bin", "--clock-02-bg");
 
-    updateDerivedVariable("--fg-notes", "--clock-06-fg");
-    updateDerivedVariable("--fg-triaged", "--clock-12-fg");
+    updateDerivedVariable("--fg-inbox", "--clock-06-fg");
+    updateDerivedVariable("--fg-group", "--clock-12-fg");
     updateDerivedVariable("--fg-bin", "--clock-02-fg");
 
     updateDerivedVariable("--textarea-border", "--textarea-bg");

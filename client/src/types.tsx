@@ -28,15 +28,9 @@ export type Note = {
     categoryId?: number;
 };
 
-export type Listing = {
-    notes: Array<Note>;
-    category: { [key: number]: Array<Note> };
-    bin: Array<Note>;
-};
-
-export enum NoteKind {
+export enum NoteLocation {
     Inbox,
-    Category,
+    Group,
     Bin,
 }
 
@@ -46,9 +40,15 @@ export enum LoadState {
     Loaded,
 }
 
+export type Listing = {
+    inbox: Array<Note>;
+    group: { [key: number]: Array<Note> };
+    bin: Array<Note>;
+};
+
 export type LoadedListing = {
-    notes: LoadState;
-    category: { [key: number]: LoadState };
+    inbox: LoadState;
+    group: { [key: number]: LoadState };
     bin: LoadState;
 };
 
@@ -94,9 +94,9 @@ export type State = {
     user: Signal<User>;
     wasmInterface: WasmInterface | undefined;
     settings: Signal<Settings>;
-    activeTopBarMenuItem: Signal<"notes" | "triaged" | "bin">;
-    triageLabel: Signal<string>;
-    showTriageDrawer: Signal<boolean>;
+    activeTopBarMenuItem: Signal<NoteLocation>;
+    groupLabel: Signal<string>;
+    showCategoryDrawer: Signal<boolean>;
     categories: Signal<Array<Category>>;
     listing: Signal<Listing>;
     loaded: Signal<LoadedListing>;

@@ -7,7 +7,7 @@ import { AppStateChange, AppStateProvider, getAppState } from "./AppState";
 
 import NoteView from "./components/NoteView";
 import { TopBarMenu } from "./components/TopBarMenu";
-import { InboxNotes, CategoryNotes, BinNotes } from "./components/Notes";
+import { InboxNotes, GroupedNotes, BinNotes } from "./components/Notes";
 import { Login, Logout } from "./components/Login";
 import { Settings } from "./components/Settings";
 import { TriageDrawer } from "./components/TriageDrawer";
@@ -53,7 +53,7 @@ const AppUI = () => {
                 <TriageDrawer />
                 <Router onChange={handleRoute}>
                     <InboxNotes path="/" />
-                    <CategoryNotes path="/category/:categoryId" />
+                    <GroupedNotes path="/category/:categoryId" />
                     <BinNotes path="/bin" />
                     <NoteView path="/notes/:id" />
                     <Login path="/login" />

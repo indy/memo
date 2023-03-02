@@ -1,6 +1,8 @@
 import { h } from "preact";
 import { Link } from "preact-router";
 
+import { NoteLocation } from "../types";
+
 import { getAppState, AppStateChange } from "../AppState";
 
 function TopBarMenu() {
@@ -26,25 +28,16 @@ function TopBarMenu() {
         return appState.user.value.username !== "" ? "/settings" : "/login";
     }
 
-    let notesExtraClass: string = "";
-    let triagedExtraClass: string = "";
-    let binExtraClass: string = "";
-
-    if (appState.activeTopBarMenuItem.value === "notes") {
-        notesExtraClass = "top-bar-menuitem-active";
-    } else if (appState.activeTopBarMenuItem.value === "bin") {
-        binExtraClass = "top-bar-menuitem-active";
-    } else {
-        triagedExtraClass = "top-bar-menuitem-active";
-    }
-
-    let s1: string = `top-bar-menuitem pigment-notes ${notesExtraClass}`;
-    let s2: string = `top-bar-menuitem pigment-triaged ${triagedExtraClass}`;
-    let s3: string = `top-bar-menuitem pigment-bin ${binExtraClass}`;
+    let style: Record<NoteLocation, string> = {
+        [NoteLocation.Inbox]: "top-bar-menuitem pigment-inbox",
+        [NoteLocation.Group]: "top-bar-menuitem pigment-group",
+        [NoteLocation.Bin]: "top-bar-menuitem pigment-bin",
+    };
+    style[appState.activeTopBarMenuItem.value] += " top-bar-menuitem-active";
 
     function onTriagedClicked(e: MouseEvent) {
         e.preventDefault();
-        AppStateChange.showTriageDrawer(!appState.showTriageDrawer.value);
+        AppStateChange.showCategoryDrawer(!appState.showCategoryDrawer.value);
     }
 
     return (
@@ -56,13 +49,13 @@ function TopBarMenu() {
             >
                 {loggedStatus()}
             </Link>
-            <Link class={s1} href={"/"}>
-                notes
+            <Link class={style[NoteLocation.Inbox]} href={"/"}>
+                inbox
             </Link>
-            <a class={s2} onClick={onTriagedClicked}>
-                {appState.triageLabel.value}
+            <a class={style[NoteLocation.Group]} onClick={onTriagedClicked}>
+                {appState.groupLabel.value}
             </a>
-            <Link class={s3} href={"/bin"}>
+            <Link class={style[NoteLocation.Bin]} href={"/bin"}>
                 bin
             </Link>
         </div>

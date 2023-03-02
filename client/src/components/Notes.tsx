@@ -1,7 +1,7 @@
 import { h } from "preact";
 import { useEffect } from "preact/hooks";
 
-import { Note, NoteKind, Category } from "../types";
+import { Note, NoteLocation, Category } from "../types";
 
 import Net from "../Net";
 import { ensureLoaded } from "../Utils";
@@ -16,13 +16,13 @@ function InboxNotes({ path }: { path?: string }) {
     const appState = getAppState();
 
     useEffect(() => {
-        ensureLoaded(appState, NoteKind.Inbox);
+        ensureLoaded(appState, NoteLocation.Inbox);
     }, []);
 
     let notes: Array<Note> = [];
 
-    notes = appState.listing.value.notes;
-    AppStateChange.triageDrawerDefaultLabel();
+    notes = appState.listing.value.inbox;
+    AppStateChange.groupDrawerDefaultLabel();
 
     let categories = appState.categories.value;
     const [pin, unpin] = partitionPinnedNotes(notes);
@@ -44,7 +44,7 @@ function InboxNotes({ path }: { path?: string }) {
     );
 }
 
-function CategoryNotes({
+function GroupedNotes({
     path,
     categoryId,
 }: {
@@ -55,7 +55,7 @@ function CategoryNotes({
 
     useEffect(() => {
         if (categoryId) {
-            ensureLoaded(appState, NoteKind.Category, cid);
+            ensureLoaded(appState, NoteLocation.Group, cid);
         }
     }, [categoryId]);
 
@@ -71,9 +71,9 @@ function CategoryNotes({
         cid = parseInt(categoryId ? categoryId : "0", 10);
 
         label = getTriageLabel(appState.categories.value, cid);
-        AppStateChange.triageMenuItemLabel(label);
+        AppStateChange.groupMenuItemLabel(label);
 
-        notes = appState.listing.value.category[cid];
+        notes = appState.listing.value.group[cid];
     }
 
     let categories = appState.categories.value;
@@ -101,10 +101,10 @@ function BinNotes({ path }: { path?: string }) {
     const appState = getAppState();
 
     useEffect(() => {
-        ensureLoaded(appState, NoteKind.Bin);
+        ensureLoaded(appState, NoteLocation.Bin);
     }, []);
 
-    AppStateChange.triageDrawerDefaultLabel();
+    AppStateChange.groupDrawerDefaultLabel();
 
     const notes: Array<Note> = appState.listing.value.bin;
     const listing = notes ? notes.map((n) => BinnedCard(n)) : [];
@@ -160,4 +160,4 @@ function partitionPinnedNotes(list?: Array<Note>): Array<Array<Note>> {
     return [pinned, unpinned];
 }
 
-export { InboxNotes, CategoryNotes, BinNotes };
+export { InboxNotes, GroupedNotes, BinNotes };

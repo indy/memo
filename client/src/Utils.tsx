@@ -1,11 +1,11 @@
-import { State, Pigment, Note, NoteKind, LoadState } from "./types";
+import { State, Pigment, Note, NoteLocation, LoadState } from "./types";
 
 import Net from "./Net";
 import { AppStateChange } from "./AppState";
 
 export function ensureLoaded(
     appState: State,
-    kind: NoteKind,
+    kind: NoteLocation,
     categoryId?: number
 ) {
     if (isUnloaded(appState, kind, categoryId)) {
@@ -14,34 +14,34 @@ export function ensureLoaded(
 }
 function isUnloaded(
     appState: State,
-    kind: NoteKind,
+    kind: NoteLocation,
     categoryId?: number
 ): boolean {
     let loaded = appState.loaded.value;
 
     switch (kind) {
-        case NoteKind.Inbox:
-            return loaded.notes === LoadState.NotLoaded;
-        case NoteKind.Category:
+        case NoteLocation.Inbox:
+            return loaded.inbox === LoadState.NotLoaded;
+        case NoteLocation.Group:
             if (categoryId) {
                 return (
-                    !loaded.category ||
-                    !loaded.category[categoryId] ||
-                    loaded.category[categoryId] === LoadState.NotLoaded
+                    !loaded.group ||
+                    !loaded.group[categoryId] ||
+                    loaded.group[categoryId] === LoadState.NotLoaded
                 );
             } else {
                 return false;
             }
-        case NoteKind.Bin:
+        case NoteLocation.Bin:
             return loaded.bin === LoadState.NotLoaded;
     }
 }
 
-function loadNotes(kind: NoteKind, categoryId?: number) {
-    let urls: Record<NoteKind, string> = {
-        [NoteKind.Inbox]: `/api/notes`,
-        [NoteKind.Category]: `/api/categories/${categoryId!}/notes`,
-        [NoteKind.Bin]: `/api/bin`,
+function loadNotes(kind: NoteLocation, categoryId?: number) {
+    let urls: Record<NoteLocation, string> = {
+        [NoteLocation.Inbox]: `/api/notes`,
+        [NoteLocation.Group]: `/api/categories/${categoryId!}/notes`,
+        [NoteLocation.Bin]: `/api/bin`,
     };
 
     AppStateChange.setToLoading(kind, categoryId);

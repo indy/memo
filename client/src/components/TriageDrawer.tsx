@@ -10,7 +10,7 @@ import { getAppState, AppStateChange } from "../AppState";
 function TriageDrawer() {
     const appState = getAppState();
 
-    if (appState.showTriageDrawer.value) {
+    if (appState.showCategoryDrawer.value) {
         return (
             <div class="drawer">
                 <CreateNewCategory />
@@ -122,7 +122,7 @@ function CreateNewCategory() {
 
 function DrawerItem({ id, title }: { id: number; title: string }) {
     function onLinkClicked() {
-        AppStateChange.showTriageDrawer(false);
+        AppStateChange.showCategoryDrawer(false);
     }
 
     return (

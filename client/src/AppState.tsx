@@ -9,7 +9,7 @@ import {
     Listing,
     Category,
     LoadState,
-    NoteKind,
+    NoteLocation,
 } from "./types";
 
 const emptyUser: User = {
@@ -27,18 +27,18 @@ const state: State = {
         hueOffset: 0,
         hueDelta: 30,
     }),
-    showTriageDrawer: signal(false),
-    activeTopBarMenuItem: signal("notes"),
-    triageLabel: signal("triaged"),
+    showCategoryDrawer: signal(false),
+    activeTopBarMenuItem: signal(NoteLocation.Inbox),
+    groupLabel: signal("categories"),
     categories: signal([]),
     listing: signal({
-        notes: [],
-        category: {},
+        inbox: [],
+        group: {},
         bin: [],
     }),
     loaded: signal({
-        notes: LoadState.NotLoaded,
-        category: {},
+        inbox: LoadState.NotLoaded,
+        group: {},
         bin: LoadState.NotLoaded,
     }),
 };
@@ -71,11 +71,11 @@ export const AppStateChange = {
             console.log("routeChanged");
         }
         if (url === "/") {
-            state.activeTopBarMenuItem.value = "notes";
+            state.activeTopBarMenuItem.value = NoteLocation.Inbox;
         } else if (url === "/bin") {
-            state.activeTopBarMenuItem.value = "bin";
+            state.activeTopBarMenuItem.value = NoteLocation.Bin;
         } else {
-            state.activeTopBarMenuItem.value = "triaged";
+            state.activeTopBarMenuItem.value = NoteLocation.Group;
         }
     },
     userLogin: function (
@@ -97,11 +97,11 @@ export const AppStateChange = {
 
         let listing = {
             ...state.listing.value,
-            category: cats,
+            group: cats,
         };
         let loaded = {
             ...state.loaded.value,
-            category: catsLoaded,
+            group: catsLoaded,
         };
         // let listing: Listing = {
         //     bin: bin.map(calculateAge),
@@ -114,7 +114,7 @@ export const AppStateChange = {
         state.listing.value = listing;
         state.loaded.value = loaded;
     },
-    setToLoading: function (kind: NoteKind, categoryId?: number) {
+    setToLoading: function (kind: NoteLocation, categoryId?: number) {
         if (DEBUG_APP_STATE) {
             console.log("setToLoading");
         }
@@ -122,19 +122,19 @@ export const AppStateChange = {
         let loaded = { ...state.loaded.value };
 
         switch (kind) {
-            case NoteKind.Inbox:
-                loaded.notes = LoadState.Loading;
+            case NoteLocation.Inbox:
+                loaded.inbox = LoadState.Loading;
                 break;
-            case NoteKind.Category:
+            case NoteLocation.Group:
                 if (categoryId) {
-                    loaded.category[categoryId] = LoadState.Loading;
+                    loaded.group[categoryId] = LoadState.Loading;
                 } else {
                     console.error(
-                        `setToLoading given a NoteKind.Category without a categoryId`
+                        `setToLoading given a NoteLocation.Group without a categoryId`
                     );
                 }
                 break;
-            case NoteKind.Bin:
+            case NoteLocation.Bin:
                 loaded.bin = LoadState.Loading;
                 break;
         }
@@ -143,7 +143,7 @@ export const AppStateChange = {
     },
     loadedNotes: function (
         notes: Array<Note>,
-        kind: NoteKind,
+        kind: NoteLocation,
         categoryId?: number
     ) {
         if (DEBUG_APP_STATE) {
@@ -153,21 +153,21 @@ export const AppStateChange = {
         let listing = { ...state.listing.value };
 
         switch (kind) {
-            case NoteKind.Inbox:
-                loaded.notes = LoadState.Loaded;
-                listing.notes = notes.map(calculateAge);
+            case NoteLocation.Inbox:
+                loaded.inbox = LoadState.Loaded;
+                listing.inbox = notes.map(calculateAge);
                 break;
-            case NoteKind.Category:
+            case NoteLocation.Group:
                 if (categoryId) {
-                    loaded.category[categoryId] = LoadState.Loaded;
-                    listing.category[categoryId] = notes.map(calculateAge);
+                    loaded.group[categoryId] = LoadState.Loaded;
+                    listing.group[categoryId] = notes.map(calculateAge);
                 } else {
                     console.error(
-                        `loadedNotes given a NoteKind.Category without a categoryId`
+                        `loadedNotes given a NoteLocation.Group without a categoryId`
                     );
                 }
                 break;
-            case NoteKind.Bin:
+            case NoteLocation.Bin:
                 loaded.bin = LoadState.Loaded;
                 listing.bin = notes.map(calculateAge);
                 break;
@@ -186,24 +186,24 @@ export const AppStateChange = {
 
         state.user.value = user;
     },
-    showTriageDrawer: function (show: boolean) {
+    showCategoryDrawer: function (show: boolean) {
         if (DEBUG_APP_STATE) {
-            console.log("showTriageDrawer");
+            console.log("showCategoryDrawer");
         }
 
-        state.showTriageDrawer.value = show;
+        state.showCategoryDrawer.value = show;
     },
-    triageMenuItemLabel: function (title: string) {
+    groupMenuItemLabel: function (title: string) {
         if (DEBUG_APP_STATE) {
-            console.log("triageMenuItemLabel");
+            console.log("groupMenuItemLabel");
         }
-        state.triageLabel.value = title;
+        state.groupLabel.value = title;
     },
-    triageDrawerDefaultLabel: function () {
+    groupDrawerDefaultLabel: function () {
         if (DEBUG_APP_STATE) {
-            console.log("triageDrawerDefaultLabel");
+            console.log("groupDrawerDefaultLabel");
         }
-        state.triageLabel.value = "triaged";
+        state.groupLabel.value = "categories";
     },
     listingNoteAppended: function (note: Note) {
         if (DEBUG_APP_STATE) {
@@ -213,18 +213,18 @@ export const AppStateChange = {
         let listing: Listing = { ...state.listing.value };
 
         if (note.categoryId) {
-            if (!listing.category[note.categoryId]) {
-                listing.category[note.categoryId] = [];
+            if (!listing.group[note.categoryId]) {
+                listing.group[note.categoryId] = [];
             }
         } else {
-            if (!listing.notes) {
-                listing.notes = [];
+            if (!listing.inbox) {
+                listing.inbox = [];
             }
         }
 
         let arr = note.categoryId
-            ? listing.category[note.categoryId]
-            : listing.notes;
+            ? listing.group[note.categoryId]
+            : listing.inbox;
         arr.unshift(note);
 
         state.listing.value = listing;
@@ -237,7 +237,7 @@ export const AppStateChange = {
         let listing = { ...state.listing.value };
 
         let note: Note = findNote(
-            n.categoryId ? listing.category[n.categoryId] : listing.notes,
+            n.categoryId ? listing.group[n.categoryId] : listing.inbox,
             n.id
         )!;
 
@@ -254,14 +254,14 @@ export const AppStateChange = {
         let listing = { ...state.listing.value };
 
         if (n.categoryId) {
-            // binning a triaged note
-            listing.category[n.categoryId] = removeNoteFromArray(
-                listing.category[n.categoryId],
+            // binning a grouped note
+            listing.group[n.categoryId] = removeNoteFromArray(
+                listing.group[n.categoryId],
                 n.id
             );
         } else {
             // binning a note from the inbox
-            listing.notes = removeNoteFromArray(listing.notes, n.id);
+            listing.inbox = removeNoteFromArray(listing.inbox, n.id);
         }
 
         if (listing.bin) {
@@ -277,7 +277,7 @@ export const AppStateChange = {
         }
 
         let listing = { ...state.listing.value };
-        let arr = n.categoryId ? listing.category[n.categoryId] : listing.notes;
+        let arr = n.categoryId ? listing.group[n.categoryId] : listing.inbox;
         let note = findNote(arr, n.id)!;
 
         note.content = n.content;
@@ -295,7 +295,7 @@ export const AppStateChange = {
         );
         let listing = { ...state.listing.value };
 
-        delete listing.category[categoryId];
+        delete listing.group[categoryId];
 
         state.listing.value = listing;
     },
@@ -307,8 +307,8 @@ export const AppStateChange = {
         let listing = { ...state.listing.value };
 
         for (let i: number = 0; i < categories.length; i++) {
-            if (!listing.category[categories[i].id]) {
-                listing.category[categories[i].id] = [];
+            if (!listing.group[categories[i].id]) {
+                listing.group[categories[i].id] = [];
             }
         }
         state.listing.value = listing;
@@ -321,16 +321,16 @@ export const AppStateChange = {
 
         let listing = { ...state.listing.value };
 
-        let note = findNote(listing.category[categoryId], noteId);
+        let note = findNote(listing.group[categoryId], noteId);
         if (note) {
-            listing.category[categoryId] = removeNoteFromArray(
-                listing.category[categoryId],
+            listing.group[categoryId] = removeNoteFromArray(
+                listing.group[categoryId],
                 noteId
             );
 
             note.categoryId = undefined;
             note.triagedAt = undefined;
-            listing.notes.unshift(note);
+            listing.inbox.unshift(note);
         }
 
         state.listing.value = listing;
@@ -369,12 +369,12 @@ export const AppStateChange = {
             //
 
             if (currentCategoryId) {
-                listing.category[currentCategoryId] = removeNoteFromArray(
-                    listing.category[currentCategoryId],
+                listing.group[currentCategoryId] = removeNoteFromArray(
+                    listing.group[currentCategoryId],
                     note.id
                 );
             } else {
-                listing.notes = removeNoteFromArray(listing.notes, note.id);
+                listing.inbox = removeNoteFromArray(listing.inbox, note.id);
             }
 
             // only add this note to the appState's category array if
@@ -382,8 +382,8 @@ export const AppStateChange = {
             // will only have this note in it, and since it won't be
             // empty the app won't request the full list from the server.)
             //
-            if (listing.category[note.categoryId].length > 0) {
-                listing.category[note.categoryId].unshift(note);
+            if (listing.group[note.categoryId].length > 0) {
+                listing.group[note.categoryId].unshift(note);
             }
         } else {
             console.error("note should have a categoryId");
@@ -411,9 +411,9 @@ export const AppStateChange = {
         listing.bin = removeNoteFromArray(listing.bin, note.id);
 
         if (note.categoryId) {
-            listing.category[note.categoryId].unshift(note);
+            listing.group[note.categoryId].unshift(note);
         } else {
-            listing.notes.unshift(note);
+            listing.inbox.unshift(note);
         }
 
         state.listing.value = listing;
