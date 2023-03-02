@@ -117,8 +117,8 @@ staging/www/index.html: $(CLIENT_FOLDER)/www/index.js
 	mkdir -p $(@D)
 	cp -r $(CLIENT_FOLDER)/www staging/.
 ifdef MINIFY
-	minify -o staging/www/ --match=\.css www
-	minify -r -o staging/www/js --match=\.js www/js
+	minify -o staging/www/ --match=\.css client/www
+#	minify -r -o staging/www --match=index\.js client/www
 endif
 	sed -i 's/^var devMode.*/\/\/ START OF CODE MODIFIED BY MAKEFILE\nvar devMode = false;/g' staging/www/service-worker.js
 	sed -i "s/^var CACHE_NAME.*/var CACHE_NAME = 'memo-$$(date '+%Y%m%d-%H%M')';\n\/\/ END OF CODE MODIFIED BY MAKEFILE/g" staging/www/service-worker.js
