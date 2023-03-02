@@ -741,6 +741,12 @@ h3 {
   overflow: hidden;
   transition: all 0.3s;
 
+  position: fixed;
+  top: 3rem;
+  width: 100%;
+
+  background: var(--bg);
+
   display: flex;
   flex-wrap: wrap;
 }
