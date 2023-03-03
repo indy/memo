@@ -95,7 +95,7 @@ function CardBase({
     }
 
     function handleChangeContent(event: Event) {
-        if (event.target instanceof HTMLInputElement) {
+        if (event.target instanceof HTMLTextAreaElement) {
             const newUserText = event.target.value;
             setLocalState({
                 ...localState,
