@@ -115,6 +115,7 @@ function BinnedNotes({ path }: { path?: string }) {
 
     const notes: Array<Note> = appState.listing.value.bin;
     const listing = notes ? notes.map((n) => BinnedCard(n)) : [];
+    const loadState = appState.loaded.value.bin;
 
     function onDeleteClicked(e: MouseEvent) {
         e.preventDefault();
@@ -127,7 +128,7 @@ function BinnedNotes({ path }: { path?: string }) {
     return (
         <div>
             <div class="button-container darken-border">
-                {listing.length == 0 && <div>Bin is Empty</div>}
+                {loadState === LoadState.Loaded && listing.length == 0 && <div>Bin is Empty</div>}
                 {listing.length > 0 && (
                     <div class="button button-delete" onClick={onDeleteClicked}>
                         Permanently Delete
