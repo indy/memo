@@ -115,10 +115,8 @@ function CreateNewCategory({ }) {
             </form>
         );
     } else {
-
-        let extra = "drawer-item drawer-item-new";
         return (
-            <a class={extra} onClick={onClicked}>
+            <a class="drawer-item drawer-item-new" onClick={onClicked}>
                 New Category...
             </a>
         );

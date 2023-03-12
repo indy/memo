@@ -749,7 +749,7 @@ h3 {
 
   position: fixed;
   top: 4rem;
-  width: 100%;
+  width: 96%;
 
   background: var(--bg);
 
@@ -758,7 +758,6 @@ h3 {
 
   justify-content: center;
   align-items: center;
-
 }
 
 .drawer-visible {
@@ -781,11 +780,13 @@ h3 {
     border: 0.2rem solid var(--bg2);
 
     text-align: center;
-
 }
 
 .drawer-item-new {
-    cursor: pointer;
+  color: var(--clock-04-fg);
+  border: 0.2rem solid var(--clock04-fg);
+  background: var(--clock-04-bg);
+  cursor: pointer;
 }
 
 .card-action-row {
