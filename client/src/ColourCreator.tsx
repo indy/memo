@@ -55,8 +55,8 @@ function augmentSettingsWithCssModifierParameters(settings: Settings) {
             ...settings,
 
             bg: tuple(46.5, 19.2, 95.7),
-            bg1: tuple(85.9, 4.5, 93.9),
-            bg2: tuple(46.2, 20.1, 92),
+            bg1: tuple(85.9, 4.5, 90),
+            bg2: tuple(46.2, 20.1, 85),
             fg: tuple(53.2, 17.4, 3.4),
             fg1: tuple(0, 0, 40.7),
 

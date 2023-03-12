@@ -130,11 +130,8 @@ function DrawerItem({ id, title }: { id: number; title: string }) {
         AppStateChange.showCategoryDrawer(false);
     }
 
-
-    let extra = "drawer-item";
-
     return (
-        <Link class={ extra } href={"/category/" + id} onClick={onLinkClicked}>
+        <Link class="drawer-item" href={"/category/" + id} onClick={onLinkClicked}>
             {title}
         </Link>
     );
