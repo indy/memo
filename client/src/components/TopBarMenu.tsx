@@ -33,7 +33,18 @@ export default function TopBarMenu() {
         [NoteLocation.Group]: "top-bar-menuitem pigment-group",
         [NoteLocation.Bin]: "top-bar-menuitem pigment-bin",
     };
-    style[appState.activeTopBarMenuItem.value] += " top-bar-menuitem-active";
+
+    switch(appState.activeTopBarMenuItem.value) {
+        case NoteLocation.Inbox:
+            style[NoteLocation.Inbox] += " highlighted-inbox";
+            break;
+        case NoteLocation.Group:
+            style[NoteLocation.Group] += " highlighted-group";
+            break;
+        case NoteLocation.Bin:
+            style[NoteLocation.Bin] += " highlighted-bin";
+            break;
+    }
 
     function onTriagedClicked(e: MouseEvent) {
         e.preventDefault();

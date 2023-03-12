@@ -191,6 +191,10 @@ function declareCssVariables(settings: Settings, wasmInterface: WasmInterface) {
     updateDerivedVariable("--fg-group", "--clock-12-fg");
     updateDerivedVariable("--fg-bin", "--clock-02-fg");
 
+    updateDerivedVariable("--hi-inbox", "--clock-06-fg1");
+    updateDerivedVariable("--hi-group", "--clock-12-fg1");
+    updateDerivedVariable("--hi-bin", "--clock-02-fg1");
+
     updateDerivedVariable("--textarea-border", "--textarea-bg");
 }
 
