@@ -23,8 +23,16 @@ export default function NoteView({ id, path }: { id?: string; path?: string }) {
     }
 
     const noteId = parseInt(id, 10);
-    const note = getNoteById(appState, noteId)!;
     const pigment = notePigment(noteId);
+
+    const n = getNoteById(appState, noteId)!;
+    const [note, setNote] = useState(n);
+
+    if (!note) {
+        Net.get<Note>(`/api/notes/${noteId}`).then(setNote);
+        return <div></div>;
+    }
+
 
     if (note.categoryId) {
         if (!appState.listing.value.group[note.categoryId]) {
