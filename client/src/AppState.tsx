@@ -152,15 +152,27 @@ export const AppStateChange = {
         let loaded = { ...state.loaded.value };
         let listing = { ...state.listing.value };
 
+
+        // this will be in local time
+        let today = new Date();
+        // this has to be done because the Javascript standard is retarded
+        // and there's no simple way of getting the current date in UTC
+        let todayUtc = new Date(today.getUTCFullYear(), today.getUTCMonth(),
+                                today.getUTCDate(), today.getUTCHours(),
+                                today.getUTCMinutes(), today.getUTCSeconds());
+        function calcAge(note: Note) {
+            return calculateAge(note, todayUtc);
+        }
+
         switch (kind) {
             case NoteLocation.Inbox:
                 loaded.inbox = LoadState.Loaded;
-                listing.inbox = notes.map(calculateAge);
+                listing.inbox = notes.map(calcAge);
                 break;
             case NoteLocation.Group:
                 if (categoryId) {
                     loaded.group[categoryId] = LoadState.Loaded;
-                    listing.group[categoryId] = notes.map(calculateAge);
+                    listing.group[categoryId] = notes.map(calcAge);
                 } else {
                     console.error(
                         `loadedNotes given a NoteLocation.Group without a categoryId`
@@ -169,7 +181,7 @@ export const AppStateChange = {
                 break;
             case NoteLocation.Bin:
                 loaded.bin = LoadState.Loaded;
-                listing.bin = notes.map(calculateAge);
+                listing.bin = notes.map(calcAge);
                 break;
         }
 
@@ -433,10 +445,11 @@ function removeNoteFromArray(array: Array<Note>, noteId: number): Array<Note> {
     return array ? array.filter((n) => n.id !== noteId) : array;
 }
 
-function calculateAge(note: Note) {
+function calculateAge(note: Note, currentDate: Date) {
+    // this is in UTC
     let createdAt = new Date(Date.parse(note.createdAt));
-    let today = new Date();
-    let delta = today.getTime() - createdAt.getTime();
+
+    let delta = currentDate.getTime() - createdAt.getTime();
     let decimalPlaces = 2;
 
     note.age = humanReadableAge(delta, decimalPlaces);
