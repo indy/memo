@@ -21,19 +21,19 @@ function isUnloaded(
 
     switch (kind) {
         case NoteLocation.Inbox:
-            return loaded.inbox === LoadState.NotLoaded;
+            return loaded.inbox !== LoadState.Loaded;
         case NoteLocation.Group:
             if (categoryId) {
                 return (
                     !loaded.group ||
                     !loaded.group[categoryId] ||
-                    loaded.group[categoryId] === LoadState.NotLoaded
+                    loaded.group[categoryId] !== LoadState.Loaded
                 );
             } else {
                 return false;
             }
         case NoteLocation.Bin:
-            return loaded.bin === LoadState.NotLoaded;
+            return loaded.bin !== LoadState.Loaded;
     }
 }
 
