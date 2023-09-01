@@ -61,7 +61,30 @@ CREATE TABLE IF NOT EXISTS notes (
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
-*/
+ */
+
+/*
+proposed:
+
+CREATE TABLE IF NOT EXISTS checklistitems (
+    id INTEGER PRIMARY KEY,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    note_id INTEGER NOT NULL,
+
+    content TEXT NOT NULL,
+    state INTEGER DEFAULT 0,
+
+    FOREIGN KEY (note_id) REFERENCES notes (id) ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
+    -- TODO: add this column to notes
+    -- if this is not null, then category_id, pinned, triaged_at and deleted_at can be ignored
+    -- and title will be automatically generated
+    diary_date DATE,
+
+
+ */
 
 pub(crate) fn migration_check(db_name: &str) -> Result<()> {
     // Define migrations

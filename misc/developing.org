@@ -1,3 +1,14 @@
+
+* todo [0/2]
+1. [ ] have a special category for 'diary' ???
+2. [ ] lazy load the notes
+3. [ ] merge with habit functionality
+4. [ ] copy the appstate architecture of civil
+5. [ ] add todo lists that can augment a note
+6. [ ] migrate my todo.org over to the diary functionality
+
+
+
 * Deploying: 2. setup nginx
 
     # https://memo.indy.io
