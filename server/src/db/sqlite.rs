@@ -15,48 +15,128 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use crate::error::Result;
+use crate::interop::Key;
+
+#[allow(unused_imports)]
+use crate::error::{display_local_backtrace, Error};
+#[allow(unused_imports)]
 use rusqlite::{Connection, Row, ToSql};
 #[allow(unused_imports)]
-use tracing::info;
+use tracing::error;
 
-pub type SqlitePool = r2d2::Pool<r2d2_sqlite::SqliteConnectionManager>;
+pub(crate) type SqlitePool = r2d2::Pool<r2d2_sqlite::SqliteConnectionManager>;
 
-pub(crate) fn zero(conn: &Connection, sql: &str, params: &[&dyn ToSql]) -> Result<()> {
+pub(crate) trait FromRow {
+    fn from_row(row: &Row) -> crate::Result<Self>
+    where
+        Self: Sized;
+}
+
+impl FromRow for i32 {
+    fn from_row(row: &Row) -> crate::Result<i32> {
+        Ok(row.get(0)?)
+    }
+}
+
+impl FromRow for Key {
+    fn from_row(row: &Row) -> crate::Result<Key> {
+        Ok(row.get(0)?)
+    }
+}
+
+impl FromRow for Option<Key> {
+    fn from_row(row: &Row) -> crate::Result<Option<Key>> {
+        Ok(row.get(0)?)
+    }
+}
+
+impl FromRow for String {
+    fn from_row(row: &Row) -> crate::Result<String> {
+        Ok(row.get(0)?)
+    }
+}
+
+impl FromRow for chrono::NaiveDateTime {
+    fn from_row(row: &Row) -> crate::Result<chrono::NaiveDateTime> {
+        Ok(row.get(0)?)
+    }
+}
+
+pub(crate) fn zero(conn: &Connection, sql: &str, params: &[&dyn ToSql]) -> crate::Result<()> {
     conn.execute(sql, params)?;
     Ok(())
 }
 
-pub(crate) fn one<T>(
+pub(crate) fn one<T: FromRow>(
     conn: &Connection,
     sql: &str,
     params: &[&dyn ToSql],
-    from_row: fn(&Row) -> Result<T>,
-) -> Result<T> {
-    let mut stmt = conn.prepare(sql)?;
+) -> crate::Result<T> {
+    let mut stmt = match conn.prepare_cached(sql) {
+        Ok(st) => st,
+        Err(e) => {
+            error!("{}", &sql);
+            error!("{:?}", e);
+            return Err(Error::Sqlite(e));
+        }
+    };
     let mut rows = stmt.query(params)?;
-
-    if let Some(row) = rows.next()? {
-        let res: T = from_row(row)?;
+    if let Some(row) = match rows.next() {
+        Ok(r) => r,
+        Err(e) => {
+            error!("row.next error in query: {}", sql);
+            display_local_backtrace();
+            return Err(Error::Sqlite(e));
+        }
+    } {
+        let res: T = match FromRow::from_row(row) {
+            Ok(r) => r,
+            Err(e) => {
+                error!("from_row error in query: {}", sql);
+                error!("{:?}", &e);
+                return Err(e);
+            }
+        };
         Ok(res)
     } else {
         Err(crate::Error::NotFound)
     }
 }
 
-pub(crate) fn many<T>(
+pub(crate) fn many<T: FromRow>(
     conn: &Connection,
     sql: &str,
     params: &[&dyn ToSql],
-    from_row: fn(&Row) -> Result<T>,
-) -> Result<Vec<T>> {
-    let mut stmt = conn.prepare(sql)?;
-    let mut rows = stmt.query(params)?;
+) -> crate::Result<Vec<T>> {
+    let mut stmt = match conn.prepare_cached(sql) {
+        Ok(st) => st,
+        Err(e) => {
+            error!("{}", &sql);
+            error!("{:?}", e);
+            return Err(Error::Sqlite(e));
+        }
+    };
 
+    let mut rows = stmt.query(params)?;
     let mut res_vec = Vec::new();
 
-    while let Some(row) = rows.next()? {
-        let res: T = from_row(row)?;
+    while let Some(row) = match rows.next() {
+        Ok(r) => r,
+        Err(e) => {
+            error!("row.next error in query: {}", sql);
+            display_local_backtrace();
+            return Err(Error::Sqlite(e));
+        }
+    } {
+        let res: T = match FromRow::from_row(row) {
+            Ok(r) => r,
+            Err(e) => {
+                error!("from_row error in query: {}", sql);
+                error!("{:?}", &e);
+                return Err(e);
+            }
+        };
+
         res_vec.push(res);
     }
 

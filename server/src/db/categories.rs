@@ -15,18 +15,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use crate::db::sqlite::{many, one, zero, SqlitePool};
 use crate::db::notes as db_notes;
-use crate::error::Result;
+use crate::db::sqlite::{many, one, zero, FromRow, SqlitePool};
 use crate::interop::categories as interop;
 use crate::interop::Key;
 use rusqlite::{params, Row};
 
-fn from_row(row: &Row) -> Result<interop::Category> {
-    Ok(interop::Category {
-        id: row.get(0)?,
-        title: row.get(1)?,
-    })
+impl FromRow for interop::Category {
+    fn from_row(row: &Row) -> crate::Result<interop::Category> {
+        Ok(interop::Category {
+            id: row.get(0)?,
+            title: row.get(1)?,
+        })
+    }
 }
 
 // note: this returns an array of all the user's categories rather
@@ -37,51 +38,36 @@ pub(crate) fn create(
     db_pool: &SqlitePool,
     user_id: Key,
     category: &interop::ProtoCategory,
-) -> Result<Vec<interop::Category>> {
+) -> crate::Result<Vec<interop::Category>> {
     let conn = db_pool.get()?;
     zero(
         &conn,
-        r#"
-               insert into categories (user_id, title)
-               values(?1, ?2)
-            "#,
+        "insert into categories (user_id, title) values(?1, ?2)",
         params![user_id, category.title],
     )?;
 
     all(db_pool, user_id)
 }
 
-pub(crate) fn all(db_pool: &SqlitePool, user_id: Key) -> Result<Vec<interop::Category>> {
+pub(crate) fn all(db_pool: &SqlitePool, user_id: Key) -> crate::Result<Vec<interop::Category>> {
     let conn = db_pool.get()?;
-    many::<interop::Category>(
-        &conn,
-        r#"
-           SELECT id, title
-           FROM categories
-           WHERE user_id = ?1
-           ORDER BY title COLLATE NOCASE ASC
-        "#,
-        params![user_id],
-        from_row,
-    )
+    let stmt = "SELECT id, title
+                FROM categories
+                WHERE user_id = ?1
+                ORDER BY title COLLATE NOCASE ASC";
+    many(&conn, stmt, params![user_id])
 }
 
 pub(crate) fn get(
     db_pool: &SqlitePool,
     user_id: Key,
     category_id: Key,
-) -> Result<interop::Category> {
+) -> crate::Result<interop::Category> {
     let conn = db_pool.get()?;
-    one::<interop::Category>(
-        &conn,
-        r#"
-           select id, title
-           from categories
-           where user_id = ?1 and id = ?2
-        "#,
-        params![user_id, category_id],
-        from_row,
-    )
+    let stmt = "SELECT id, title
+                FROM categories
+                WHERE user_id = ?1 AND id = ?2";
+    one(&conn, stmt, params![user_id, category_id])
 }
 
 pub(crate) fn edit(
@@ -89,33 +75,20 @@ pub(crate) fn edit(
     user_id: Key,
     category: &interop::ProtoCategory,
     category_id: Key,
-) -> Result<interop::Category> {
+) -> crate::Result<interop::Category> {
     let conn = db_pool.get()?;
-    zero(
-        &conn,
-        r#"
-           update categories
-           set title = ?1 where user_id = ?2 and id = ?3
-        "#,
-        params![category.title, user_id, category_id],
-    )?;
+    let stmt = "UPDATE categories
+                SET title = ?1 WHERE user_id = ?2 AND id = ?3";
+    zero(&conn, stmt, params![category.title, user_id, category_id])?;
     get(db_pool, user_id, category_id)
 }
 
-pub(crate) fn delete(db_pool: &SqlitePool, user_id: Key, id: Key) -> Result<()> {
-
+pub(crate) fn delete(db_pool: &SqlitePool, user_id: Key, id: Key) -> crate::Result<()> {
     db_notes::delete_all_categorised(db_pool, user_id, id)?;
 
     let conn = db_pool.get()?;
-    zero(
-        &conn,
-        r#"
-           delete
-           from categories
-           where user_id = ?1 and id = ?2
-        "#,
-        params![user_id, id],
-    )
-
-
+    let stmt = "DELETE
+                FROM categories
+                WHERE user_id = ?1 AND id = ?2";
+    zero(&conn, stmt, params![user_id, id])
 }

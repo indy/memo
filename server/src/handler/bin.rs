@@ -17,7 +17,6 @@
 
 use crate::db::notes as db;
 use crate::db::sqlite::SqlitePool;
-use crate::error::Result;
 use crate::interop::IdParam;
 use crate::session;
 use actix_web::web::{Data, Path};
@@ -29,7 +28,7 @@ use tracing::info;
 pub async fn get_all(
     db_pool: Data<SqlitePool>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("get_all");
 
     let user_id = session::user_id(&session)?;
@@ -42,7 +41,7 @@ pub async fn get_all(
 pub async fn delete_all(
     db_pool: Data<SqlitePool>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("delete_all");
 
     let user_id = session::user_id(&session)?;
@@ -56,7 +55,7 @@ pub async fn get(
     db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("get note {:?}", params.id);
 
     let user_id = session::user_id(&session)?;
@@ -71,7 +70,7 @@ pub async fn unbin(
     db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("delete");
 
     let user_id = session::user_id(&session)?;
@@ -86,7 +85,7 @@ pub async fn delete(
     db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("delete");
 
     let user_id = session::user_id(&session)?;

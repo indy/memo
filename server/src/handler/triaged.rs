@@ -17,7 +17,6 @@
 
 use crate::db::notes as db;
 use crate::db::sqlite::SqlitePool;
-use crate::error::Result;
 use crate::interop::IdParam;
 use crate::session;
 use actix_web::web::{Data, Path};
@@ -30,7 +29,7 @@ pub async fn get(
     db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("get note {:?}", params.id);
 
     let user_id = session::user_id(&session)?;
@@ -45,7 +44,7 @@ pub async fn untriage(
     db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("untriage note {:?}", params.id);
 
     let user_id = session::user_id(&session)?;
@@ -60,7 +59,7 @@ pub async fn bin(
     db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("bin triaged note {:?}", params.id);
 
     let user_id = session::user_id(&session)?;

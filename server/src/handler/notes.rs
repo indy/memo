@@ -17,7 +17,6 @@
 
 use crate::db::notes as db;
 use crate::db::sqlite::SqlitePool;
-use crate::error::Result;
 use crate::interop::categories as interop_categories;
 use crate::interop::notes as interop;
 use crate::interop::IdParam;
@@ -47,7 +46,7 @@ pub async fn bookmark(
     mut payload: Multipart,
     db_pool: Data<SqlitePool>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("bookmark");
 
     let now: DateTime<Utc> = Utc::now();
@@ -92,7 +91,7 @@ pub async fn create(
     note: Json<interop::ProtoNote>,
     db_pool: Data<SqlitePool>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("create");
 
     let user_id = session::user_id(&session)?;
@@ -108,7 +107,7 @@ pub async fn create(
 pub async fn get_all(
     db_pool: Data<SqlitePool>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("get_all");
 
     let user_id = session::user_id(&session)?;
@@ -123,7 +122,7 @@ pub async fn triage(
     db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("triage note {:?}", params.id);
 
     let user_id = session::user_id(&session)?;
@@ -139,7 +138,7 @@ pub async fn bin(
     db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("bin note {:?}", params.id);
 
     let user_id = session::user_id(&session)?;
@@ -154,7 +153,7 @@ pub async fn get(
     db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("get note {:?}", params.id);
 
     let user_id = session::user_id(&session)?;
@@ -170,7 +169,7 @@ pub async fn edit(
     db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("edit");
 
     let user_id = session::user_id(&session)?;

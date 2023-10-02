@@ -18,7 +18,6 @@
 use crate::db::categories as db;
 use crate::db::notes as db_notes;
 use crate::db::sqlite::SqlitePool;
-use crate::error::Result;
 use crate::interop::categories as interop;
 use crate::interop::IdParam;
 use crate::session;
@@ -32,7 +31,7 @@ pub async fn create(
     category: Json<interop::ProtoCategory>,
     db_pool: Data<SqlitePool>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("create");
 
     let user_id = session::user_id(&session)?;
@@ -48,7 +47,7 @@ pub async fn create(
 pub async fn get_all(
     db_pool: Data<SqlitePool>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("get_all");
 
     let user_id = session::user_id(&session)?;
@@ -62,7 +61,7 @@ pub async fn get(
     db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("get category {:?}", params.id);
 
     let user_id = session::user_id(&session)?;
@@ -77,7 +76,7 @@ pub async fn get_notes(
     db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("get category {:?}", params.id);
 
     let user_id = session::user_id(&session)?;
@@ -93,7 +92,7 @@ pub async fn edit(
     db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("edit");
 
     let user_id = session::user_id(&session)?;
@@ -109,7 +108,7 @@ pub async fn delete(
     db_pool: Data<SqlitePool>,
     params: Path<IdParam>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("delete");
 
     let user_id = session::user_id(&session)?;

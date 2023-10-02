@@ -22,7 +22,9 @@ mod handler;
 mod interop;
 mod session;
 
-pub use crate::error::{Error, Result};
+pub use crate::error::Error;
+
+pub type Result<T> = ::std::result::Result<T, error::Error>;
 
 use actix_files as fs;
 use actix_session::{config::PersistentSession, storage::CookieSessionStore, SessionMiddleware};

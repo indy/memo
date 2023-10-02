@@ -17,7 +17,7 @@
 
 use crate::db::sqlite::SqlitePool;
 use crate::db::users as db;
-use crate::error::{Error, Result};
+use crate::error::Error;
 use crate::interop::users as interop;
 use crate::session;
 use actix_web::web::{Data, Json};
@@ -31,7 +31,7 @@ pub async fn login(
     login: Json<interop::LoginCredentials>,
     db_pool: Data<SqlitePool>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("login");
     let login = login.into_inner();
 
@@ -56,7 +56,7 @@ pub async fn login(
 pub async fn logout(
     _db_pool: Data<SqlitePool>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("logout");
     session.purge();
 
@@ -64,7 +64,7 @@ pub async fn logout(
     Ok(HttpResponse::Ok().json(true))
 }
 
-fn verify_encoded(encoded: &str, pwd: &[u8]) -> Result<bool> {
+fn verify_encoded(encoded: &str, pwd: &[u8]) -> crate::Result<bool> {
     let res = argon2::verify_encoded(encoded, pwd)?;
 
     Ok(res)
@@ -74,7 +74,7 @@ pub async fn create_user(
     registration: Json<interop::Registration>,
     db_pool: Data<SqlitePool>,
     session: actix_session::Session,
-) -> ::std::result::Result<HttpResponse, actix_web::Error> {
+) -> crate::Result<HttpResponse> {
     let registration = registration.into_inner();
     let hash = hash_password(&registration.password)?;
 
@@ -90,7 +90,7 @@ pub async fn create_user(
 pub async fn get_user(
     db_pool: Data<SqlitePool>,
     session: actix_session::Session,
-) -> Result<HttpResponse> {
+) -> crate::Result<HttpResponse> {
     info!("get_user");
 
     if let Ok(user_id) = session::user_id(&session) {
@@ -108,7 +108,7 @@ fn generate_random_salt() -> [u8; 16] {
     salt
 }
 
-fn hash_password(password: &str) -> Result<String> {
+fn hash_password(password: &str) -> crate::Result<String> {
     let salt = generate_random_salt();
     let hash = argon2::hash_encoded(password.as_bytes(), &salt, &argon2::Config::default())?;
 
