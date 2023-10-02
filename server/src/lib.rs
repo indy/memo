@@ -25,18 +25,17 @@ mod session;
 pub use crate::error::{Error, Result};
 
 use actix_files as fs;
-use actix_session::CookieSession;
-use actix_web::cookie::SameSite;
+use actix_session::{config::PersistentSession, storage::CookieSessionStore, SessionMiddleware};
+use actix_web::cookie::{self, Key, SameSite};
 use actix_web::middleware::{self, ErrorHandlers};
 use actix_web::{http, web, App, HttpServer};
-use dotenv;
 use std::env;
 use tracing::{error, info, Level};
 use tracing_subscriber::FmtSubscriber;
 
 use r2d2_sqlite::SqliteConnectionManager;
 
-const SIGNING_KEY_SIZE: usize = 32;
+const SIGNING_KEY_SIZE: usize = 64;
 
 pub struct ServerConfig {
     pub registration_magic_word: String,
@@ -61,7 +60,7 @@ pub async fn start_server() -> Result<()> {
 
     // a builder for `FmtSubscriber`.
     let subscriber = FmtSubscriber::builder()
-        .with_max_level(Level::TRACE)
+        .with_max_level(Level::DEBUG)
         .finish();
 
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
@@ -80,14 +79,19 @@ pub async fn start_server() -> Result<()> {
     let session_signing_key = env::var("SESSION_SIGNING_KEY")?;
 
     let server = HttpServer::new(move || {
-        let mut signing_key: &mut [u8] = &mut [0; SIGNING_KEY_SIZE];
-        read_signing_key(&mut signing_key, &session_signing_key);
+        let signing_key: &mut [u8] = &mut [0; SIGNING_KEY_SIZE];
+        read_signing_key(signing_key, &session_signing_key);
         // info!("signing key: {:?}", signing_key);
 
-        let session_store = CookieSession::private(signing_key)
-            .secure(cookie_secure)
-            .same_site(SameSite::Strict)
-            .max_age(60 * 60 * 24 * 30); // 30 days
+        let session_store =
+            SessionMiddleware::builder(CookieSessionStore::default(), Key::from(signing_key))
+                .cookie_secure(cookie_secure)
+                .cookie_same_site(SameSite::Strict)
+                .session_lifecycle(
+                    PersistentSession::default().session_ttl(cookie::time::Duration::days(30)),
+                )
+                .build();
+
         let error_handlers = ErrorHandlers::new()
             .handler(
                 http::StatusCode::INTERNAL_SERVER_ERROR,
@@ -124,7 +128,8 @@ fn read_signing_key(signing_key: &mut [u8], session_signing_key: &str) {
     //
     if session_signing_key.len() != (SIGNING_KEY_SIZE * 2) {
         error!(
-            "SESSION_SIGNING_KEY in .env has to be 32 bytes (currently: {})",
+            "SESSION_SIGNING_KEY in .env has to be {} characters long (currently: {})",
+            SIGNING_KEY_SIZE * 2,
             session_signing_key.len()
         );
     }

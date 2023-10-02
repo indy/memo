@@ -38,6 +38,8 @@ pub enum Error {
     InvalidKind,
     InvalidResource,
     RadixConversion,
+    SessionGetError(actix_session::SessionGetError),
+    SessionInsertError(actix_session::SessionInsertError),
     Sqlite(rusqlite::Error),
     SqliteMigration(rusqlite_migration::Error),
     SqlitePool(r2d2::Error),
