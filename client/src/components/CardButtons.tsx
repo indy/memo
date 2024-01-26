@@ -74,7 +74,7 @@ function ButtonEdit({
         callback(!editing);
     }
 
-    let editButtonText = editing ? "Cancel Editing" : "Edit";
+    let editButtonText = editing ? "cancel editing" : "edit";
 
     return (
         <button

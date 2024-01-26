@@ -68,7 +68,7 @@ export default function TriageDropDown({
                 class={`${pigment.classAlt} button button-triage`}
                 onClick={onToggleShowList}
             >
-                <span class="button-title-ellipses">Triage</span>
+                <span class="button-title-ellipses">triage</span>
             </button>
         );
     }

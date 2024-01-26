@@ -119,6 +119,8 @@ function CardBase({
         classes += " card-height-limited";
     }
 
+    const cardDate = note.createdAt.slice(0, 10);
+
     return (
         <div class={classes} onClick={onCardClicked}>
             <div class="card-body">
@@ -127,9 +129,15 @@ function CardBase({
                     style="border-bottom: 1px solid {cssColourBg1(pigment.numString)};"
                 >
                     <div class="card-action-row">{children}</div>
-                    <div class="card-action-row-reverse">
+                    <div class="card-action-row-spread">
                         <div
-                            class="card-age"
+                            class="card-time"
+                            style="color: {cssColourFg1(pigment.numString)};"
+                        >
+                            {cardDate}
+                        </div>
+                        <div
+                            class="card-time"
                             style="color: {cssColourFg1(pigment.numString)};"
                         >
                             {note.age}

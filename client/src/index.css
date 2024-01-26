@@ -669,7 +669,6 @@ hr {
 }
 
 .card-common {
-    font-family: Tahoma, Geneva, sans-serif;
     border-radius: var(--ui-element-border-radius);
     display: inline-block;
     vertical-align: top;
@@ -708,7 +707,7 @@ h3 {
     font-weight: bold;
     margin-top: 0rem;
     margin-bottom: 1.5rem;
-    font-size: 1.2rem;
+    font-size: 1.0rem;
     line-height: 1;
 }
 
@@ -799,15 +798,13 @@ h3 {
     margin: 0 0.15rem;
 }
 
-.card-action-row-reverse {
+.card-action-row-spread {
     display: flex;
-    flex-direction: row-reverse;
+    justify-content: space-between;
 }
 
-.card-age {
-    padding-right: 0.2rem;
-    padding-top: 0.1rem;
-    padding-bottom: 0.1rem;
+.card-time {
+  padding: 0.5rem 0.5rem 0rem 0.5rem;
 }
 
 .triage-dropdown-list {
