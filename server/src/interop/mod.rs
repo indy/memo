@@ -16,10 +16,12 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 pub mod categories;
+pub mod key;
 pub mod notes;
 pub mod users;
 
-pub type Key = i64;
+//pub type Key = i64;
+pub use key::Key;
 
 #[derive(serde::Deserialize)]
 pub struct IdParam {
