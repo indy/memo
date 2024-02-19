@@ -21,7 +21,7 @@ pub struct Key(pub i64);
 use std::fmt;
 impl fmt::Display for Key {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Key({})", self.0)
+        write!(f, "{}", self.0)
     }
 }
 
