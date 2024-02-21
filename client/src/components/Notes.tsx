@@ -8,6 +8,7 @@ import { ensureLoaded } from "../Utils";
 import { getAppState, AppStateChange } from "../AppState";
 
 import { BinnedCard, Card } from "./Card";
+import CryptoAssets from "./CryptoAssets";
 import DeletableCategory from "./DeletableCategory";
 import { CreateNoteForm } from "./CreateNoteForm";
 import { PinnedListing, UnPinnedListing } from "./Listing";
@@ -30,6 +31,7 @@ function InboxedNotes({ path }: { path?: string }) {
     return (
         <div>
             <CreateNoteForm />
+            <CryptoAssets />
             <PinnedListing>
                 {pin.map((n) => (
                     <Card note={n} categories={categories} />
