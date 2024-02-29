@@ -49,24 +49,79 @@ export default function CryptoAssets({}) {
     }, []);
 
 
-    let btcValue = localState.bitcoinPrice * localState.bitcoinQuantity;
-    let ethValue = localState.ethereumPrice * localState.ethereumQuantity;
-    let solValue = localState.solanaPrice * localState.solanaQuantity;
-    let totalValue = btcValue + ethValue + solValue;
+    const btcValue = localState.bitcoinPrice * localState.bitcoinQuantity;
+    const ethValue = localState.ethereumPrice * localState.ethereumQuantity;
+    const solValue = localState.solanaPrice * localState.solanaQuantity;
+    const totalValue = btcValue + ethValue + solValue;
 
-    function toDollars(n: number): string {
-        return "$" + Number(n).toFixed(2);
+    function toUSD(n: number): string {
+        return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
     }
     function fixed2(n: number): string {
         return Number(n).toFixed(2);
     }
 
+    function maxBtc() {
+        let max = 0;
+        if (localState.bitcoinPrice > 0) {
+            max = totalValue / localState.bitcoinPrice;
+        }
+
+        return fixed2(max);
+    }
+
+    function maxEth() {
+        let max = 0;
+        if (localState.ethereumPrice > 0) {
+            max = totalValue / localState.ethereumPrice;
+        }
+
+        return fixed2(max);
+    }
+
+    function pad(s: string, pstart: number) {
+        let sp = s.padStart(pstart);
+        return (<span class="ws-pre">{sp}</span>);
+    }
+
+    function info(coin: string) {
+        let value: number = 0;
+        let quantity: number = 0;
+        let price: number = 0;
+
+        switch(coin) {
+            case "BTC":
+                value = localState.bitcoinPrice * localState.bitcoinQuantity;
+                quantity = localState.bitcoinQuantity;
+                price = localState.bitcoinPrice;
+                break;
+            case "ETH":
+                value = localState.ethereumPrice * localState.ethereumQuantity;
+                quantity = localState.ethereumQuantity;
+                price = localState.ethereumPrice;
+                break;
+            case "SOL":
+                value = localState.solanaPrice * localState.solanaQuantity;
+                quantity = localState.solanaQuantity;
+                price = localState.solanaPrice;
+                break;
+        };
+
+        return (
+            <div>{pad(toUSD(value), 10)} ({pad(fixed2(quantity), 5)} {coin} @ {pad(toUSD(price), 10)})</div>
+        )
+    }
+
     return (
         <div class="c-crypto-assets">
-            <div>Total {toDollars(totalValue)}</div>
-            <div>{toDollars(btcValue)} ({fixed2(localState.bitcoinQuantity)} BTC @ {toDollars(localState.bitcoinPrice)}) </div>
-            <div>{toDollars(ethValue)} ({fixed2(localState.ethereumQuantity)} ETH @ {toDollars(localState.ethereumPrice)}) </div>
-            <div>{toDollars(solValue)} ({fixed2(localState.solanaQuantity)} SOL @ {toDollars(localState.solanaPrice)}) </div>
+            <div>Total: {toUSD(totalValue)}</div>
+            <div class="crypto-assets-v-spacer"></div>
+            { info("BTC") }
+            { info("ETH") }
+            { info("SOL") }
+            <div class="crypto-assets-v-spacer"></div>
+            <div>Potential Max BTC: {pad(maxBtc(), 5)}</div>
+            <div>Potential Max ETH: {pad(maxEth(), 5)}</div>
         </div>
     )
 }

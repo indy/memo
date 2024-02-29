@@ -327,6 +327,13 @@ textarea {
     padding: 1rem 1rem 1rem 1rem;
     margin: 1rem 1rem 0 1rem;
 }
+.crypto-assets-v-spacer {
+  padding-top: 1rem;
+}
+.ws-pre {
+  white-space: pre;
+}
+
 
 #app-content {
     margin-top: 4rem;
