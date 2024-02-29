@@ -9,6 +9,7 @@ export default function CryptoAssets({}) {
         bitcoinQuantity: number;
         ethereumQuantity: number;
         solanaQuantity: number;
+        dollarsSpent: number;
     };
 
     const lidoEth = 16.5;
@@ -23,7 +24,8 @@ export default function CryptoAssets({}) {
         solanaPrice: 0,
         bitcoinQuantity: 0.95652791,
         ethereumQuantity: lidoEth + trezorEth + inderjitEth + rEth + coinbaseEth,
-        solanaQuantity: 0.06532819
+        solanaQuantity: 0.06532819,
+        dollarsSpent: 91229.42,
     };
     let [localState, setLocalState] = useState(initialState);
 
@@ -114,7 +116,8 @@ export default function CryptoAssets({}) {
 
     return (
         <div class="c-crypto-assets">
-            <div>Total: {toUSD(totalValue)}</div>
+            <div>Total : {pad(toUSD(totalValue), 11)}</div>
+            <div>Profit: {pad(toUSD(totalValue - localState.dollarsSpent), 11)}</div>
             <div class="crypto-assets-v-spacer"></div>
             { info("BTC") }
             { info("ETH") }
