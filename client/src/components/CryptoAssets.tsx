@@ -55,6 +55,7 @@ export default function CryptoAssets({}) {
     const ethValue = localState.ethereumPrice * localState.ethereumQuantity;
     const solValue = localState.solanaPrice * localState.solanaQuantity;
     const totalValue = btcValue + ethValue + solValue;
+    const profitPercentage = (100 / localState.dollarsSpent) * totalValue;
 
     function toUSD(n: number): string {
         return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -117,7 +118,7 @@ export default function CryptoAssets({}) {
     return (
         <div class="c-crypto-assets">
             <div>Total : {pad(toUSD(totalValue), 11)}</div>
-            <div>Profit: {pad(toUSD(totalValue - localState.dollarsSpent), 11)}</div>
+            <div>Profit: {pad(toUSD(totalValue - localState.dollarsSpent), 11)} ({pad(fixed2(profitPercentage - 100), 5)}%)</div>
             <div class="crypto-assets-v-spacer"></div>
             { info("BTC") }
             { info("ETH") }
