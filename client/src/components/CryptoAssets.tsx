@@ -51,12 +51,6 @@ export default function CryptoAssets({}) {
     }, []);
 
 
-    const btcValue = localState.bitcoinPrice * localState.bitcoinQuantity;
-    const ethValue = localState.ethereumPrice * localState.ethereumQuantity;
-    const solValue = localState.solanaPrice * localState.solanaQuantity;
-    const totalValue = btcValue + ethValue + solValue;
-    const profitPercentage = (100 / localState.dollarsSpent) * totalValue;
-
     function toUSD(n: number): string {
         return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
     }
@@ -64,22 +58,15 @@ export default function CryptoAssets({}) {
         return Number(n).toFixed(2);
     }
 
-    function maxBtc() {
+    function allIn(coin: string, price: number, totalValue: number) {
         let max = 0;
-        if (localState.bitcoinPrice > 0) {
-            max = totalValue / localState.bitcoinPrice;
+        if (price > 0) {
+            max = totalValue / price;
         }
 
-        return fixed2(max);
-    }
+        let val = fixed2(max);
 
-    function maxEth() {
-        let max = 0;
-        if (localState.ethereumPrice > 0) {
-            max = totalValue / localState.ethereumPrice;
-        }
-
-        return fixed2(max);
+        return <div>Potential Max {coin}: {pad(val, 6)}</div>
     }
 
     function pad(s: string, pstart: number) {
@@ -87,45 +74,41 @@ export default function CryptoAssets({}) {
         return (<span class="ws-pre">{sp}</span>);
     }
 
-    function info(coin: string) {
-        let value: number = 0;
-        let quantity: number = 0;
-        let price: number = 0;
-
-        switch(coin) {
-            case "BTC":
-                value = localState.bitcoinPrice * localState.bitcoinQuantity;
-                quantity = localState.bitcoinQuantity;
-                price = localState.bitcoinPrice;
-                break;
-            case "ETH":
-                value = localState.ethereumPrice * localState.ethereumQuantity;
-                quantity = localState.ethereumQuantity;
-                price = localState.ethereumPrice;
-                break;
-            case "SOL":
-                value = localState.solanaPrice * localState.solanaQuantity;
-                quantity = localState.solanaQuantity;
-                price = localState.solanaPrice;
-                break;
-        };
-
+    function info(coin: string, price: number, quantity: number) {
+        let value = price * quantity;
         return (
-            <div>{pad(toUSD(value), 10)} ({pad(fixed2(quantity), 5)} {coin} @ {pad(toUSD(price), 10)})</div>
+            <div>{pad(fixed2(quantity), 5)} {coin} @ {pad(toUSD(price), 10)} = {pad(toUSD(value), 10)}</div>
         )
     }
+
+    function percent(coin: string, p: number) {
+        return <span>{coin} {fixed2(p)}%</span>
+    }
+
+    const btcValue = localState.bitcoinPrice * localState.bitcoinQuantity;
+    const ethValue = localState.ethereumPrice * localState.ethereumQuantity;
+    const solValue = localState.solanaPrice * localState.solanaQuantity;
+    const totalValue = btcValue + ethValue + solValue;
+    const profitPercentage = (100 / localState.dollarsSpent) * totalValue;
+
+    const btcPct = (100 / totalValue) * btcValue;
+    const ethPct = (100 / totalValue) * ethValue;
+    const solPct = (100 / totalValue) * solValue;
 
     return (
         <div class="c-crypto-assets">
             <div>Total : {pad(toUSD(totalValue), 11)}</div>
             <div>Profit: {pad(toUSD(totalValue - localState.dollarsSpent), 11)} ({pad(fixed2(profitPercentage - 100), 5)}%)</div>
             <div class="crypto-assets-v-spacer"></div>
-            { info("BTC") }
-            { info("ETH") }
-            { info("SOL") }
+            { info("BTC", localState.bitcoinPrice, localState.bitcoinQuantity) }
+            { info("ETH", localState.ethereumPrice, localState.ethereumQuantity) }
+            { info("SOL", localState.solanaPrice, localState.solanaQuantity) }
             <div class="crypto-assets-v-spacer"></div>
-            <div>Potential Max BTC: {pad(maxBtc(), 5)}</div>
-            <div>Potential Max ETH: {pad(maxEth(), 5)}</div>
+            <div>{percent("BTC", btcPct)} | {percent("ETH", ethPct)} | {percent("SOL", solPct)}</div>
+            <div class="crypto-assets-v-spacer"></div>
+            { allIn("BTC", localState.bitcoinPrice, totalValue) }
+            { allIn("ETH", localState.ethereumPrice, totalValue) }
+            { allIn("SOL", localState.solanaPrice, totalValue) }
         </div>
     )
 }
