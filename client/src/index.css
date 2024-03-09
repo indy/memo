@@ -322,8 +322,8 @@ textarea {
 
 .c-crypto-assets {
     border-radius: var(--ui-element-border-radius);
-    background: var(--clock-02-bg);
-    color: var(--clock-02-fg);
+    background: linear-gradient(180deg, var(--clock-09-bg) 0%, var(--clock-11-bg) 100%);
+    color: var(--clock-09-fg);
     padding: 1rem 1rem 1rem 1rem;
     margin: 1rem 1rem 0 1rem;
 }
@@ -384,138 +384,175 @@ a:visited.pigment-inherit {
 }
 
 .pigment-clock-12 {
-    background: var(--clock-12-bg);
+    background: linear-gradient(180deg, var(--clock-12-bg) 0%, var(--clock-02-bg) 100%);
     color: var(--clock-12-fg);
 }
 .pigment-clock-01 {
-    background: var(--clock-01-bg);
+  background: linear-gradient(180deg, var(--clock-01-bg) 0%, var(--clock-03-bg) 100%);
     color: var(--clock-01-fg);
 }
 .pigment-clock-02 {
-    background: var(--clock-02-bg);
+  background: linear-gradient(180deg, var(--clock-02-bg) 0%, var(--clock-04-bg) 100%);
     color: var(--clock-02-fg);
 }
 .pigment-clock-03 {
-    background: var(--clock-03-bg);
+  background: linear-gradient(180deg, var(--clock-03-bg) 0%, var(--clock-05-bg) 100%);
     color: var(--clock-03-fg);
 }
 .pigment-clock-04 {
-    background: var(--clock-04-bg);
+  background: linear-gradient(180deg, var(--clock-04-bg) 0%, var(--clock-06-bg) 100%);
     color: var(--clock-04-fg);
 }
 .pigment-clock-05 {
-    background: var(--clock-05-bg);
+  background: linear-gradient(180deg, var(--clock-05-bg) 0%, var(--clock-07-bg) 100%);
     color: var(--clock-05-fg);
 }
 .pigment-clock-06 {
-    background: var(--clock-06-bg);
+  background: linear-gradient(180deg, var(--clock-06-bg) 0%, var(--clock-08-bg) 100%);
     color: var(--clock-06-fg);
 }
 .pigment-clock-07 {
-    background: var(--clock-07-bg);
+  background: linear-gradient(180deg, var(--clock-07-bg) 0%, var(--clock-09-bg) 100%);
     color: var(--clock-07-fg);
 }
 .pigment-clock-08 {
-    background: var(--clock-08-bg);
+  background: linear-gradient(180deg, var(--clock-08-bg) 0%, var(--clock-10-bg) 100%);
     color: var(--clock-08-fg);
 }
 .pigment-clock-09 {
-    background: var(--clock-09-bg);
+  background: linear-gradient(180deg, var(--clock-09-bg) 0%, var(--clock-11-bg) 100%);
     color: var(--clock-09-fg);
 }
 .pigment-clock-10 {
-    background: var(--clock-10-bg);
+  background: linear-gradient(180deg, var(--clock-10-bg) 0%, var(--clock-12-bg) 100%);
     color: var(--clock-10-fg);
 }
 .pigment-clock-11 {
-    background: var(--clock-11-bg);
+  background: linear-gradient(180deg, var(--clock-11-bg) 0%, var(--clock-01-bg) 100%);
     color: var(--clock-11-fg);
 }
 
 .pigment-clock-12-alt {
-    background: var(--clock-12-bg1);
+  background: var(--clock-12-bg1);
     color: var(--clock-12-fg);
 }
 .pigment-clock-01-alt {
-    background: var(--clock-01-bg1);
+  background: var(--clock-01-bg1);
     color: var(--clock-01-fg);
 }
 .pigment-clock-02-alt {
-    background: var(--clock-02-bg1);
+  background: var(--clock-02-bg1);
     color: var(--clock-02-fg);
 }
 .pigment-clock-03-alt {
-    background: var(--clock-03-bg1);
+  background: var(--clock-03-bg1);
     color: var(--clock-03-fg);
 }
 .pigment-clock-04-alt {
-    background: var(--clock-04-bg1);
+  background: var(--clock-04-bg1);
     color: var(--clock-04-fg);
 }
 .pigment-clock-05-alt {
-    background: var(--clock-05-bg1);
+  background: var(--clock-05-bg1);
     color: var(--clock-05-fg);
 }
 .pigment-clock-06-alt {
-    background: var(--clock-06-bg1);
+  background: var(--clock-06-bg1);
     color: var(--clock-06-fg);
 }
 .pigment-clock-07-alt {
-    background: var(--clock-07-bg1);
+  background: var(--clock-07-bg1);
     color: var(--clock-07-fg);
 }
 .pigment-clock-08-alt {
-    background: var(--clock-08-bg1);
+  background: var(--clock-08-bg1);
     color: var(--clock-08-fg);
 }
 .pigment-clock-09-alt {
-    background: var(--clock-09-bg1);
+  background: var(--clock-09-bg1);
     color: var(--clock-09-fg);
 }
 .pigment-clock-10-alt {
-    background: var(--clock-10-bg1);
+  background: var(--clock-10-bg1);
     color: var(--clock-10-fg);
 }
 .pigment-clock-11-alt {
-    background: var(--clock-11-bg1);
+  background: var(--clock-11-bg1);
+    color: var(--clock-11-fg);
+}
+
+.pigment-clock-12-fg {
+    color: var(--clock-12-fg);
+}
+.pigment-clock-01-fg {
+    color: var(--clock-01-fg);
+}
+.pigment-clock-02-fg {
+    color: var(--clock-02-fg);
+}
+.pigment-clock-03-fg {
+    color: var(--clock-03-fg);
+}
+.pigment-clock-04-fg {
+    color: var(--clock-04-fg);
+}
+.pigment-clock-05-fg {
+    color: var(--clock-05-fg);
+}
+.pigment-clock-06-fg {
+    color: var(--clock-06-fg);
+}
+.pigment-clock-07-fg {
+    color: var(--clock-07-fg);
+}
+.pigment-clock-08-fg {
+    color: var(--clock-08-fg);
+}
+.pigment-clock-09-fg {
+    color: var(--clock-09-fg);
+}
+.pigment-clock-10-fg {
+    color: var(--clock-10-fg);
+}
+.pigment-clock-11-fg {
     color: var(--clock-11-fg);
 }
 
 .pigment-clock-12-alt:hover {
-    background: var(--clock-12-bg2);
+  background: var(--clock-12-bg2);
 }
 .pigment-clock-01-alt:hover {
-    background: var(--clock-01-bg2);
+  background: var(--clock-01-bg2);
 }
 .pigment-clock-02-alt:hover {
-    background: var(--clock-02-bg2);
+  background: var(--clock-02-bg2);
 }
 .pigment-clock-03-alt:hover {
-    background: var(--clock-03-bg2);
+  background: var(--clock-03-bg2);
 }
 .pigment-clock-04-alt:hover {
-    background: var(--clock-04-bg2);
+  background: var(--clock-04-bg2);
 }
 .pigment-clock-05-alt:hover {
-    background: var(--clock-05-bg2);
+  background: var(--clock-05-bg2);
 }
 .pigment-clock-06-alt:hover {
-    background: var(--clock-06-bg2);
+  background: var(--clock-06-bg2);
 }
 .pigment-clock-07-alt:hover {
-    background: var(--clock-07-bg2);
+  background: var(--clock-07-bg2);
 }
 .pigment-clock-08-alt:hover {
-    background: var(--clock-08-bg2);
+  background: var(--clock-08-bg2);
 }
 .pigment-clock-09-alt:hover {
-    background: var(--clock-09-bg2);
+  background: var(--clock-09-bg2);
 }
 .pigment-clock-10-alt:hover {
-    background: var(--clock-10-bg2);
+  background: var(--clock-10-bg2);
 }
 .pigment-clock-11-alt:hover {
-    background: var(--clock-11-bg2);
+  background: var(--clock-11-bg2);
 }
 
 .darken-border {

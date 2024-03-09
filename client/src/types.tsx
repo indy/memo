@@ -107,4 +107,5 @@ export type Pigment = {
     numString: string;
     class: string;
     classAlt: string;
+    classFg: string;
 };

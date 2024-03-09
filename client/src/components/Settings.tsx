@@ -272,6 +272,7 @@ function SampleCard({ pigment }: { pigment: string }) {
         numString: pigment,
         class: `pigment-clock-${pigment}`,
         classAlt: `pigment-clock-${pigment}-alt`,
+        classFg: `pigment-clock-${pigment}-fg`,
     };
 
     const editing = false;

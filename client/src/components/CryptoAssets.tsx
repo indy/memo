@@ -97,7 +97,8 @@ export default function CryptoAssets({}) {
 
     return (
         <div class="c-crypto-assets">
-            <div>Total : {pad(toUSD(totalValue), 11)}</div>
+            <div>Spent : {pad(toUSD(localState.dollarsSpent), 11)}</div>
+            <div>Value : {pad(toUSD(totalValue), 11)}</div>
             <div>Profit: {pad(toUSD(totalValue - localState.dollarsSpent), 11)} ({pad(fixed2(profitPercentage - 100), 5)}%)</div>
             <div class="crypto-assets-v-spacer"></div>
             { info("BTC", localState.bitcoinPrice, localState.bitcoinQuantity) }
@@ -108,7 +109,6 @@ export default function CryptoAssets({}) {
             <div class="crypto-assets-v-spacer"></div>
             { allIn("BTC", localState.bitcoinPrice, totalValue) }
             { allIn("ETH", localState.ethereumPrice, totalValue) }
-            { allIn("SOL", localState.solanaPrice, totalValue) }
         </div>
     )
 }

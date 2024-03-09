@@ -286,7 +286,7 @@ function parseNoteText(text: string, parentTag: string, noteId: number) {
                         "a",
                         {
                             href: ensureLinkable(seg),
-                            class: `in-note-link ${pigment.class}`,
+                            class: `in-note-link ${pigment.classFg}`,
                         },
                         seg
                     )
