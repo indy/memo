@@ -101,6 +101,23 @@ pub async fn get_user(
     }
 }
 
+pub async fn edit_ui_config(
+    edit_ui_config: Json<interop::EditUiConfig>,
+    db_pool: Data<SqlitePool>,
+    session: actix_session::Session,
+) -> crate::Result<HttpResponse> {
+    info!("edit_ui_config");
+
+    let user_id = session::user_id(&session)?;
+
+    let edit_ui_config = edit_ui_config.into_inner();
+
+    db::edit_ui_config(&db_pool, user_id, &edit_ui_config.json)?;
+
+    // send response
+    Ok(HttpResponse::Ok().json(true))
+}
+
 fn generate_random_salt() -> [u8; 16] {
     let mut salt = [0; 16];
     thread_rng().fill_bytes(&mut salt);

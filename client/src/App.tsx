@@ -1,8 +1,6 @@
-import { h } from "preact";
+import { type State } from "./types";
 
-import { State } from "./types";
-
-import { Router, route, RouterOnChangeArgs } from "preact-router";
+import { Router, route, type RouterOnChangeArgs } from "preact-router";
 import { AppStateChange, AppStateProvider, getAppState } from "./AppState";
 
 import CategoryDrawer from "./components/CategoryDrawer";

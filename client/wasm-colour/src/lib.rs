@@ -13,21 +13,44 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #![allow(dead_code)]
-#![cfg_attr(
-    feature = "cargo-clippy",
-    allow(many_single_char_names, too_many_arguments)
-)]
 
 extern crate cfg_if;
 extern crate wasm_bindgen;
 
 mod colour;
 mod error;
-mod utils;
 
-use crate::colour::{Rgb, Hsluv};
+use crate::colour::{Hsluv, Rgb};
 use cfg_if::cfg_if;
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
+
+cfg_if! {
+    // When the `console_error_panic_hook` feature is enabled, we can call the
+    // `set_panic_hook` function at least once during initialization, and then
+    // we will get better error messages if our code ever panics.
+    //
+    // For more details see
+    // https://github.com/rustwasm/console_error_panic_hook#readme
+    if #[cfg(feature = "console_error_panic_hook")] {
+        extern crate console_error_panic_hook;
+        pub use self::console_error_panic_hook::set_once as set_panic_hook;
+    } else {
+        #[inline]
+        pub fn set_panic_hook() {}
+    }
+}
+
+cfg_if! {
+    if #[cfg(feature = "console_log")] {
+        fn init_log() {
+            use log::Level;
+            console_log::init_with_level(Level::Info).expect("error initializing log");
+        }
+    } else {
+        fn init_log() {}
+    }
+}
 
 cfg_if! {
     // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -45,21 +68,16 @@ extern "C" {
     fn log(s: &str);
 }
 
-#[wasm_bindgen]
+#[derive(Serialize, Deserialize)]
 pub struct Transport3C {
     c0: f64,
     c1: f64,
     c2: f64,
 }
 
-#[wasm_bindgen]
 impl Transport3C {
     pub fn new(c0: f64, c1: f64, c2: f64) -> Transport3C {
-        Transport3C {
-            c0: c0,
-            c1: c1,
-            c2: c2,
-        }
+        Transport3C { c0, c1, c2 }
     }
 
     pub fn blank() -> Transport3C {
@@ -68,18 +86,6 @@ impl Transport3C {
             c1: 0.0,
             c2: 0.0,
         }
-    }
-
-    pub fn get_0(&self) -> f64 {
-        self.c0
-    }
-
-    pub fn get_1(&self) -> f64 {
-        self.c1
-    }
-
-    pub fn get_2(&self) -> f64 {
-        self.c2
     }
 }
 
@@ -96,22 +102,25 @@ impl From<Hsluv> for Transport3C {
 }
 
 #[wasm_bindgen]
-pub fn hsluv_from_rgb(r: f64, g: f64, b: f64) -> Transport3C {
+pub fn hsluv_from_rgb(r: f64, g: f64, b: f64) -> JsValue {
     let hsluv: Hsluv = Rgb::new(r as f32, g as f32, b as f32, 1.0).into();
 
-    hsluv.into()
+    let res: Transport3C = hsluv.into();
+    serde_wasm_bindgen::to_value(&res).unwrap()
 }
 
 #[wasm_bindgen]
-pub fn rgb_from_hsluv(h: f64, s: f64, l: f64) -> Transport3C {
+pub fn rgb_from_hsluv(h: f64, s: f64, l: f64) -> JsValue {
     let rgb: Rgb = Hsluv::new(h as f32, s as f32, l as f32, 1.0).into();
 
-    rgb.into()
+    let res: Transport3C = rgb.into();
+    serde_wasm_bindgen::to_value(&res).unwrap()
 }
 
 #[wasm_bindgen]
-pub fn rgb_from_oklch(h: f64, s: f64, l: f64) -> Transport3C {
+pub fn rgb_from_oklch(h: f64, s: f64, l: f64) -> JsValue {
     let rgb: Rgb = Hsluv::new(h as f32, s as f32, l as f32, 1.0).into();
 
-    rgb.into()
+    let res: Transport3C = rgb.into();
+    serde_wasm_bindgen::to_value(&res).unwrap()
 }

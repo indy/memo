@@ -1,8 +1,8 @@
-import { h, ComponentChildren } from "preact";
+import { h, type ComponentChildren } from "preact";
 import { useState } from "preact/hooks";
 import { route } from "preact-router";
 
-import { Note, Pigment, Category } from "../types";
+import type { Note, Pigment, Category } from "../types";
 
 import Net from "../Net";
 import { AppStateChange } from "../AppState";
@@ -312,7 +312,7 @@ function splitLineByHyperlinks(line: string): Array<string> {
         .filter((seg) => seg.length > 0);
 
     // remove space at end of the last seg
-    segs[segs.length - 1] = segs[segs.length - 1].trim();
+    segs[segs.length - 1] = segs[segs.length - 1]!.trim(); // todo: !
 
     return segs;
 }

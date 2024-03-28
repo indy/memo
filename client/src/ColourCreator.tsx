@@ -1,204 +1,213 @@
-import { WasmInterface, Settings, ColourTriple } from "./types";
+import { ColourScheme } from "./enums";
+import type { State, ColourTriple, ColourQuad, ColourSeeds } from "./types";
 
-function buildColourConversionFn(wasm_bindgen_bg: InitOutput) {
-    const {
-        rgb_from_hsluv,
-        __wbg_transport3c_free,
-        transport3c_get_0,
-        transport3c_get_1,
-        transport3c_get_2,
-    } = wasm_bindgen_bg;
+type ColourDefinitions = {
+    [index: string]: string | ColourTriple | ColourQuad | undefined;
+};
 
-    return (hsl: ColourTriple): string => {
+function generateColoursFromSeeds(state: State, seeds: ColourSeeds) {
+    if (state.wasmInterface) {
+        const colourDefinitions: ColourDefinitions = generateColourDefs(seeds);
+        const rgbFromHsl = state.wasmInterface.rgbFromHsl;
+
         function clamp(value: number, min: number, max: number) {
             return value < min ? min : value > max ? max : value;
         }
 
-        function componentAsHexString(c: number) {
-            let hex = c.toString(16);
-            if (hex.length < 2) {
-                hex = "0" + hex;
-            }
-            return hex;
+        function clampedRgbFromHsl(
+            h: number,
+            s: number,
+            l: number,
+        ): [number, number, number] {
+            const transportRGB = rgbFromHsl(h, s, l);
+
+            let r = Math.floor(clamp(transportRGB.c0, 0, 1) * 255);
+            let g = Math.floor(clamp(transportRGB.c1, 0, 1) * 255);
+            let b = Math.floor(clamp(transportRGB.c2, 0, 1) * 255);
+
+            return [r, g, b];
         }
 
-        const res = rgb_from_hsluv(hsl[0], hsl[1], hsl[2]);
+        let root = document.body;
 
-        let r = Math.floor(clamp(transport3c_get_0(res), 0, 1) * 255);
-        let g = Math.floor(clamp(transport3c_get_1(res), 0, 1) * 255);
-        let b = Math.floor(clamp(transport3c_get_2(res), 0, 1) * 255);
+        Object.keys(colourDefinitions).forEach((key) => {
+            let cssName = cssFromUnderscore(key);
+            let value = colourDefinitions[key];
 
-        __wbg_transport3c_free(res);
-        // transportRGB.free();
+            if (Array.isArray(value)) {
+                if (value.length === 3) {
+                    let [h, s, l] = value as ColourTriple;
 
-        return (
-            "#" +
-            componentAsHexString(r) +
-            componentAsHexString(g) +
-            componentAsHexString(b)
-        );
-    };
+                    let [r, g, b] = clampedRgbFromHsl(h, s, l);
+                    root.style.setProperty(cssName, `rgb(${r}, ${g}, ${b})`);
+                } else if (value.length === 4) {
+                    let [h, s, l, alpha] = value as ColourQuad;
+
+                    let [r, g, b] = clampedRgbFromHsl(h, s, l);
+                    root.style.setProperty(
+                        cssName,
+                        `rgba(${r}, ${g}, ${b}, ${alpha})`,
+                    );
+                } else {
+                    console.error(
+                        `${cssName}: unknown array size expected 3 or 4`,
+                    );
+                }
+            } else {
+                let name = value;
+                if (name) {
+                    let source = getComputedStyle(root).getPropertyValue(name);
+                    root.style.setProperty(cssName, source);
+                }
+            }
+        });
+    }
 }
 
-function tuple(a: number, b: number, c: number): ColourTriple {
-    return [a, b, c];
-}
+function declareSeeds(colourScheme: ColourScheme): ColourSeeds {
+    let s: ColourSeeds;
 
-function augmentSettingsWithCssModifierParameters(settings: Settings) {
-    let root = document.body;
-    let mode = getComputedStyle(root).getPropertyValue("--mode").trim();
-
-    let s;
-
-    if (mode === "light") {
+    if (colourScheme === ColourScheme.Light) {
         s = {
-            ...settings,
+            hue: 67,
+            sat: 20,
 
-            bg: tuple(46.5, 19.2, 95.7),
-            bg1: tuple(85.9, 4.5, 90),
-            bg2: tuple(46.2, 20.1, 85),
-            fg: tuple(53.2, 17.4, 3.4),
-            fg1: tuple(0, 0, 40.7),
+            bgL: 99.0,
+            bg1L: 80.0,
+            bgLDelta: -3,
 
-            fg_inactive: tuple(0, 0, 59.8),
-            textarea_bg: tuple(85.9, 100, 99.8),
-            textarea_fg: tuple(53.2, 17.4, 3.4),
+            fgH: 67,
+            fgS: 0,
+            fgL: 5.0,
+            fgLDelta: 10.0,
 
-            save_on_bg: tuple(127, 70, 80),
-            save_on_fg: tuple(53.2, 17.4, 3.4),
+            clockHDelta: 30,
 
-            divider: tuple(0, 0, 77.7),
-
-            saturation: 60.2,
-            lightnessBg: 90.0,
-            lightnessBg1: 80.0,
-            lightnessBg2: 70.0,
-            lightnessFg: 30.0,
-            lightnessFg1: 70.0,
+            clockFgL: 53.6,
+            clockBgL: 93,
         };
     } else {
-        let bgh = 220;
-        let bgs = 60;
-        let bgl = 10;
-
         s = {
-            ...settings,
+            hue: 230.0,
+            sat: 20.0,
 
-            bg: tuple(bgh, bgs, bgl),
-            bg1: tuple(bgh, bgs, bgl + 3),
-            bg2: tuple(bgh, bgs, bgl + 6),
-            fg: tuple(bgh, 100, 70),
-            fg1: tuple(bgh, 100, 50),
+            bgL: 1,
+            bg1L: 1,
+            bgLDelta: 3,
 
-            fg_inactive: tuple(bgh, bgs + 40, 20),
-            textarea_bg: tuple(0, 0, 12),
-            textarea_fg: tuple(236, 2.7, 69),
+            fgH: 16.7,
+            fgS: 0,
+            fgL: 90.0,
+            fgLDelta: -10.0,
 
-            save_on_fg: tuple(220, 10, 80),
-            save_on_bg: tuple(127, 90, 40),
+            clockHDelta: 30,
 
-            divider: tuple(bgh, bgs, bgl - 13),
-
-            saturation: 70,
-            lightnessBg: 30.0,
-            lightnessBg1: 25.0,
-            lightnessBg2: 15.0,
-            lightnessFg: 60.0,
-            lightnessFg1: 15.0,
+            clockBgL: 30.0,
+            clockFgL: 80,
         };
     }
     return s;
 }
 
-/*
-  | suffix | use                        | example      |
-  |--------+----------------------------+--------------|
-  | fg     | normal text                | clock-05-fg  |
-  | fg1    | secondary text             | clock-05-fg1 |
-  | bg     | card colour                | clock-05-bg  |
-  | bg1    | button background          | clock-05-bg1 |
-  | bg2    | button background on hover | clock-05-bg2 |
-*/
+function generateColourDefs(seeds: ColourSeeds): ColourDefinitions {
+    let defs: ColourDefinitions = {};
 
-function declareCssVariables(settings: Settings, wasmInterface: WasmInterface) {
-    let root = document.body;
-
-    function updateVariable(label: string, val: ColourTriple) {
-        let cssName = "--" + label.replaceAll("_", "-");
-
-        root.style.setProperty(cssName, wasmInterface.RgbFromHsl(val));
-    }
-
-    for (const [key, val] of Object.entries(settings)) {
-        if (Array.isArray(val) && val.length === 3) {
-            updateVariable(key, [val[0], val[1], val[2]]);
-        }
-    }
-
-    let hue, rgb, index;
     for (let i = 0; i < 12; i++) {
-        hue = settings.hueOffset + i * settings.hueDelta;
+        let hueFg = seeds.hue + i * seeds.clockHDelta;
+        let hueBg = seeds.hue + i * seeds.clockHDelta;
 
-        index = indexAsString(i);
+        let index = indexAsString(i);
 
-        rgb = wasmInterface.RgbFromHsl([
-            hue,
-            settings.saturation!,
-            settings.lightnessFg!,
-        ]);
-
-        root.style.setProperty(`--clock-${index}-fg`, rgb);
-
-        rgb = wasmInterface.RgbFromHsl([
-            hue,
-            settings.saturation!,
-            settings.lightnessFg1!,
-        ]);
-        root.style.setProperty(`--clock-${index}-fg1`, rgb);
-
-        rgb = wasmInterface.RgbFromHsl([
-            hue,
-            settings.saturation!,
-            settings.lightnessBg!,
-        ]);
-        root.style.setProperty(`--clock-${index}-bg`, rgb);
-
-        rgb = wasmInterface.RgbFromHsl([
-            hue,
-            settings.saturation!,
-            settings.lightnessBg1!,
-        ]);
-        root.style.setProperty(`--clock-${index}-bg1`, rgb);
-
-        rgb = wasmInterface.RgbFromHsl([
-            hue,
-            settings.saturation!,
-            settings.lightnessBg2!,
-        ]);
-        root.style.setProperty(`--clock-${index}-bg2`, rgb);
+        defs[`fg_clock_${index}`] = [
+            hueFg,
+            seeds.sat + 30,
+            seeds.clockFgL,
+        ] as ColourTriple;
+        defs[`bg_clock_${index}`] = [
+            hueBg,
+            seeds.sat + 30,
+            seeds.clockBgL,
+        ] as ColourTriple;
+        defs[`bg1_clock_${index}`] = [
+            hueBg,
+            seeds.sat + 90,
+            seeds.clockBgL,
+        ] as ColourTriple;
+        defs[`hi_clock_${index}`] = [
+            hueFg,
+            seeds.sat + 30,
+            seeds.clockFgL + 10,
+        ] as ColourTriple;
     }
 
-    function updateDerivedVariable(cssLabel: string, copyFrom: string) {
-        let source = getComputedStyle(root).getPropertyValue(copyFrom);
-        root.style.setProperty(cssLabel, source);
-    }
+    // colours that can be derived from previously set
+    // variables regardless of the current colour scheme
+    //
+    defs = {
+        ...defs,
 
-    updateDerivedVariable("--bg-inbox", "--clock-06-bg");
-    updateDerivedVariable("--bg-group", "--clock-12-bg");
-    updateDerivedVariable("--bg-bin", "--clock-02-bg");
+        ui_shadow: [seeds.hue, seeds.sat, seeds.bgL * 0.2, 0.1] as ColourQuad,
 
-    updateDerivedVariable("--fg-inbox", "--clock-06-fg");
-    updateDerivedVariable("--fg-group", "--clock-12-fg");
-    updateDerivedVariable("--fg-bin", "--clock-02-fg");
+        ui_shadow_2: [seeds.hue, seeds.sat, seeds.bgL * 0.1, 0.1] as ColourQuad,
 
-    updateDerivedVariable("--hi-inbox", "--clock-06-fg1");
-    updateDerivedVariable("--hi-group", "--clock-12-fg1");
-    updateDerivedVariable("--hi-bin", "--clock-02-fg1");
+        bg_inbox: "--bg-clock-06",
+        bg_group: "--bg-clock-12",
+        bg_bin: "--bg-clock-02",
 
-    updateDerivedVariable("--textarea-border", "--textarea-bg");
+        fg_inbox: "--fg-clock-06",
+        fg_group: "--fg-clock-12",
+        fg_bin: "--fg-clock-02",
+
+        hi_inbox: "--hi-clock-06",
+        hi_group: "--hi-clock-12",
+        hi_bin: "--hi-clock-02",
+    };
+
+    defs = bgCol(defs, seeds, 1, "bg");
+    defs = bgCol(defs, seeds, 0, "bg_lighter_1");
+    defs = bgCol(defs, seeds, 2, "bg_darker_2");
+    defs = bgCol(defs, seeds, 3, "bg_darker_3");
+    defs = bgCol(defs, seeds, 4, "bg_darker_4");
+    defs = bgCol(defs, seeds, 6, "bg_darker_6");
+
+    defs = fgCol(defs, seeds, 0, "fg");
+    defs = fgCol(defs, seeds, 1, "fg_lighter_1");
+    defs = fgCol(defs, seeds, 2, "fg_lighter_2");
+    defs = fgCol(defs, seeds, 5, "fg_lighter_5");
+    defs = fgCol(defs, seeds, 7, "fg_lighter_7");
+
+    return defs;
 }
 
-// let current = getComputedStyle(root).getPropertyValue("--fg-clock-12");
+function bgCol(
+    defs: ColourDefinitions,
+    seeds: ColourSeeds,
+    factor: number,
+    name: string,
+): ColourDefinitions {
+    defs[name] = [
+        seeds.hue,
+        seeds.sat,
+        seeds.bgL + seeds.bgLDelta * factor,
+    ] as ColourTriple;
+
+    return defs;
+}
+
+function fgCol(
+    defs: ColourDefinitions,
+    seeds: ColourSeeds,
+    factor: number,
+    name: string,
+): ColourDefinitions {
+    defs[name] = [
+        seeds.fgH,
+        seeds.fgS,
+        seeds.fgL + seeds.fgLDelta * factor,
+    ] as ColourTriple;
+
+    return defs;
+}
 
 function indexAsString(i: number) {
     if (i === 0) {
@@ -210,8 +219,9 @@ function indexAsString(i: number) {
     }
 }
 
-export {
-    buildColourConversionFn,
-    declareCssVariables,
-    augmentSettingsWithCssModifierParameters,
-};
+function cssFromUnderscore(name: string) {
+    let cssName = "--" + name.replaceAll("_", "-");
+    return cssName;
+}
+
+export { generateColoursFromSeeds, declareSeeds };

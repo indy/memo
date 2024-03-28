@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-use crate::db::sqlite::{one, FromRow, SqlitePool};
+use crate::db::sqlite::{one, zero, FromRow, SqlitePool};
 use crate::interop::users as interop;
 use crate::interop::Key;
 use rusqlite::{params, Row};
@@ -37,13 +37,14 @@ pub(crate) fn login(
                     username: row.get(2)?,
                     email: row.get(1)?,
                     admin: None,
+                    ui_config_json: row.get(4)?,
                 },
             ))
         }
     }
 
     let conn = db_pool.get()?;
-    let stmt = "SELECT id, email, username, password
+    let stmt = "SELECT id, email, username, password, ui_config_json
                 FROM users
                 WHERE email = ?1";
     one(&conn, stmt, params![login_credentials.email])
@@ -66,19 +67,25 @@ pub(crate) fn create(
                     username: row.get(2)?,
                     email: row.get(1)?,
                     admin: None,
+                    ui_config_json: row.get(3)?,
                 },
             ))
         }
     }
 
     let conn = db_pool.get()?;
-    let stmt = "INSERT INTO users (email, username, password)
-                VALUES(?1, ?2, ?3)
-                RETURNING id, email, username";
+    let stmt = "INSERT INTO users (email, username, password, ui_config_json)
+                VALUES(?1, ?2, ?3, ?4)
+                RETURNING id, email, username, ui_config_json";
     one(
         &conn,
         stmt,
-        params![registration.email, registration.username, hash],
+        params![
+            registration.email,
+            registration.username,
+            hash,
+            registration.ui_config
+        ],
     )
 }
 
@@ -89,13 +96,33 @@ pub(crate) fn get(db_pool: &SqlitePool, user_id: Key) -> crate::Result<interop::
                 username: row.get(1)?,
                 email: row.get(0)?,
                 admin: None,
+                ui_config_json: row.get(2)?,
             })
         }
     }
 
     let conn = db_pool.get()?;
-    let stmt = "SELECT email, username
+    let stmt = "SELECT email, username, ui_config_json
                 FROM users
                 WHERE id = ?1";
     one(&conn, stmt, params![user_id])
+}
+
+pub(crate) fn edit_ui_config(
+    sqlite_pool: &SqlitePool,
+    user_id: Key,
+    ui_config_json: &str,
+) -> crate::Result<bool> {
+    let conn = sqlite_pool.get()?;
+    zero(
+        &conn,
+        r#"
+           update users
+           set ui_config_json = ?2
+           where id = ?1
+        "#,
+        params![user_id, ui_config_json],
+    )?;
+
+    Ok(true)
 }

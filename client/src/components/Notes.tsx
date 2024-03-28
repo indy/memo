@@ -1,7 +1,7 @@
-import { h } from "preact";
 import { useEffect } from "preact/hooks";
 
-import { Note, NoteLocation, Category, LoadState } from "../types";
+import { NoteLocation, LoadState } from "../enums";
+import type { Note, Category } from "../types";
 
 import Net from "../Net";
 import { ensureLoaded } from "../Utils";
@@ -28,17 +28,18 @@ function InboxedNotes({ path }: { path?: string }) {
     let categories = appState.categories.value;
     const [pin, unpin] = partitionPinnedNotes(notes);
 
+    // todo: fix the !
     return (
         <div>
             <CreateNoteForm />
             <CryptoAssets />
             <PinnedListing>
-                {pin.map((n) => (
+                {pin!.map((n) => (
                     <Card note={n} categories={categories} />
                 ))}
             </PinnedListing>
             <UnPinnedListing>
-                {unpin.map((n) => (
+                {unpin!.map((n) => (
                     <Card note={n} categories={categories} />
                 ))}
             </UnPinnedListing>
@@ -76,7 +77,7 @@ function GroupedNotes({
         label = getTriageLabel(appState.categories.value, cid);
         AppStateChange.groupMenuItemLabel(label);
 
-        notes = appState.listing.value.group[cid];
+        notes = appState.listing.value.group[cid]!; // todo: !
 
         // only show the delete button after the group has been loaded
         // otherwise there's an annoying brief view of the button whilst
@@ -87,17 +88,17 @@ function GroupedNotes({
 
     let categories = appState.categories.value;
     const [pin, unpin] = partitionPinnedNotes(notes);
-
+    // todo: !
     return (
         <div>
             <CreateNoteForm categoryId={cid} />
             <PinnedListing>
-                {pin.map((n) => (
+                {pin!.map((n) => (
                     <Card note={n} categories={categories} categoryId={cid} />
                 ))}
             </PinnedListing>
             <UnPinnedListing>
-                {unpin.map((n) => (
+                {unpin!.map((n) => (
                     <Card note={n} categories={categories} categoryId={cid} />
                 ))}
             </UnPinnedListing>

@@ -1,7 +1,6 @@
-import { h } from "preact";
 import { route } from "preact-router";
 
-import { Note, Pigment } from "../types";
+import type { Note, Pigment } from "../types";
 
 import Net from "../Net";
 import { AppStateChange } from "../AppState";
@@ -26,7 +25,7 @@ function ButtonDelete({ note, pigment }: { note: Note; pigment: Pigment }) {
             class={`${pigment.classAlt} button card-action-cell`}
             onClick={onDeleteClicked}
         >
-            <SvgBin fillColour={`--clock-${pigment.numString}-fg`} />
+            <SvgBin fillColour={`--fg-clock-${pigment.numString}`} />
         </button>
     );
 }
@@ -52,9 +51,9 @@ function ButtonPinned({ note, pigment }: { note: Note; pigment: Pigment }) {
             onClick={onPinnedClicked}
         >
             {note.pinned ? (
-                <SvgPinned fillColour={`--clock-${pigment.numString}-fg`} />
+                <SvgPinned fillColour={`--fg-clock-${pigment.numString}`} />
             ) : (
-                <SvgUnpinned fillColour={`--clock-${pigment.numString}-fg`} />
+                <SvgUnpinned fillColour={`--fg-clock-${pigment.numString}`} />
             )}
         </button>
     );

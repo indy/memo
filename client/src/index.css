@@ -322,8 +322,8 @@ textarea {
 
 .c-crypto-assets {
     border-radius: var(--ui-element-border-radius);
-    background: linear-gradient(180deg, var(--clock-09-bg) 0%, var(--clock-11-bg) 100%);
-    color: var(--clock-09-fg);
+    background: linear-gradient(180deg, var(--bg-clock-09) 0%, var(--bg-clock-11) 100%);
+    color: var(--fg-clock-09);
     padding: 1rem 1rem 1rem 1rem;
     margin: 1rem 1rem 0 1rem;
 }
@@ -384,175 +384,175 @@ a:visited.pigment-inherit {
 }
 
 .pigment-clock-12 {
-    background: linear-gradient(180deg, var(--clock-12-bg) 0%, var(--clock-02-bg) 100%);
-    color: var(--clock-12-fg);
+    background: linear-gradient(180deg, var(--bg-clock-12) 0%, var(--bg-clock-02) 100%);
+    color: var(--fg-clock-12);
 }
 .pigment-clock-01 {
-  background: linear-gradient(180deg, var(--clock-01-bg) 0%, var(--clock-03-bg) 100%);
-    color: var(--clock-01-fg);
+  background: linear-gradient(180deg, var(--bg-clock-01) 0%, var(--bg-clock-03) 100%);
+    color: var(--fg-clock-01);
 }
 .pigment-clock-02 {
-  background: linear-gradient(180deg, var(--clock-02-bg) 0%, var(--clock-04-bg) 100%);
-    color: var(--clock-02-fg);
+  background: linear-gradient(180deg, var(--bg-clock-02) 0%, var(--bg-clock-04) 100%);
+    color: var(--fg-clock-02);
 }
 .pigment-clock-03 {
-  background: linear-gradient(180deg, var(--clock-03-bg) 0%, var(--clock-05-bg) 100%);
-    color: var(--clock-03-fg);
+  background: linear-gradient(180deg, var(--bg-clock-03) 0%, var(--bg-clock-05) 100%);
+    color: var(--fg-clock-03);
 }
 .pigment-clock-04 {
-  background: linear-gradient(180deg, var(--clock-04-bg) 0%, var(--clock-06-bg) 100%);
-    color: var(--clock-04-fg);
+  background: linear-gradient(180deg, var(--bg-clock-04) 0%, var(--bg-clock-06) 100%);
+    color: var(--fg-clock-04);
 }
 .pigment-clock-05 {
-  background: linear-gradient(180deg, var(--clock-05-bg) 0%, var(--clock-07-bg) 100%);
-    color: var(--clock-05-fg);
+  background: linear-gradient(180deg, var(--bg-clock-05) 0%, var(--bg-clock-07) 100%);
+    color: var(--fg-clock-05);
 }
 .pigment-clock-06 {
-  background: linear-gradient(180deg, var(--clock-06-bg) 0%, var(--clock-08-bg) 100%);
-    color: var(--clock-06-fg);
+  background: linear-gradient(180deg, var(--bg-clock-06) 0%, var(--bg-clock-08) 100%);
+    color: var(--fg-clock-06);
 }
 .pigment-clock-07 {
-  background: linear-gradient(180deg, var(--clock-07-bg) 0%, var(--clock-09-bg) 100%);
-    color: var(--clock-07-fg);
+  background: linear-gradient(180deg, var(--bg-clock-07) 0%, var(--bg-clock-09) 100%);
+    color: var(--fg-clock-07);
 }
 .pigment-clock-08 {
-  background: linear-gradient(180deg, var(--clock-08-bg) 0%, var(--clock-10-bg) 100%);
-    color: var(--clock-08-fg);
+  background: linear-gradient(180deg, var(--bg-clock-08) 0%, var(--bg-clock-10) 100%);
+    color: var(--fg-clock-08);
 }
 .pigment-clock-09 {
-  background: linear-gradient(180deg, var(--clock-09-bg) 0%, var(--clock-11-bg) 100%);
-    color: var(--clock-09-fg);
+  background: linear-gradient(180deg, var(--bg-clock-09) 0%, var(--bg-clock-11) 100%);
+    color: var(--fg-clock-09);
 }
 .pigment-clock-10 {
-  background: linear-gradient(180deg, var(--clock-10-bg) 0%, var(--clock-12-bg) 100%);
-    color: var(--clock-10-fg);
+  background: linear-gradient(180deg, var(--bg-clock-10) 0%, var(--bg-clock-12) 100%);
+    color: var(--fg-clock-10);
 }
 .pigment-clock-11 {
-  background: linear-gradient(180deg, var(--clock-11-bg) 0%, var(--clock-01-bg) 100%);
-    color: var(--clock-11-fg);
+  background: linear-gradient(180deg, var(--bg-clock-11) 0%, var(--bg-clock-01) 100%);
+    color: var(--fg-clock-11);
 }
 
-.pigment-clock-12-alt {
-  background: var(--clock-12-bg1);
-    color: var(--clock-12-fg);
+.pigment-alt-clock-12 {
+  background: var(--bg1-clock-12);
+    color: var(--fg-clock-12);
 }
-.pigment-clock-01-alt {
-  background: var(--clock-01-bg1);
-    color: var(--clock-01-fg);
+.pigment-alt-clock-01 {
+  background: var(--bg1-clock-01);
+    color: var(--fg-clock-01);
 }
-.pigment-clock-02-alt {
-  background: var(--clock-02-bg1);
-    color: var(--clock-02-fg);
+.pigment-alt-clock-02 {
+  background: var(--bg1-clock-02);
+    color: var(--fg-clock-02);
 }
-.pigment-clock-03-alt {
-  background: var(--clock-03-bg1);
-    color: var(--clock-03-fg);
+.pigment-alt-clock-03 {
+  background: var(--bg1-clock-03);
+    color: var(--fg-clock-03);
 }
-.pigment-clock-04-alt {
-  background: var(--clock-04-bg1);
-    color: var(--clock-04-fg);
+.pigment-alt-clock-04 {
+  background: var(--bg1-clock-04);
+    color: var(--fg-clock-04);
 }
-.pigment-clock-05-alt {
-  background: var(--clock-05-bg1);
-    color: var(--clock-05-fg);
+.pigment-alt-clock-05 {
+  background: var(--bg1-clock-05);
+    color: var(--fg-clock-05);
 }
-.pigment-clock-06-alt {
-  background: var(--clock-06-bg1);
-    color: var(--clock-06-fg);
+.pigment-alt-clock-06 {
+  background: var(--bg1-clock-06);
+    color: var(--fg-clock-06);
 }
-.pigment-clock-07-alt {
-  background: var(--clock-07-bg1);
-    color: var(--clock-07-fg);
+.pigment-alt-clock-07 {
+  background: var(--bg1-clock-07);
+    color: var(--fg-clock-07);
 }
-.pigment-clock-08-alt {
-  background: var(--clock-08-bg1);
-    color: var(--clock-08-fg);
+.pigment-alt-clock-08 {
+  background: var(--bg1-clock-08);
+    color: var(--fg-clock-08);
 }
-.pigment-clock-09-alt {
-  background: var(--clock-09-bg1);
-    color: var(--clock-09-fg);
+.pigment-alt-clock-09 {
+  background: var(--bg1-clock-09);
+    color: var(--fg-clock-09);
 }
-.pigment-clock-10-alt {
-  background: var(--clock-10-bg1);
-    color: var(--clock-10-fg);
+.pigment-alt-clock-10 {
+  background: var(--bg1-clock-10);
+    color: var(--fg-clock-10);
 }
-.pigment-clock-11-alt {
-  background: var(--clock-11-bg1);
-    color: var(--clock-11-fg);
+.pigment-alt-clock-11 {
+  background: var(--bg1-clock-11);
+    color: var(--fg-clock-11);
 }
 
-.pigment-clock-12-fg {
-    color: var(--clock-12-fg);
+.pigment-fg-clock-12 {
+    color: var(--fg-clock-12);
 }
-.pigment-clock-01-fg {
-    color: var(--clock-01-fg);
+.pigment-fg-clock-01 {
+    color: var(--fg-clock-01);
 }
-.pigment-clock-02-fg {
-    color: var(--clock-02-fg);
+.pigment-fg-clock-02 {
+    color: var(--fg-clock-02);
 }
-.pigment-clock-03-fg {
-    color: var(--clock-03-fg);
+.pigment-fg-clock-03 {
+    color: var(--fg-clock-03);
 }
-.pigment-clock-04-fg {
-    color: var(--clock-04-fg);
+.pigment-fg-clock-04 {
+    color: var(--fg-clock-04);
 }
-.pigment-clock-05-fg {
-    color: var(--clock-05-fg);
+.pigment-fg-clock-05 {
+    color: var(--fg-clock-05);
 }
-.pigment-clock-06-fg {
-    color: var(--clock-06-fg);
+.pigment-fg-clock-06 {
+    color: var(--fg-clock-06);
 }
-.pigment-clock-07-fg {
-    color: var(--clock-07-fg);
+.pigment-fg-clock-07 {
+    color: var(--fg-clock-07);
 }
-.pigment-clock-08-fg {
-    color: var(--clock-08-fg);
+.pigment-fg-clock-08 {
+    color: var(--fg-clock-08);
 }
-.pigment-clock-09-fg {
-    color: var(--clock-09-fg);
+.pigment-fg-clock-09 {
+    color: var(--fg-clock-09);
 }
-.pigment-clock-10-fg {
-    color: var(--clock-10-fg);
+.pigment-fg-clock-10 {
+    color: var(--fg-clock-10);
 }
-.pigment-clock-11-fg {
-    color: var(--clock-11-fg);
+.pigment-fg-clock-11 {
+    color: var(--fg-clock-11);
 }
 
 .pigment-clock-12-alt:hover {
-  background: var(--clock-12-bg2);
+  background: var(--bg-clock-122);
 }
 .pigment-clock-01-alt:hover {
-  background: var(--clock-01-bg2);
+  background: var(--bg-clock-012);
 }
 .pigment-clock-02-alt:hover {
-  background: var(--clock-02-bg2);
+  background: var(--bg-clock-022);
 }
 .pigment-clock-03-alt:hover {
-  background: var(--clock-03-bg2);
+  background: var(--bg-clock-032);
 }
 .pigment-clock-04-alt:hover {
-  background: var(--clock-04-bg2);
+  background: var(--bg-clock-042);
 }
 .pigment-clock-05-alt:hover {
-  background: var(--clock-05-bg2);
+  background: var(--bg-clock-052);
 }
 .pigment-clock-06-alt:hover {
-  background: var(--clock-06-bg2);
+  background: var(--bg-clock-062);
 }
 .pigment-clock-07-alt:hover {
-  background: var(--clock-07-bg2);
+  background: var(--bg-clock-072);
 }
 .pigment-clock-08-alt:hover {
-  background: var(--clock-08-bg2);
+  background: var(--bg-clock-082);
 }
 .pigment-clock-09-alt:hover {
-  background: var(--clock-09-bg2);
+  background: var(--bg-clock-092);
 }
 .pigment-clock-10-alt:hover {
-  background: var(--clock-10-bg2);
+  background: var(--bg-clock-102);
 }
 .pigment-clock-11-alt:hover {
-  background: var(--clock-11-bg2);
+  background: var(--bg-clock-112);
 }
 
 .darken-border {
@@ -607,7 +607,7 @@ section > form {
     padding-bottom: 0.5em;
     border-bottom-width: 0.1em;
     border-bottom-style: solid;
-    border-color: var(--divider);
+    border-color: var(--bg-lighter-1);
 }
 
 #top-bar-menu {
@@ -633,7 +633,7 @@ hr {
     height: 1em;
     width: var(--block-width);
     border: 0;
-    border-top: 2px solid var(--divider);
+    border-top: 2px solid var(--bg-lighter-1);
     margin: 1em 0;
     padding: 0;
 }
@@ -664,7 +664,7 @@ hr {
 #new-category {
     background: var(--textarea-bg);
     color: var(--textarea-fg);
-    border-color: var(--textarea-border);
+    border-color: var(--bg-darker-3);
     border-radius: var(--ui-element-border-radius);
 }
 
@@ -672,7 +672,7 @@ hr {
     width: 100%;
     background: var(--textarea-bg);
     color: var(--textarea-fg);
-    border-color: var(--textarea-border);
+    border-color: var(--bg-darker-3);
     border-radius: var(--ui-element-border-radius);
 }
 
@@ -834,9 +834,9 @@ h3 {
 }
 
 .drawer-item-new {
-  color: var(--clock-04-fg);
-  border: 0.2rem solid var(--clock04-fg);
-  background: var(--clock-04-bg);
+  color: var(--fg-clock-04);
+  border: 0.2rem solid var(--fg-clock-04);
+  background: var(--bg-clock-04);
   cursor: pointer;
 }
 

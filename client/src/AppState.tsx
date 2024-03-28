@@ -1,16 +1,25 @@
-import { h, createContext, ComponentChildren } from "preact";
+import { createContext, type ComponentChildren } from "preact";
 import { signal } from "@preact/signals";
 import { useContext } from "preact/hooks";
 
-import {
+import { LoadState, ColourScheme, NoteLocation } from "./enums";
+
+import type {
     User,
+    UserWithUiConfig,
     State,
     Note,
     Listing,
     Category,
-    LoadState,
-    NoteLocation,
+    UiConfig,
 } from "./types";
+
+import { basicUiConfig } from "./Utils";
+
+import {
+    declareSeeds,
+    generateColoursFromSeeds,
+} from "./ColourCreator";
 
 const emptyUser: User = {
     username: "",
@@ -21,12 +30,16 @@ const emptyUser: User = {
 const state: State = {
     user: signal(emptyUser),
     wasmInterface: undefined,
-    settings: signal({
-        // note: extra setting variables are declared in
-        // ColourCreator.js::augmentSettingsWithCssModifierParameters
-        hueOffset: 0,
-        hueDelta: 30,
-    }),
+
+    uiConfig: signal(basicUiConfig()),
+    colourSeeds: signal(declareSeeds(ColourScheme.Light)),
+
+    // settings: signal({
+    //     // note: extra setting variables are declared in
+    //     // ColourCreator.js::augmentSettingsWithCssModifierParameters
+    //     hueOffset: 0,
+    //     hueDelta: 30,
+    // }),
     showCategoryDrawer: signal(false),
     activeTopBarMenuItem: signal(NoteLocation.Inbox),
     groupLabel: signal("categories"),
@@ -66,6 +79,14 @@ export const getAppState = () => useContext(AppStateContext);
 const DEBUG_APP_STATE = false;
 
 export const AppStateChange = {
+
+    setUiConfig: function(uiConfig: UiConfig) {
+        state.colourSeeds.value = declareSeeds(uiConfig.colourScheme);
+        generateColoursFromSeeds(state, state.colourSeeds.value);
+
+        state.uiConfig.value = uiConfig;
+    },
+
     routeChanged: function (url: string) {
         if (DEBUG_APP_STATE) {
             console.log("routeChanged");
@@ -79,7 +100,7 @@ export const AppStateChange = {
         }
     },
     userLogin: function (
-        user: User,
+        user: UserWithUiConfig,
         categories: Array<Category>
         // notes: Array<Note>,
         // bin: Array<Note>
@@ -109,7 +130,16 @@ export const AppStateChange = {
 
         // };
 
-        state.user.value = user;
+        state.user.value = {
+            username: user.username,
+            email: user.email,
+            admin: user.admin,
+        };
+
+        // setup the UI Config:
+        //
+        setupUiConfig(user.uiConfigJson);
+
         state.categories.value = categories;
         state.listing.value = listing;
         state.loaded.value = loaded;
@@ -237,7 +267,8 @@ export const AppStateChange = {
         let arr = note.categoryId
             ? listing.group[note.categoryId]
             : listing.inbox;
-        arr.unshift(note);
+        // todo: fix 'possibly undefined' warning, remove !
+        arr!.unshift(note);
 
         state.listing.value = listing;
     },
@@ -249,7 +280,8 @@ export const AppStateChange = {
         let listing = { ...state.listing.value };
 
         let note: Note = findNote(
-            n.categoryId ? listing.group[n.categoryId] : listing.inbox,
+            // todo: fix the !
+            n.categoryId ? listing.group[n.categoryId]! : listing.inbox,
             n.id
         )!;
 
@@ -268,7 +300,7 @@ export const AppStateChange = {
         if (n.categoryId) {
             // binning a grouped note
             listing.group[n.categoryId] = removeNoteFromArray(
-                listing.group[n.categoryId],
+                listing.group[n.categoryId]!, // todo: fix the !
                 n.id
             );
         } else {
@@ -289,7 +321,8 @@ export const AppStateChange = {
         }
 
         let listing = { ...state.listing.value };
-        let arr = n.categoryId ? listing.group[n.categoryId] : listing.inbox;
+        // todo: fix the !
+        let arr: Array<Note> = n.categoryId ? listing.group[n.categoryId]! : listing.inbox;
         let note = findNote(arr, n.id)!;
 
         note.content = n.content;
@@ -319,8 +352,9 @@ export const AppStateChange = {
         let listing = { ...state.listing.value };
 
         for (let i: number = 0; i < categories.length; i++) {
-            if (!listing.group[categories[i].id]) {
-                listing.group[categories[i].id] = [];
+            // todo: fix the !
+            if (!listing.group[categories[i]!.id]) {
+                listing.group[categories[i]!.id] = [];
             }
         }
         state.listing.value = listing;
@@ -333,10 +367,10 @@ export const AppStateChange = {
 
         let listing = { ...state.listing.value };
 
-        let note = findNote(listing.group[categoryId], noteId);
+        let note = findNote(listing.group[categoryId]!, noteId); // todo: !
         if (note) {
             listing.group[categoryId] = removeNoteFromArray(
-                listing.group[categoryId],
+                listing.group[categoryId]!, // todo: !
                 noteId
             );
 
@@ -351,10 +385,11 @@ export const AppStateChange = {
         if (DEBUG_APP_STATE) {
             console.log("settingsColourScalar");
         }
-        let newSettings = { ...state.settings.value };
-        newSettings[id] = parseInt(value, 10);
+        // isg todo: fix this
+        // let newSettings = { ...state.settings.value };
+        // newSettings[id] = parseInt(value, 10);
 
-        state.settings.value = newSettings;
+        // state.settings.value = newSettings;
     },
     settingsColourTriple: function (
         id: string,
@@ -363,11 +398,13 @@ export const AppStateChange = {
         if (DEBUG_APP_STATE) {
             console.log("settingsColourTriple");
         }
-        let newSettings = { ...state.settings.value };
+        // isg todo: fix this
 
-        newSettings[id] = value;
+        // let newSettings = { ...state.settings.value };
 
-        state.settings.value = newSettings;
+        // newSettings[id] = value;
+
+        // state.settings.value = newSettings;
     },
     noteTriaged: function (note: Note, currentCategoryId?: number) {
         if (DEBUG_APP_STATE) {
@@ -382,7 +419,7 @@ export const AppStateChange = {
 
             if (currentCategoryId) {
                 listing.group[currentCategoryId] = removeNoteFromArray(
-                    listing.group[currentCategoryId],
+                    listing.group[currentCategoryId]!, // todo: !
                     note.id
                 );
             } else {
@@ -394,8 +431,8 @@ export const AppStateChange = {
             // will only have this note in it, and since it won't be
             // empty the app won't request the full list from the server.)
             //
-            if (listing.group[note.categoryId].length > 0) {
-                listing.group[note.categoryId].unshift(note);
+            if (listing.group[note.categoryId]!.length > 0) {// todo: !
+                listing.group[note.categoryId]!.unshift(note); // todo: !
             }
         } else {
             console.error("note should have a categoryId");
@@ -423,7 +460,7 @@ export const AppStateChange = {
         listing.bin = removeNoteFromArray(listing.bin, note.id);
 
         if (note.categoryId) {
-            listing.group[note.categoryId].unshift(note);
+            listing.group[note.categoryId]!.unshift(note); // todo: !
         } else {
             listing.inbox.unshift(note);
         }
@@ -494,4 +531,21 @@ function plural(
 ) {
     let showNum = num.toFixed(decimalPlaces);
     return num === 1 ? `${showNum} ${phrase}` : `${showNum} ${phrase}${suffix}`;
+}
+
+function setupUiConfig(uiConfigJson: string) {
+    // start with valid default values for the config
+    let uiConfig: UiConfig = basicUiConfig();
+
+    // customise defaults with values from the server
+    // the server may not have all the values that are defined by UiConfig
+    //
+    let untypedConfig: any = JSON.parse(uiConfigJson);
+    let configFromServer: UiConfig = JSON.parse(uiConfigJson);
+    Object.keys(untypedConfig).forEach((key) => {
+        if (key === "colourScheme") {
+            uiConfig.colourScheme = configFromServer.colourScheme;
+        }
+    });
+    AppStateChange.setUiConfig(uiConfig);
 }

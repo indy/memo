@@ -1,15 +1,23 @@
-import { h } from "preact";
-import { AppStateChange, getAppState } from "../AppState";
+import { type ComponentChildren } from "preact";
+import { useState } from "preact/hooks";
 
-import { Note, Pigment } from "../types";
+// import { AppStateChange, getAppState } from "../AppState";
+import { getAppState } from "../AppState";
 
-import { declareCssVariables } from "../ColourCreator";
+import { ColourScheme } from "../enums";
+import type { Note, Pigment } from "../types";
+
+// import { declareCssVariables } from "../ColourCreator";
 
 import { ButtonEdit } from "./CardButtons";
 import { CardBase } from "./Card";
 import { Logout } from "./Login";
 
+import { svgMoon, svgSun } from "../svgIcons";
+import { updateAndSaveUiConfig } from "../Utils";
+
 export default function Settings({ path }: { path?: string }) {
+    /*
     const appState = getAppState();
 
     function updateColourScalar(e: Event, id: string) {
@@ -29,24 +37,231 @@ export default function Settings({ path }: { path?: string }) {
                 value.length === 3
             ) {
                 value[index] = parseInt(e.target.value, 10);
-                AppStateChange.settingsColourTriple(id, value);
+                // isg todo: fix this
+                // AppStateChange.settingsColourTriple(id, value);
             }
         }
     }
+    */
 
-    const settings = appState.settings.value;
+    // const settings = appState.settings.value;
 
-    const wasmInterface = appState.wasmInterface;
-    if (wasmInterface) {
-        declareCssVariables(settings, wasmInterface);
-    } else {
-        console.error("require a valid wasmInterface");
-    }
+    // const wasmInterface = appState.wasmInterface;
+    // if (wasmInterface) {
+    //     declareCssVariables(settings, wasmInterface);
+    // } else {
+    //     console.error("require a valid wasmInterface");
+    // }
 
     return (
         <div>
+            <ColourSchemeSelector />
             <Logout />
             <hr />
+            <hr />
+            <div class="card-holder">
+                <SampleCard pigment="12" />
+                <SampleCard pigment="01" />
+                <SampleCard pigment="02" />
+                <SampleCard pigment="03" />
+                <SampleCard pigment="04" />
+                <SampleCard pigment="05" />
+                <SampleCard pigment="06" />
+                <SampleCard pigment="07" />
+                <SampleCard pigment="08" />
+                <SampleCard pigment="09" />
+                <SampleCard pigment="10" />
+                <SampleCard pigment="11" />
+            </div>
+        </div>
+    );
+}
+/*
+function ColourControl({
+    onInput,
+    value,
+    id,
+}: {
+    onInput: (e: Event, index: number, id: string) => void;
+    value: [number, number, number] | undefined;
+    id: string;
+}) {
+    const labelH = `${id} h`;
+    const labelS = `${id} s`;
+    const labelL = `${id} l`;
+
+    const idH = `${id}-h`;
+    const idS = `${id}-s`;
+    const idL = `${id}-l`;
+
+    if (value !== undefined) {
+        return (
+            <div>
+                <label for={idH}>{labelH}</label>
+                <input
+                    type="number"
+                    value={value[0]}
+                    id={idH}
+                    name={idH}
+                    min="0"
+                    max="359"
+                    onInput={(e) => onInput(e, 0, id)}
+                />
+
+                <label for={idS}>{labelS}</label>
+                <input
+                    type="number"
+                    value={value[1]}
+                    id={idS}
+                    name={idS}
+                    min="0"
+                    max="100"
+                    onInput={(e) => onInput(e, 1, id)}
+                />
+
+                <label for={idL}>{labelL}</label>
+                <input
+                    type="number"
+                    value={value[2]}
+                    id={idL}
+                    name={idL}
+                    min="0"
+                    max="100"
+                    onInput={(e) => onInput(e, 2, id)}
+                />
+            </div>
+        );
+    } else {
+        return <div></div>;
+    }
+}
+*/
+function SampleCard({ pigment }: { pigment: string }) {
+    const note: Note = {
+        age: "test age",
+        content: "test content",
+        createdAt: "",
+        id: 0,
+        pinned: false,
+        title: "test title",
+    };
+
+    const pig: Pigment = {
+        num: parseInt(pigment, 10),
+        numString: pigment,
+        class: `pigment-clock-${pigment}`,
+        classAlt: `pigment-alt-clock-${pigment}`,
+        classFg: `pigment-fg-clock-${pigment}`,
+    };
+
+    const editing = false;
+
+    function callback() {}
+
+    return (
+        <CardBase note={note} pigment={pig} editing={editing}>
+            <ButtonEdit pigment={pig} editing={editing} callback={callback} />
+        </CardBase>
+    );
+}
+
+
+
+
+
+function ColourSchemeSelector({}) {
+    const appState = getAppState();
+
+    const [colourScheme, setColourScheme] = useState(
+        appState.uiConfig.value.colourScheme,
+    );
+
+    function updateColourScheme(cs: ColourScheme) {
+        setColourScheme(cs);
+        const uiConfig = {
+            ...appState.uiConfig.value,
+            colourScheme: cs,
+        };
+        updateAndSaveUiConfig(uiConfig);
+    }
+
+    return (
+        <Module heading="colour scheme">
+            <div class="icon-horizontal-grouping">
+                <ColourSchemeOption
+                    desiredScheme={ColourScheme.Light}
+                    colourScheme={colourScheme}
+                    setColourScheme={updateColourScheme}
+                >
+                    {svgSun()}
+                </ColourSchemeOption>
+                <ColourSchemeOption
+                    desiredScheme={ColourScheme.Dark}
+                    colourScheme={colourScheme}
+                    setColourScheme={updateColourScheme}
+                >
+                    {svgMoon()}
+                </ColourSchemeOption>
+            </div>
+        </Module>
+    );
+}
+
+type ColourSchemeOptionProps = {
+    desiredScheme: ColourScheme;
+    colourScheme: ColourScheme;
+    setColourScheme: (cs: ColourScheme) => void;
+    children: ComponentChildren;
+};
+
+function ColourSchemeOption({
+    desiredScheme,
+    colourScheme,
+    setColourScheme,
+    children,
+}: ColourSchemeOptionProps) {
+    function clickHandler() {
+        if (colourScheme !== desiredScheme) {
+            setColourScheme(desiredScheme);
+        }
+    }
+
+    let cl = "icon-button ";
+    cl += colourScheme === desiredScheme ? "icon-selected" : "icon-unselected";
+
+    return (
+        <div class={cl} onClick={clickHandler}>
+            {children}
+        </div>
+    );
+}
+
+type Props = {
+    heading: string;
+    buttons?: ComponentChildren;
+    children: ComponentChildren;
+};
+
+function Module({ heading, children, buttons }: Props) {
+    return (
+        <article class="module">
+            <div>
+                <div>
+                    <span class="module-top-part">
+                        <span class="display-flex-justify-right">
+                            {buttons}
+                        </span>
+                        <h1 class="ui">{heading}</h1>
+                    </span>
+                    {children}
+                </div>
+            </div>
+        </article>
+    );
+}
+
+
+/*
             <h2>UI colours</h2>
             <ColourControl
                 onInput={updateColourTriple}
@@ -104,6 +319,14 @@ export default function Settings({ path }: { path?: string }) {
                 id="divider"
             />
             <hr />
+
+*/
+
+
+
+
+/*
+
             <h2>Card colours</h2>
             <label for="hue-offset">Hue Offset:</label>
             <input
@@ -179,109 +402,6 @@ export default function Settings({ path }: { path?: string }) {
                 max="100"
                 onInput={(e) => updateColourScalar(e, "lightnessHi2")}
             />
-            <hr />
-            <div class="card-holder">
-                <SampleCard pigment="12" />
-                <SampleCard pigment="01" />
-                <SampleCard pigment="02" />
-                <SampleCard pigment="03" />
-                <SampleCard pigment="04" />
-                <SampleCard pigment="05" />
-                <SampleCard pigment="06" />
-                <SampleCard pigment="07" />
-                <SampleCard pigment="08" />
-                <SampleCard pigment="09" />
-                <SampleCard pigment="10" />
-                <SampleCard pigment="11" />
-            </div>
-        </div>
-    );
-}
 
-function ColourControl({
-    onInput,
-    value,
-    id,
-}: {
-    onInput: (e: Event, index: number, id: string) => void;
-    value: [number, number, number] | undefined;
-    id: string;
-}) {
-    const labelH = `${id} h`;
-    const labelS = `${id} s`;
-    const labelL = `${id} l`;
 
-    const idH = `${id}-h`;
-    const idS = `${id}-s`;
-    const idL = `${id}-l`;
-
-    if (value !== undefined) {
-        return (
-            <div>
-                <label for={idH}>{labelH}</label>
-                <input
-                    type="number"
-                    value={value[0]}
-                    id={idH}
-                    name={idH}
-                    min="0"
-                    max="359"
-                    onInput={(e) => onInput(e, 0, id)}
-                />
-
-                <label for={idS}>{labelS}</label>
-                <input
-                    type="number"
-                    value={value[1]}
-                    id={idS}
-                    name={idS}
-                    min="0"
-                    max="100"
-                    onInput={(e) => onInput(e, 1, id)}
-                />
-
-                <label for={idL}>{labelL}</label>
-                <input
-                    type="number"
-                    value={value[2]}
-                    id={idL}
-                    name={idL}
-                    min="0"
-                    max="100"
-                    onInput={(e) => onInput(e, 2, id)}
-                />
-            </div>
-        );
-    } else {
-        return <div></div>;
-    }
-}
-
-function SampleCard({ pigment }: { pigment: string }) {
-    const note: Note = {
-        age: "test age",
-        content: "test content",
-        createdAt: "",
-        id: 0,
-        pinned: false,
-        title: "test title",
-    };
-
-    const pig: Pigment = {
-        num: parseInt(pigment, 10),
-        numString: pigment,
-        class: `pigment-clock-${pigment}`,
-        classAlt: `pigment-clock-${pigment}-alt`,
-        classFg: `pigment-clock-${pigment}-fg`,
-    };
-
-    const editing = false;
-
-    function callback() {}
-
-    return (
-        <CardBase note={note} pigment={pig} editing={editing}>
-            <ButtonEdit pigment={pig} editing={editing} callback={callback} />
-        </CardBase>
-    );
-}
+ */

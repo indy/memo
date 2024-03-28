@@ -1,4 +1,6 @@
-import { State, Pigment, Note, NoteLocation, LoadState } from "./types";
+import { ColourScheme, LoadState, NoteLocation } from "./enums";
+
+import type { State, Pigment, Note, UiConfig } from "./types";
 
 import Net from "./Net";
 import { AppStateChange } from "./AppState";
@@ -55,8 +57,8 @@ export function notePigment(noteId: number): Pigment {
     const pigmentNumString =
         pigmentNum < 10 ? `0${pigmentNum}` : `${pigmentNum}`;
     const pigmentClass = `pigment-clock-${pigmentNumString}`;
-    const pigmentClassAlt = `${pigmentClass}-alt`;
-    const pigmentClassFg = `${pigmentClass}-fg`;
+    const pigmentClassAlt = `pigment-alt-clock-${pigmentNumString}`;
+    const pigmentClassFg = `pigment-fg-clock-${pigmentNumString}`;
 
     return {
         num: pigmentNum,
@@ -65,4 +67,30 @@ export function notePigment(noteId: number): Pigment {
         classAlt: pigmentClassAlt,
         classFg: pigmentClassFg,
     };
+}
+
+export function updateAndSaveUiConfig(uiConfig: UiConfig) {
+    type EditUiConfig = {
+        json: string;
+    };
+
+    // save the uiconfig as an opaque json string
+    //
+    const json = JSON.stringify(uiConfig);
+    Net.put<EditUiConfig, any>("api/users/ui_config", { json });
+
+    AppStateChange.setUiConfig( uiConfig );
+}
+
+export function basicUiConfig(): UiConfig {
+    return {
+        colourScheme: ColourScheme.Light,
+    };
+}
+
+export function getCssString(name: string): string {
+    let body = document.body;
+    let v = getComputedStyle(body).getPropertyValue(name).trim();
+
+    return v;
 }

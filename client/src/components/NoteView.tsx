@@ -1,7 +1,6 @@
-import { h } from "preact";
 import { useState } from "preact/hooks";
 
-import { State, Note } from "../types";
+import type { State, Note } from "../types";
 
 import Net from "../Net";
 import { notePigment } from "../Utils";
@@ -102,7 +101,7 @@ function getNoteById(state: State, id: number): Note | undefined {
     }
 
     for (const key in state.categories.value) {
-        let cat = state.categories.value[key];
+        let cat = state.categories.value[key]!; // todo: !
 
         let l: Array<Note> | undefined = state.listing.value.group[cat.id];
         if (l != undefined) {

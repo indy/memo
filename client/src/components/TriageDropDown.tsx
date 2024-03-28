@@ -1,7 +1,6 @@
-import { h } from "preact";
 import { useState } from "preact/hooks";
 
-import { Category, Note, Pigment } from "../types";
+import type { Category, Note, Pigment } from "../types";
 
 import Net from "../Net";
 import { AppStateChange } from "../AppState";

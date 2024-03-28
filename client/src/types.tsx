@@ -2,6 +2,8 @@
 
 import { Signal } from "@preact/signals";
 
+import { NoteLocation, LoadState, ColourScheme } from "./enums";
+
 export type Admin = {
     dbName: string;
 };
@@ -10,6 +12,10 @@ export type User = {
     username: string;
     email: string;
     admin?: Admin;
+};
+
+export type UserWithUiConfig = User & {
+    uiConfigJson: string;
 };
 
 export type Category = {
@@ -28,18 +34,6 @@ export type Note = {
     categoryId?: number;
 };
 
-export enum NoteLocation {
-    Inbox,
-    Group,
-    Bin,
-}
-
-export enum LoadState {
-    NotLoaded = 1,
-    Loading,
-    Loaded,
-}
-
 export type Listing = {
     inbox: Array<Note>;
     group: { [key: number]: Array<Note> };
@@ -53,47 +47,37 @@ export type LoadedListing = {
 };
 
 export type ColourTriple = [number, number, number];
+export type ColourQuad = [number, number, number, number];
 
-export type Settings = {
-    [index: string]: number | ColourTriple | undefined;
+export type ColourSeeds = {
+    hue: number;
+    sat: number;
 
-    hueOffset: number;
-    hueDelta: number;
+    bgL: number;
+    bg1L: number;
+    bgLDelta: number;
 
-    bg?: ColourTriple;
-    bg1?: ColourTriple;
-    bg2?: ColourTriple;
-    fg?: ColourTriple;
-    fg1?: ColourTriple;
+    fgH: number;
+    fgS: number;
+    fgL: number;
+    fgLDelta: number;
 
-    fg_inactive?: ColourTriple;
-    textarea_bg?: ColourTriple;
-    textarea_fg?: ColourTriple;
+    clockHDelta: number;
 
-    save_on_bg?: ColourTriple;
-    save_on_fg?: ColourTriple;
-
-    divider?: ColourTriple;
-
-    saturation?: number;
-    lightnessBg?: number;
-    lightnessBg1?: number;
-    lightnessBg2?: number;
-    lightnessFg?: number;
-    lightnessFg1?: number;
-
-    lightnessHi?: number;
-    lightnessHi2?: number;
+    clockFgL: number;
+    clockBgL: number;
 };
 
 export type WasmInterface = {
-    RgbFromHsl(hsl: ColourTriple): string;
+    rgbFromHsl(h: number, s: number, l: number): any;
 };
 
 export type State = {
     user: Signal<User>;
     wasmInterface: WasmInterface | undefined;
-    settings: Signal<Settings>;
+    uiConfig: Signal<UiConfig>; // bit of duplication as the User contains the original uiConfig json string
+    colourSeeds: Signal<ColourSeeds>;
+
     activeTopBarMenuItem: Signal<NoteLocation>;
     groupLabel: Signal<string>;
     showCategoryDrawer: Signal<boolean>;
@@ -108,4 +92,10 @@ export type Pigment = {
     class: string;
     classAlt: string;
     classFg: string;
+};
+
+// json structure that will be saved server-side
+//
+export type UiConfig = {
+    colourScheme: ColourScheme;
 };

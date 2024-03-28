@@ -1,8 +1,7 @@
-import { h } from "preact";
 import { useState } from "preact/hooks";
 import { Link } from "preact-router";
 
-import { Category } from "../types";
+import type { Category } from "../types";
 
 import Net from "../Net";
 import { getAppState, AppStateChange } from "../AppState";

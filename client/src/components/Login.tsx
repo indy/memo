@@ -1,8 +1,7 @@
-import { h } from "preact";
 import { useState, useRef } from "preact/hooks";
 import { route } from "preact-router";
 
-import { User, Category } from "../types";
+import type { UserWithUiConfig, Category } from "../types";
 
 import Net from "../Net";
 import { AppStateChange, getAppState } from "../AppState";
@@ -57,7 +56,7 @@ function Login({ path }: { path?: string }) {
         }
     };
 
-    async function loginCallback(user: User) {
+    async function loginCallback(user: UserWithUiConfig) {
         let categories = await Net.get<Array<Category>>("/api/categories");
         AppStateChange.userLogin(user, categories);
         // once the state has a user, the Login page will redirect to '/'
@@ -89,7 +88,7 @@ function Login({ path }: { path?: string }) {
             let email: string = ec.value.trim();
             let password: string = pc.value.trim();
 
-            Net.post<AuthData, User>("api/auth", {
+            Net.post<AuthData, UserWithUiConfig>("api/auth", {
                 email,
                 password
             })
@@ -119,7 +118,7 @@ function Login({ path }: { path?: string }) {
 
     function handleRegisterSubmit(event: Event) {
         if (okToSendRegistration()) {
-            Net.post<RegisterData, User>("api/users", {
+            Net.post<RegisterData, UserWithUiConfig>("api/users", {
                 username: state["register-username"],
                 email: state["register-email"],
                 password: state["register-password"],

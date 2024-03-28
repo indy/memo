@@ -1,7 +1,6 @@
-import { h } from "preact";
 import { Link } from "preact-router";
 
-import { NoteLocation } from "../types";
+import { NoteLocation } from "../enums";
 
 import { getAppState, AppStateChange } from "../AppState";
 

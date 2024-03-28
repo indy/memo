@@ -28,6 +28,7 @@ pub struct Registration {
     pub username: String,
     pub email: String,
     pub password: String,
+    pub ui_config: String,
 }
 
 #[derive(serde::Serialize)]
@@ -36,10 +37,17 @@ pub struct User {
     pub username: String,
     pub email: String,
     pub admin: Option<Admin>,
+    pub ui_config_json: String,
 }
 
 #[derive(serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Admin {
     pub db_name: String,
+}
+
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EditUiConfig {
+    pub json: String,
 }
