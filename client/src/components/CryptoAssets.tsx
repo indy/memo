@@ -4,10 +4,10 @@ export default function CryptoAssets({}) {
     type Crypto = {
         bitcoinPrice: number;
         ethereumPrice: number;
-        solanaPrice: number;
+        degenPrice: number;
         bitcoinQuantity: number;
         ethereumQuantity: number;
-        solanaQuantity: number;
+        degenQuantity: number;
         dollarsSpent: number;
     };
 
@@ -20,17 +20,17 @@ export default function CryptoAssets({}) {
     const initialState: Crypto = {
         bitcoinPrice: 0,
         ethereumPrice: 0,
-        solanaPrice: 0,
+        degenPrice: 0,
         bitcoinQuantity: 0.95652791,
         ethereumQuantity: lidoEth + trezorEth + inderjitEth + rEth + coinbaseEth,
-        solanaQuantity: 0.06532819,
+        degenQuantity: 	2131297,
         dollarsSpent: 91229.42,
     };
     let [localState, setLocalState] = useState(initialState);
 
     useEffect(() => {
         try {
-            const url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd';
+            const url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,degen-base&vs_currencies=usd';
             fetch(url).then((response) => {
                 if (!response.ok) {
                     throw new Error(`Unable to fetch price`);
@@ -40,7 +40,7 @@ export default function CryptoAssets({}) {
                         ...localState,
                         bitcoinPrice: data.bitcoin.usd,
                         ethereumPrice: data.ethereum.usd,
-                        solanaPrice: data.solana.usd
+                        degenPrice: data["degen-base"].usd
                     })
                 });
             });
@@ -68,15 +68,27 @@ export default function CryptoAssets({}) {
         return <div>Potential Max {coin}: {pad(val, 6)}</div>
     }
 
-    function pad(s: string, pstart: number) {
-        let sp = s.padStart(pstart);
+    function pad(s: string, longest: number) {
+        let sp = s.padStart(longest);
+        return (<span class="ws-pre">{sp}</span>);
+    }
+
+    // pad the s text to longest length, if s is longer than longest use orText instead (assuming that orText.length <= longest)
+    function padOr(s: string, longest: number, orText: string) {
+        let t = s.length <= longest ? s : orText;
+        let sp = t.padStart(longest);
         return (<span class="ws-pre">{sp}</span>);
     }
 
     function info(coin: string, price: number, quantity: number) {
         let value = price * quantity;
+
+        let q = fixed2(quantity);
+        let p = toUSD(price);
+        let v = toUSD(value);
+
         return (
-            <div>{pad(fixed2(quantity), 5)} {coin} @ {pad(toUSD(price), 10)} = {pad(toUSD(value), 10)}</div>
+            <div>{padOr(q, 5, "many")} {coin} @ {pad(p, 11)} = {pad(v, 10)}</div>
         )
     }
 
@@ -86,25 +98,25 @@ export default function CryptoAssets({}) {
 
     const btcValue = localState.bitcoinPrice * localState.bitcoinQuantity;
     const ethValue = localState.ethereumPrice * localState.ethereumQuantity;
-    const solValue = localState.solanaPrice * localState.solanaQuantity;
-    const totalValue = btcValue + ethValue + solValue;
+    const dgnValue = localState.degenPrice * localState.degenQuantity;
+    const totalValue = btcValue + ethValue + dgnValue;
     const profitPercentage = (100 / localState.dollarsSpent) * totalValue;
 
     const btcPct = (100 / totalValue) * btcValue;
     const ethPct = (100 / totalValue) * ethValue;
-    const solPct = (100 / totalValue) * solValue;
+    const dgnPct = (100 / totalValue) * dgnValue;
 
     return (
         <div class="c-crypto-assets">
-            <div>Spent : {pad(toUSD(localState.dollarsSpent), 11)}</div>
-            <div>Value : {pad(toUSD(totalValue), 11)}</div>
-            <div>Profit: {pad(toUSD(totalValue - localState.dollarsSpent), 11)} ({pad(fixed2(profitPercentage - 100), 5)}%)</div>
+            <div>{pad("Spent:", 11)} {pad(toUSD(localState.dollarsSpent), 11)}</div>
+            <div>{pad("Value:", 11)} {pad(toUSD(totalValue), 11)}</div>
+            <div>{pad("Profit:", 11)} {pad(toUSD(totalValue - localState.dollarsSpent), 11)} {pad(`(${fixed2(profitPercentage - 100)}%)`, 11)}</div>
             <div class="crypto-assets-v-spacer"></div>
             { info("BTC", localState.bitcoinPrice, localState.bitcoinQuantity) }
             { info("ETH", localState.ethereumPrice, localState.ethereumQuantity) }
-            { info("SOL", localState.solanaPrice, localState.solanaQuantity) }
+            { info("DGN", localState.degenPrice, localState.degenQuantity) }
             <div class="crypto-assets-v-spacer"></div>
-            <div>{percent("BTC", btcPct)} | {percent("ETH", ethPct)} | {percent("SOL", solPct)}</div>
+            <div>{percent("BTC", btcPct)} | {percent("ETH", ethPct)} | {percent("DGN", dgnPct)}</div>
             <div class="crypto-assets-v-spacer"></div>
             { allIn("BTC", localState.bitcoinPrice, totalValue) }
             { allIn("ETH", localState.ethereumPrice, totalValue) }
