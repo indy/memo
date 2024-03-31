@@ -50,8 +50,11 @@ export default function CryptoAssets({}) {
     }, []);
 
 
-    function toUSD(n: number): string {
+    function asUSD(n: number): string {
         return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    }
+    function asCents(n: number): string {
+        return `${n}`.slice(0, 8) + "¢";
     }
     function fixed2(n: number): string {
         return Number(n).toFixed(2);
@@ -84,11 +87,11 @@ export default function CryptoAssets({}) {
         let value = price * quantity;
 
         let q = fixed2(quantity);
-        let p = toUSD(price);
-        let v = toUSD(value);
+        let p = price > 1 ? asUSD(price) : asCents(price);
+        let v = asUSD(value);
 
         return (
-            <div>{padOr(q, 5, "many")} {coin} @ {pad(p, 11)} = {pad(v, 10)}</div>
+            <div>{padOr(q, 5, "many")} {coin} @{pad(p, 11)} = {pad(v, 11)}</div>
         )
     }
 
@@ -108,9 +111,9 @@ export default function CryptoAssets({}) {
 
     return (
         <div class="c-crypto-assets">
-            <div>{pad("Spent:", 11)} {pad(toUSD(localState.dollarsSpent), 11)}</div>
-            <div>{pad("Value:", 11)} {pad(toUSD(totalValue), 11)}</div>
-            <div>{pad("Profit:", 11)} {pad(toUSD(totalValue - localState.dollarsSpent), 11)} {pad(`(${fixed2(profitPercentage - 100)}%)`, 11)}</div>
+            <div>{pad("Spent", 9)} {pad(asUSD(localState.dollarsSpent), 12)}</div>
+            <div>{pad("Value", 9)} {pad(asUSD(totalValue), 12)}</div>
+            <div>{pad("Profit", 9)} {pad(asUSD(totalValue - localState.dollarsSpent), 12)} {pad(`(${fixed2(profitPercentage - 100)}%)`, 13)}</div>
             <div class="crypto-assets-v-spacer"></div>
             { info("BTC", localState.bitcoinPrice, localState.bitcoinQuantity) }
             { info("ETH", localState.ethereumPrice, localState.ethereumQuantity) }
