@@ -73,7 +73,6 @@ function declareSeeds(colourScheme: ColourScheme): ColourSeeds {
             sat: 20,
 
             bgL: 99.0,
-            bg1L: 80.0,
             bgLDelta: -3,
 
             fgH: 67,
@@ -83,8 +82,14 @@ function declareSeeds(colourScheme: ColourScheme): ColourSeeds {
 
             clockHDelta: 30,
 
-            clockFgL: 53.6,
+            clockFgS: 40,
+            clockFgL: 40,
+
+            clockBgS: 77,
             clockBgL: 93,
+
+            clockHiS: 57,
+            clockHiL: 86,
         };
     } else {
         s = {
@@ -92,7 +97,6 @@ function declareSeeds(colourScheme: ColourScheme): ColourSeeds {
             sat: 20.0,
 
             bgL: 1,
-            bg1L: 1,
             bgLDelta: 3,
 
             fgH: 16.7,
@@ -102,8 +106,14 @@ function declareSeeds(colourScheme: ColourScheme): ColourSeeds {
 
             clockHDelta: 30,
 
-            clockBgL: 30.0,
-            clockFgL: 80,
+            clockFgS: 50,
+            clockFgL: 90,
+
+            clockBgS: 60,
+            clockBgL: 30,
+
+            clockHiS: 80,
+            clockHiL: 40,
         };
     }
     return s;
@@ -113,30 +123,23 @@ function generateColourDefs(seeds: ColourSeeds): ColourDefinitions {
     let defs: ColourDefinitions = {};
 
     for (let i = 0; i < 12; i++) {
-        let hueFg = seeds.hue + i * seeds.clockHDelta;
-        let hueBg = seeds.hue + i * seeds.clockHDelta;
-
+        let hue = seeds.hue + i * seeds.clockHDelta;
         let index = indexAsString(i);
 
         defs[`fg_clock_${index}`] = [
-            hueFg,
-            seeds.sat + 30,
+            hue,
+            seeds.clockFgS,
             seeds.clockFgL,
         ] as ColourTriple;
         defs[`bg_clock_${index}`] = [
-            hueBg,
-            seeds.sat + 30,
-            seeds.clockBgL,
-        ] as ColourTriple;
-        defs[`bg1_clock_${index}`] = [
-            hueBg,
-            seeds.sat + 90,
+            hue,
+            seeds.clockBgS,
             seeds.clockBgL,
         ] as ColourTriple;
         defs[`hi_clock_${index}`] = [
-            hueFg,
-            seeds.sat + 30,
-            seeds.clockFgL + 10,
+            hue,
+            seeds.clockHiS,
+            seeds.clockHiL,
         ] as ColourTriple;
     }
 
@@ -175,6 +178,11 @@ function generateColourDefs(seeds: ColourSeeds): ColourDefinitions {
     defs = fgCol(defs, seeds, 2, "fg_lighter_2");
     defs = fgCol(defs, seeds, 5, "fg_lighter_5");
     defs = fgCol(defs, seeds, 7, "fg_lighter_7");
+
+    defs = bgCol(defs, seeds, 4, "pinned_border_colour");
+    defs = bgCol(defs, seeds, 4, "pinned_background_colour");
+    defs = bgCol(defs, seeds, 3, "textarea_bg");
+    defs = fgCol(defs, seeds, 3, "textarea_fg");
 
     return defs;
 }

@@ -119,27 +119,31 @@ function CardBase({
         classes += " card-height-limited";
     }
 
+    function cssColourHi(n: string) {
+        return `var(--hi-clock-${n})`;
+    }
+    function cssColourFg1(n: string) {
+        return `var(--fg-clock-${n})`;
+    }
+
     const cardDate = note.createdAt.slice(0, 10);
+
+    let cardActionStyle = `border-bottom: 1px solid ${cssColourHi(pigment.numString)};`;
+    let cardTimeStyle = `color: ${cssColourFg1(pigment.numString)};`;
 
     return (
         <div class={classes} onClick={onCardClicked}>
             <div class="card-body">
                 <div
                     class="card-action"
-                    style="border-bottom: 1px solid {cssColourBg1(pigment.numString)};"
+                    style={cardActionStyle}
                 >
                     <div class="card-action-row">{children}</div>
                     <div class="card-action-row-spread">
-                        <div
-                            class="card-time"
-                            style="color: {cssColourFg1(pigment.numString)};"
-                        >
+                        <div class="card-time" style={cardTimeStyle}>
                             {cardDate}
                         </div>
-                        <div
-                            class="card-time"
-                            style="color: {cssColourFg1(pigment.numString)};"
-                        >
+                        <div class="card-time" style={cardTimeStyle}>
                             {note.age}
                         </div>
                     </div>

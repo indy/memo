@@ -54,7 +54,6 @@ export type ColourSeeds = {
     sat: number;
 
     bgL: number;
-    bg1L: number;
     bgLDelta: number;
 
     fgH: number;
@@ -64,8 +63,14 @@ export type ColourSeeds = {
 
     clockHDelta: number;
 
+    clockFgS: number;
     clockFgL: number;
+
+    clockBgS: number;
     clockBgL: number;
+
+    clockHiS: number;
+    clockHiL: number;
 };
 
 export type WasmInterface = {

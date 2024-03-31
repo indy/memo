@@ -22,6 +22,7 @@
     --block-width-indented: 50%;
 
     --ui-element-border-radius: 0.4em;
+    --card-border-radius: 0.8em;
 }
 
 @media (max-width: 1200px) {
@@ -60,7 +61,7 @@ select {
     appearance: auto;
 
     border-radius: var(--ui-element-border-radius);
-    border: 1px solid var(--bg1);
+    border: 1px solid var(--bg-lighter-1);
     background: var(--bg);
     color: var(--fg);
 
@@ -321,7 +322,7 @@ textarea {
 */
 
 .c-crypto-assets {
-    border-radius: var(--ui-element-border-radius);
+    border-radius: var(--card-border-radius);
     background: linear-gradient(180deg, var(--bg-clock-09) 0%, var(--bg-clock-11) 100%);
     color: var(--fg-clock-09);
     padding: 1rem 1rem 1rem 1rem;
@@ -433,51 +434,51 @@ a:visited.pigment-inherit {
 }
 
 .pigment-alt-clock-12 {
-  background: var(--bg1-clock-12);
+  background: var(--hi-clock-12);
     color: var(--fg-clock-12);
 }
 .pigment-alt-clock-01 {
-  background: var(--bg1-clock-01);
+  background: var(--hi-clock-01);
     color: var(--fg-clock-01);
 }
 .pigment-alt-clock-02 {
-  background: var(--bg1-clock-02);
+  background: var(--hi-clock-02);
     color: var(--fg-clock-02);
 }
 .pigment-alt-clock-03 {
-  background: var(--bg1-clock-03);
+  background: var(--hi-clock-03);
     color: var(--fg-clock-03);
 }
 .pigment-alt-clock-04 {
-  background: var(--bg1-clock-04);
+  background: var(--hi-clock-04);
     color: var(--fg-clock-04);
 }
 .pigment-alt-clock-05 {
-  background: var(--bg1-clock-05);
+  background: var(--hi-clock-05);
     color: var(--fg-clock-05);
 }
 .pigment-alt-clock-06 {
-  background: var(--bg1-clock-06);
+  background: var(--hi-clock-06);
     color: var(--fg-clock-06);
 }
 .pigment-alt-clock-07 {
-  background: var(--bg1-clock-07);
+  background: var(--hi-clock-07);
     color: var(--fg-clock-07);
 }
 .pigment-alt-clock-08 {
-  background: var(--bg1-clock-08);
+  background: var(--hi-clock-08);
     color: var(--fg-clock-08);
 }
 .pigment-alt-clock-09 {
-  background: var(--bg1-clock-09);
+  background: var(--hi-clock-09);
     color: var(--fg-clock-09);
 }
 .pigment-alt-clock-10 {
-  background: var(--bg1-clock-10);
+  background: var(--hi-clock-10);
     color: var(--fg-clock-10);
 }
 .pigment-alt-clock-11 {
-  background: var(--bg1-clock-11);
+  background: var(--hi-clock-11);
     color: var(--fg-clock-11);
 }
 
@@ -649,7 +650,7 @@ hr {
 }
 
 .section-controls {
-    background: var(--bg1);
+    background: var(--bg-lighter-1);
     border-radius: var(--ui-element-border-radius);
     width: 40em;
 
@@ -701,15 +702,10 @@ hr {
 }
 
 .card-holder-pinned {
-    border: 0.5rem solid var(--bg2);
+    border: 0.5rem solid var(--pinned-border-colour);
     border-radius: calc(var(--ui-element-border-radius) * 2);
     margin-top: 1rem;
-    background: var(--bg2);
-}
-.card-holder-pinned-inner {
-    border: 0.5rem solid var(--bg);
-    border-radius: calc(var(--ui-element-border-radius) * 2);
-    background: var(--bg);
+    background: var(--pinned-background-colour);
 }
 
 .button-container {
@@ -721,7 +717,7 @@ hr {
 }
 
 .card-common {
-    border-radius: var(--ui-element-border-radius);
+    border-radius: var(--card-border-radius);
     display: inline-block;
     vertical-align: top;
     overflow: hidden;
@@ -729,7 +725,7 @@ hr {
 
 .card {
     width: 20em;
-    margin: 1em;
+    margin: 0.5em;
 }
 
 .full-width {
@@ -821,14 +817,14 @@ h3 {
 }
 
 .drawer-item {
-    background: var(--bg1);
+    background: var(--bg-lighter-1);
     color: var(--fg);
     flex: 1;
     padding: 1rem;
     border-radius: var(--ui-element-border-radius);
     margin: 0.25rem;
 
-    border: 0.2rem solid var(--bg2);
+    border: 0.2rem solid var(--pinned-border-colour);
 
     text-align: center;
 }
@@ -906,22 +902,10 @@ h3 {
     float: right;
 }
 
-.bg2 {
-    background: var(--bg2);
-}
-.bg2:hover {
-    background: rgba(0, 0, 0, 0.1);
-}
-
 .note {
     margin-top: 3rem;
     padding: 2rem;
-    border-radius: var(--ui-element-border-radius);
-}
-
-.category-num-notes {
-    float: right;
-    color: var(--fg1);
+    border-radius: var(--card-border-radius);
 }
 
 @media (max-width: 700px) {
@@ -952,17 +936,17 @@ h3 {
         margin: 1.3em 0 0.8em 0;
     }
 
-    .card-holder-pinned-inner div:first-child {
+    .card-holder-pinned div:first-child {
         margin-top: 0;
     }
 
-    .card-holder-pinned-inner .card {
+    .card-holder-pinned .card {
         margin-top: 0.5rem;
     }
 
     .card {
         width: 100%;
-        margin: 1.3em 0 0 0;
+        margin: 1.0em 0 0 0;
     }
 
     .form-holder {

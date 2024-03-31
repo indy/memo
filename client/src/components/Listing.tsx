@@ -4,7 +4,7 @@ function PinnedListing({ children }: { children: ComponentChildren }) {
     if (children && Array.isArray(children) && children.length > 0) {
         return (
             <div class="card-holder-pinned">
-                <div class="card-holder-pinned-inner">{children}</div>
+                {children}
             </div>
         );
     }

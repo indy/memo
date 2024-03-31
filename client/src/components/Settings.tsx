@@ -1,13 +1,12 @@
 import { type ComponentChildren } from "preact";
 import { useState } from "preact/hooks";
 
-// import { AppStateChange, getAppState } from "../AppState";
 import { getAppState } from "../AppState";
 
 import { ColourScheme } from "../enums";
-import type { Note, Pigment } from "../types";
+import type { Note, Pigment, ColourSeeds } from "../types";
 
-// import { declareCssVariables } from "../ColourCreator";
+import { generateColoursFromSeeds } from "../ColourCreator";
 
 import { ButtonEdit } from "./CardButtons";
 import { CardBase } from "./Card";
@@ -17,47 +16,207 @@ import { svgMoon, svgSun } from "../svgIcons";
 import { updateAndSaveUiConfig } from "../Utils";
 
 export default function Settings({ path }: { path?: string }) {
-    /*
     const appState = getAppState();
 
     function updateColourScalar(e: Event, id: string) {
         if (e.target instanceof HTMLInputElement) {
-            e.preventDefault();
-            AppStateChange.settingsColourScalar(id, e.target.value);
-        }
-    }
+            let seeds: ColourSeeds = appState.colourSeeds.value;
+            let val = parseInt(e.target.value, 10);
 
-    function updateColourTriple(e: Event, index: number, id: string) {
-        if (e.target instanceof HTMLInputElement) {
-            e.preventDefault();
-            let value = settings[id];
-            if (
-                value !== undefined &&
-                Array.isArray(value) &&
-                value.length === 3
-            ) {
-                value[index] = parseInt(e.target.value, 10);
-                // isg todo: fix this
-                // AppStateChange.settingsColourTriple(id, value);
+            switch(id) {
+                case "hue": seeds.hue = val; break;
+                case "sat": seeds.sat = val; break;
+                case "bgL": seeds.bgL = val; break;
+                case "bgLDelta": seeds.bgLDelta = val; break;
+                case "fgH": seeds.fgH = val; break;
+                case "fgS": seeds.fgS = val; break;
+                case "fgL": seeds.fgL = val; break;
+                case "fgLDelta": seeds.fgLDelta = val; break;
+                case "clockHDelta": seeds.clockHDelta = val; break;
+                case "clockFgS": seeds.clockFgS = val; break;
+                case "clockFgL": seeds.clockFgL = val; break;
+                case "clockBgS": seeds.clockBgS = val; break;
+                case "clockBgL": seeds.clockBgL = val; break;
+                case "clockHiS": seeds.clockHiS = val; break;
+                case "clockHiL": seeds.clockHiL = val; break;
             }
+            generateColoursFromSeeds(appState, appState.colourSeeds.value);
         }
     }
-    */
-
-    // const settings = appState.settings.value;
-
-    // const wasmInterface = appState.wasmInterface;
-    // if (wasmInterface) {
-    //     declareCssVariables(settings, wasmInterface);
-    // } else {
-    //     console.error("require a valid wasmInterface");
-    // }
 
     return (
         <div>
             <ColourSchemeSelector />
             <Logout />
             <hr />
+            <h2>Card colours</h2>
+            <label for="hue">Hue:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.hue}
+                id="hue"
+                name="hue"
+                min="0"
+                max="359"
+                onInput={(e) => updateColourScalar(e, "hue")}
+            />
+
+            <label for="sat">Sat:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.sat}
+                id="sat"
+                name="sat"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "sat")}
+            />
+
+            <label for="bgL">BgL:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.bgL}
+                id="bgL"
+                name="bgL"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "bgL")}
+            />
+
+            <label for="bgLDelta">BgLDelta:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.bgLDelta}
+                id="bgLDelta"
+                name="bgLDelta"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "bgLDelta")}
+            />
+
+
+            <label for="fgH">FgH:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.fgH}
+                id="fgH"
+                name="fgH"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "fgH")}
+            />
+
+
+            <label for="fgS">FgS:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.fgS}
+                id="fgS"
+                name="fgS"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "fgS")}
+            />
+
+
+            <label for="fgL">FgL:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.fgL}
+                id="fgL"
+                name="fgL"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "fgL")}
+            />
+
+
+            <label for="fgLDelta">FgLDelta:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.fgLDelta}
+                id="fgLDelta"
+                name="fgLDelta"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "fgLDelta")}
+            />
+
+
+
+            <label for="clockHDelta">ClockforDelta:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.clockHDelta}
+                id="clockHDelta"
+                name="clockHDelta"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "clockHDelta")}
+            />
+<br/>
+            <label for="clockFgS">ClockFgS:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.clockFgS}
+                id="clockFgS"
+                name="clockFgS"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "clockFgS")}
+            />
+            <label for="clockFgL">ClockFgL:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.clockFgL}
+                id="clockFgL"
+                name="clockFgL"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "clockFgL")}
+            />
+<br/>
+            <label for="clockBgS">ClockBgS:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.clockBgS}
+                id="clockBgS"
+                name="clockBgS"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "clockBgS")}
+            />
+            <label for="clockBgL">ClockBgL:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.clockBgL}
+                id="clockBgL"
+                name="clockBgL"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "clockBgL")}
+            />
+<br/>
+            <label for="clockHiS">ClockHiS:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.clockHiS}
+                id="clockHiS"
+                name="clockHiS"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "clockHiS")}
+            />
+            <label for="clockHiL">ClockHiL:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.clockHiL}
+                id="clockHiL"
+                name="clockHiL"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "clockHiL")}
+            />
             <hr />
             <div class="card-holder">
                 <SampleCard pigment="12" />
@@ -76,66 +235,7 @@ export default function Settings({ path }: { path?: string }) {
         </div>
     );
 }
-/*
-function ColourControl({
-    onInput,
-    value,
-    id,
-}: {
-    onInput: (e: Event, index: number, id: string) => void;
-    value: [number, number, number] | undefined;
-    id: string;
-}) {
-    const labelH = `${id} h`;
-    const labelS = `${id} s`;
-    const labelL = `${id} l`;
 
-    const idH = `${id}-h`;
-    const idS = `${id}-s`;
-    const idL = `${id}-l`;
-
-    if (value !== undefined) {
-        return (
-            <div>
-                <label for={idH}>{labelH}</label>
-                <input
-                    type="number"
-                    value={value[0]}
-                    id={idH}
-                    name={idH}
-                    min="0"
-                    max="359"
-                    onInput={(e) => onInput(e, 0, id)}
-                />
-
-                <label for={idS}>{labelS}</label>
-                <input
-                    type="number"
-                    value={value[1]}
-                    id={idS}
-                    name={idS}
-                    min="0"
-                    max="100"
-                    onInput={(e) => onInput(e, 1, id)}
-                />
-
-                <label for={idL}>{labelL}</label>
-                <input
-                    type="number"
-                    value={value[2]}
-                    id={idL}
-                    name={idL}
-                    min="0"
-                    max="100"
-                    onInput={(e) => onInput(e, 2, id)}
-                />
-            </div>
-        );
-    } else {
-        return <div></div>;
-    }
-}
-*/
 function SampleCard({ pigment }: { pigment: string }) {
     const note: Note = {
         age: "test age",
@@ -164,10 +264,6 @@ function SampleCard({ pigment }: { pigment: string }) {
         </CardBase>
     );
 }
-
-
-
-
 
 function ColourSchemeSelector({}) {
     const appState = getAppState();
@@ -259,71 +355,6 @@ function Module({ heading, children, buttons }: Props) {
         </article>
     );
 }
-
-
-/*
-            <h2>UI colours</h2>
-            <ColourControl
-                onInput={updateColourTriple}
-                value={settings.bg}
-                id="bg"
-            />
-            <ColourControl
-                onInput={updateColourTriple}
-                value={settings.bg1}
-                id="bg1"
-            />
-            <ColourControl
-                onInput={updateColourTriple}
-                value={settings.bg2}
-                id="bg2"
-            />
-            <ColourControl
-                onInput={updateColourTriple}
-                value={settings.fg}
-                id="fg"
-            />
-            <ColourControl
-                onInput={updateColourTriple}
-                value={settings.fg1}
-                id="fg1"
-            />
-            <ColourControl
-                onInput={updateColourTriple}
-                value={settings.fg_inactive}
-                id="fg_inactive"
-            />
-            <ColourControl
-                onInput={updateColourTriple}
-                value={settings.textarea_bg}
-                id="textarea_bg"
-            />
-            <ColourControl
-                onInput={updateColourTriple}
-                value={settings.textarea_fg}
-                id="textarea_fg"
-            />
-            <ColourControl
-                onInput={updateColourTriple}
-                value={settings.save_on_bg}
-                id="save_on_bg"
-            />
-            <ColourControl
-                onInput={updateColourTriple}
-                value={settings.save_on_fg}
-                id="save_on_fg"
-            />
-            <ColourControl
-                onInput={updateColourTriple}
-                value={settings.divider}
-                id="divider"
-            />
-            <hr />
-
-*/
-
-
-
 
 /*
 

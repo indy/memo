@@ -53,7 +53,7 @@ function loadNotes(kind: NoteLocation, categoryId?: number) {
 }
 
 export function notePigment(noteId: number): Pigment {
-    const pigmentNum = (noteId % 12) + 1;
+    const pigmentNum = ((noteId * 5) % 12) + 1;
     const pigmentNumString =
         pigmentNum < 10 ? `0${pigmentNum}` : `${pigmentNum}`;
     const pigmentClass = `pigment-clock-${pigmentNumString}`;

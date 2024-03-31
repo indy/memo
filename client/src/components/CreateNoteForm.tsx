@@ -66,7 +66,6 @@ function CreateNoteForm({ categoryId }: { categoryId?: number }) {
 
     return (
         <div class="form-holder card-holder-pinned">
-            <div class="card-holder-pinned-inner">
                 <textarea
                     id="content"
                     type="text"
@@ -88,7 +87,6 @@ function CreateNoteForm({ categoryId }: { categoryId?: number }) {
                         />
                     </div>
                 )}
-            </div>
         </div>
     );
 }
