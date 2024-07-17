@@ -713,7 +713,6 @@ hr {
 }
 .create-note-button {
     margin-bottom: 1rem;
-    color: var(--fg);
 }
 
 .card-common {

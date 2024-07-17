@@ -107,7 +107,7 @@ function declareSeeds(colourScheme: ColourScheme): ColourSeeds {
             clockHDelta: 30,
 
             clockFgS: 50,
-            clockFgL: 90,
+            clockFgL: 70,
 
             clockBgS: 60,
             clockBgL: 30,
