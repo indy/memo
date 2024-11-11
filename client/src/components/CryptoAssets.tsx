@@ -5,13 +5,15 @@ export default function CryptoAssets({}) {
         bitcoinPrice: number;
         ethereumPrice: number;
         solanaPrice: number;
+        degenPrice: number;
         bitcoinQuantity: number;
         ethereumQuantity: number;
         solanaQuantity: number;
+        degenQuantity: number;
         dollarsSpent: number;
     };
 
-    const baseEth = 5.988;      // from selling DEGEN 2131297.999999999985057792 for $17,170.12
+    const baseEth = 2.988;
     const lidoEth = 16.87269948;
     const trezorEth = 0.090052062259163808;
     const inderjitEth = 0.185630544632905656;
@@ -22,16 +24,18 @@ export default function CryptoAssets({}) {
         bitcoinPrice: 0,
         ethereumPrice: 0,
         solanaPrice: 0,
+        degenPrice: 0,
         bitcoinQuantity: 0.95652791,
         ethereumQuantity: lidoEth + trezorEth + inderjitEth + rEth + coinbaseEth + baseEth,
         solanaQuantity: 4.786,
+        degenQuantity: 894508.0667673037,
         dollarsSpent: 91867.47
     };
     let [localState, setLocalState] = useState(initialState);
 
     useEffect(() => {
         try {
-            const url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd';
+            const url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,degen-base&vs_currencies=usd';
             fetch(url).then((response) => {
                 if (!response.ok) {
                     throw new Error(`Unable to fetch price`);
@@ -41,7 +45,8 @@ export default function CryptoAssets({}) {
                         ...localState,
                         bitcoinPrice: data.bitcoin.usd,
                         ethereumPrice: data.ethereum.usd,
-                        solanaPrice: data.solana.usd
+                        solanaPrice: data.solana.usd,
+                        degenPrice: data["degen-base"].usd
                     })
                 });
             });
@@ -103,12 +108,14 @@ export default function CryptoAssets({}) {
     const btcValue = localState.bitcoinPrice * localState.bitcoinQuantity;
     const ethValue = localState.ethereumPrice * localState.ethereumQuantity;
     const solValue = localState.solanaPrice * localState.solanaQuantity;
-    const totalValue = btcValue + ethValue + solValue;
+    const dgnValue = localState.degenPrice * localState.degenQuantity;
+    const totalValue = btcValue + ethValue + solValue + dgnValue;
     const profitPercentage = (100 / localState.dollarsSpent) * totalValue;
 
     const btcPct = (100 / totalValue) * btcValue;
     const ethPct = (100 / totalValue) * ethValue;
     const solPct = (100 / totalValue) * solValue;
+    const dgnPct = (100 / totalValue) * dgnValue;
 
     return (
         <div class="c-crypto-assets">
@@ -119,9 +126,10 @@ export default function CryptoAssets({}) {
             { info("BTC", localState.bitcoinPrice, localState.bitcoinQuantity) }
             { info("ETH", localState.ethereumPrice, localState.ethereumQuantity) }
             { info("SOL", localState.solanaPrice, localState.solanaQuantity) }
+            { info("DGN", localState.degenPrice, localState.degenQuantity) }
             <div class="crypto-assets-v-spacer"></div>
             <div>| {percent("BTC", btcPct)} | {percent("SOL", solPct)} |</div>
-            <div>| {percent("ETH", ethPct)} |</div>
+            <div>| {percent("ETH", ethPct)} | {percent("DGN", dgnPct)} |</div>
             <div class="crypto-assets-v-spacer"></div>
             { allIn("BTC", localState.bitcoinPrice, totalValue) }
             { allIn("ETH", localState.ethereumPrice, totalValue) }
