@@ -18,7 +18,7 @@ export default function CryptoAssets({}) {
     const trezorEth = 0.090052062259163808;
     const inderjitEth = 0.185630544632905656;
     const rEth = (1.26088 * 1.09205);
-    const coinbaseEth = 0.06351165;
+    const coinbaseEth = 0.06351165 + 0.38685;
 
     const initialState: Crypto = {
         bitcoinPrice: 0,
