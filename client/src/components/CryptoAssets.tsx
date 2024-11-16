@@ -31,7 +31,7 @@ export default function CryptoAssets({ }) {
         solanaQuantity: 4.786,
         degenQuantity: 1143019.89262,
         keycatQuantity: 298821.09245,
-        dollarsSpent: 91867.47
+        dollarsSpent: 97235.61 - 4400.13
     };
     let [localState, setLocalState] = useState(initialState);
 
