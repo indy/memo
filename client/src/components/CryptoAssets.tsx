@@ -15,11 +15,9 @@ export default function CryptoAssets({ }) {
         dollarsSpent: number;
     };
 
-    const baseEth = 1.988;
     const lidoEth = 16.87269948;
     const trezorEth = 0.090052062259163808;
     const inderjitEth = 0.185630544632905656;
-    const rEth = (1.26088 * 1.09205);
     const coinbaseEth = 0.832693;
 
     const initialState: Crypto = {
@@ -29,9 +27,9 @@ export default function CryptoAssets({ }) {
         degenPrice: 0,
         keycatPrice: 0,
         bitcoinQuantity: 0.95652791,
-        ethereumQuantity: lidoEth + trezorEth + inderjitEth + rEth + coinbaseEth + baseEth,
+        ethereumQuantity: lidoEth + trezorEth + inderjitEth + coinbaseEth,
         solanaQuantity: 4.786,
-        degenQuantity: 894508.0667673037,
+        degenQuantity: 1143019.89262,
         keycatQuantity: 298821.09245,
         dollarsSpent: 91867.47
     };
