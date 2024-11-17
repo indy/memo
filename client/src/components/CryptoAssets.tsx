@@ -19,10 +19,9 @@ export default function CryptoAssets({ }) {
         dollarsSpent: number;
     };
 
-    const lidoEth = 16.87269948;
+    const lidoEth = 16.88722044;
     const trezorEth = 0.090052062259163808;
-    const inderjitEth = 0.185630544632905656;
-    const coinbaseEth = 0.832693;
+    const inderjitEth = 0.1602;
 
     const initialState: Crypto = {
         bitcoinPrice: 0,
@@ -33,13 +32,13 @@ export default function CryptoAssets({ }) {
         flokiPrice: 0,
         pepePrice: 0,
         bitcoinQuantity: 0.95652791,
-        ethereumQuantity: lidoEth + trezorEth + inderjitEth + coinbaseEth,
-        solanaQuantity: 4.786,
+        ethereumQuantity: lidoEth + trezorEth + inderjitEth,
+        solanaQuantity: 15.721570471411,
         degenQuantity: 1143019.89262,
         flokiQuantity: 8313048.56841304,
         pepeQuantity: 93757832.6482039,
         keycatQuantity: 298821.09245,
-        dollarsSpent: 94494.26 - 401.47
+        dollarsSpent: 94494.26 - 401.68
     };
     let [localState, setLocalState] = useState(initialState);
 
