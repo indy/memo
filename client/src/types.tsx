@@ -49,37 +49,33 @@ export type LoadedListing = {
 export type ColourTriple = [number, number, number];
 export type ColourQuad = [number, number, number, number];
 
+// all colours are specified in the oklch colour space
 export type ColourSeeds = {
+    chroma: number;
     hue: number;
-    sat: number;
 
     bgL: number;
     bgLDelta: number;
 
-    fgH: number;
-    fgS: number;
     fgL: number;
     fgLDelta: number;
+    fgC: number;
+    fgH: number;
+
+    clockFgL: number;
+    clockFgC: number;
+
+    clockBgL: number;
+    clockBgC: number;
+
+    clockHiL: number;
+    clockHiC: number;
 
     clockHDelta: number;
-
-    clockFgS: number;
-    clockFgL: number;
-
-    clockBgS: number;
-    clockBgL: number;
-
-    clockHiS: number;
-    clockHiL: number;
-};
-
-export type WasmInterface = {
-    rgbFromHsl(h: number, s: number, l: number): any;
 };
 
 export type State = {
     user: Signal<User>;
-    wasmInterface: WasmInterface | undefined;
     uiConfig: Signal<UiConfig>; // bit of duplication as the User contains the original uiConfig json string
     colourSeeds: Signal<ColourSeeds>;
 

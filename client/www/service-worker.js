@@ -21,15 +21,12 @@
 
 // NOTE: Makefile will alter these variables when building a release build
 var devMode = true;
-var CACHE_NAME = "memo-20201212i";
+var CACHE_NAME = "memo-20241207";
 
 var precacheConfig = [
     "/apple-touch-icon.png",
     "/favicon-16x16.png",
     "/favicon-32x32.png",
-
-    "/wasm_colour.js",
-    "/wasm_colour_bg.wasm",
 
     "/index.html",
     "/index.css",

@@ -35,13 +35,8 @@ MINIFY := $(shell command -v minify 2> /dev/null)
 
 SERVER_BINARY = memo_server
 
-CLIENT_WASM_NAME = wasm_colour
-CLIENT_WASM = $(CLIENT_WASM_NAME).wasm
-CLIENT_WASM_BG = $(CLIENT_WASM_NAME)_bg.wasm
-
 SERVER_FOLDER = server
 CLIENT_FOLDER = client
-WASM_FOLDER = client/wasm-colour
 
 ################################################################################
 # filesets
@@ -50,7 +45,6 @@ WASM_FOLDER = client/wasm-colour
 SERVER_FILES = $(call rwildcard,$(SERVER_FOLDER)/src,*) $(SERVER_FOLDER)/Cargo.toml
 SYSTEMD_FILES = $(wildcard misc/systemd/*)
 
-WASM_FILES = $(wildcard $(WASM_FOLDER)/src/*) $(WASM_FOLDER)/Cargo.toml
 CLIENT_FILES = $(call rwildcard,$(CLIENT_FOLDER)/src,*)
 
 .PHONY: run clean-staging download-db typescript-watch typescript-typecheck typescript-format deps
@@ -73,13 +67,13 @@ typescript-format:
 # top-level public targets
 ################################################################################
 
-run: $(CLIENT_FOLDER)/www/$(CLIENT_WASM_BG) $(CLIENT_FOLDER)/www/index.js server
+run: $(CLIENT_FOLDER)/www/index.js server
 	cargo run --manifest-path $(SERVER_FOLDER)/Cargo.toml --bin $(SERVER_BINARY)
 
 server: $(SERVER_FOLDER)/target/debug/$(SERVER_BINARY)
 server-release: $(SERVER_FOLDER)/target/release/$(SERVER_BINARY)
 
-staging: clean-staging staging/www/index.html staging/$(SERVER_BINARY) staging/systemd/isg-memo.sh staging/www/$(CLIENT_WASM_BG)
+staging: clean-staging staging/www/index.html staging/$(SERVER_BINARY) staging/systemd/isg-memo.sh
 
 upload: staging
 	rsync -avzhe ssh staging/. indy@indy.io:/home/indy/work/memo
@@ -106,15 +100,6 @@ $(SERVER_FOLDER)/target/release/$(SERVER_BINARY): $(SERVER_FILES)
 
 $(CLIENT_FOLDER)/www/index.js: $(CLIENT_FILES)
 	./$(CLIENT_FOLDER)/node_modules/esbuild/bin/esbuild ./$(CLIENT_FOLDER)/src/index.tsx --sourcemap --bundle --outdir=./$(CLIENT_FOLDER)/www
-
-$(CLIENT_FOLDER)/www/$(CLIENT_WASM_BG): $(WASM_FILES)
-	cargo build --manifest-path $(WASM_FOLDER)/Cargo.toml --target wasm32-unknown-unknown
-	wasm-bindgen $(WASM_FOLDER)/target/wasm32-unknown-unknown/debug/$(CLIENT_WASM) --out-dir $(CLIENT_FOLDER)/www --no-modules
-
-staging/www/$(CLIENT_WASM_BG): $(WASM_FILES)
-	mkdir -p $(@D)
-	cargo build --manifest-path $(WASM_FOLDER)/Cargo.toml --release --target wasm32-unknown-unknown
-	wasm-bindgen $(WASM_FOLDER)/target/wasm32-unknown-unknown/release/$(CLIENT_WASM) --out-dir staging/www --no-typescript --no-modules
 
 staging/www/index.html: $(CLIENT_FOLDER)/www/index.js
 	mkdir -p $(@D)

@@ -5,63 +5,49 @@ type ColourDefinitions = {
     [index: string]: string | ColourTriple | ColourQuad | undefined;
 };
 
+/*
+
+  using the browser's native oklch colour specifier.
+
+  l: lightness: a percentage between 0..100
+  c: chroma: a value between 0..100 (that's normalised to 0..0.4)
+  h: hue angle in degrees
+
+ */
+
 function generateColoursFromSeeds(state: State, seeds: ColourSeeds) {
-    if (state.wasmInterface) {
-        const colourDefinitions: ColourDefinitions = generateColourDefs(seeds);
-        const rgbFromHsl = state.wasmInterface.rgbFromHsl;
+    const colourDefinitions: ColourDefinitions = generateColourDefs(seeds);
 
-        function clamp(value: number, min: number, max: number) {
-            return value < min ? min : value > max ? max : value;
-        }
+    let root = document.body;
 
-        function clampedRgbFromHsl(
-            h: number,
-            s: number,
-            l: number,
-        ): [number, number, number] {
-            const transportRGB = rgbFromHsl(h, s, l);
+    Object.keys(colourDefinitions).forEach((key) => {
+        let cssName = cssFromUnderscore(key);
+        let value = colourDefinitions[key];
 
-            let r = Math.floor(clamp(transportRGB.c0, 0, 1) * 255);
-            let g = Math.floor(clamp(transportRGB.c1, 0, 1) * 255);
-            let b = Math.floor(clamp(transportRGB.c2, 0, 1) * 255);
+        if (Array.isArray(value)) {
+            if (value.length === 3) {
+                let [l, c, h] = value as ColourTriple;
+                root.style.setProperty(cssName, `oklch(${l}% ${(0.4/100)*c} ${h}deg)`);
 
-            return [r, g, b];
-        }
-
-        let root = document.body;
-
-        Object.keys(colourDefinitions).forEach((key) => {
-            let cssName = cssFromUnderscore(key);
-            let value = colourDefinitions[key];
-
-            if (Array.isArray(value)) {
-                if (value.length === 3) {
-                    let [h, s, l] = value as ColourTriple;
-
-                    let [r, g, b] = clampedRgbFromHsl(h, s, l);
-                    root.style.setProperty(cssName, `rgb(${r}, ${g}, ${b})`);
-                } else if (value.length === 4) {
-                    let [h, s, l, alpha] = value as ColourQuad;
-
-                    let [r, g, b] = clampedRgbFromHsl(h, s, l);
-                    root.style.setProperty(
-                        cssName,
-                        `rgba(${r}, ${g}, ${b}, ${alpha})`,
-                    );
-                } else {
-                    console.error(
-                        `${cssName}: unknown array size expected 3 or 4`,
-                    );
-                }
+            } else if (value.length === 4) {
+                let [l, c, h, alpha] = value as ColourQuad;
+                root.style.setProperty(
+                    cssName,
+                    `oklch(${l}% ${(0.4/100)*c} ${h}deg / ${alpha})`,
+                );
             } else {
-                let name = value;
-                if (name) {
-                    let source = getComputedStyle(root).getPropertyValue(name);
-                    root.style.setProperty(cssName, source);
-                }
+                console.error(
+                    `${cssName}: unknown array size expected 3 or 4`,
+                );
             }
-        });
-    }
+        } else {
+            let name = value;
+            if (name) {
+                let source = getComputedStyle(root).getPropertyValue(name);
+                root.style.setProperty(cssName, source);
+            }
+        }
+    });
 }
 
 function declareSeeds(colourScheme: ColourScheme): ColourSeeds {
@@ -69,51 +55,50 @@ function declareSeeds(colourScheme: ColourScheme): ColourSeeds {
 
     if (colourScheme === ColourScheme.Light) {
         s = {
+            chroma: 10,
             hue: 67,
-            sat: 20,
 
             bgL: 99.0,
             bgLDelta: -3,
 
             fgH: 67,
-            fgS: 0,
+            fgC: 0,
             fgL: 5.0,
             fgLDelta: 10.0,
 
             clockHDelta: 30,
 
-            clockFgS: 40,
+            clockFgC: 40,
             clockFgL: 40,
 
-            clockBgS: 77,
+            clockBgC: 30,
             clockBgL: 93,
 
-            clockHiS: 57,
+            clockHiC: 26,
             clockHiL: 86,
         };
     } else {
         s = {
+            chroma: 20.0,
             hue: 230.0,
-            sat: 20.0,
 
             bgL: 1,
             bgLDelta: 3,
 
             fgH: 16.7,
-            fgS: 0,
+            fgC: 0,
             fgL: 90.0,
             fgLDelta: -10.0,
 
             clockHDelta: 30,
 
-            clockFgS: 50,
+            clockFgC: 25,
+            clockBgC: 20,
+            clockHiC: 34,
+
             clockFgL: 70,
-
-            clockBgS: 60,
-            clockBgL: 30,
-
-            clockHiS: 80,
-            clockHiL: 40,
+            clockBgL: 40,
+            clockHiL: 50,
         };
     }
     return s;
@@ -127,19 +112,19 @@ function generateColourDefs(seeds: ColourSeeds): ColourDefinitions {
         let index = indexAsString(i);
 
         defs[`fg_clock_${index}`] = [
-            hue,
-            seeds.clockFgS,
             seeds.clockFgL,
+            seeds.clockFgC,
+            hue,
         ] as ColourTriple;
         defs[`bg_clock_${index}`] = [
-            hue,
-            seeds.clockBgS,
             seeds.clockBgL,
+            seeds.clockBgC,
+            hue,
         ] as ColourTriple;
         defs[`hi_clock_${index}`] = [
-            hue,
-            seeds.clockHiS,
             seeds.clockHiL,
+            seeds.clockHiC,
+            hue,
         ] as ColourTriple;
     }
 
@@ -149,9 +134,9 @@ function generateColourDefs(seeds: ColourSeeds): ColourDefinitions {
     defs = {
         ...defs,
 
-        ui_shadow: [seeds.hue, seeds.sat, seeds.bgL * 0.2, 0.1] as ColourQuad,
+        ui_shadow: [seeds.bgL * 0.2, seeds.chroma, seeds.hue, 0.1] as ColourQuad,
 
-        ui_shadow_2: [seeds.hue, seeds.sat, seeds.bgL * 0.1, 0.1] as ColourQuad,
+        ui_shadow_2: [seeds.bgL * 0.1, seeds.chroma, seeds.hue, 0.1] as ColourQuad,
 
         bg_inbox: "--bg-clock-06",
         bg_group: "--bg-clock-12",
@@ -194,9 +179,9 @@ function bgCol(
     name: string,
 ): ColourDefinitions {
     defs[name] = [
-        seeds.hue,
-        seeds.sat,
         seeds.bgL + seeds.bgLDelta * factor,
+        seeds.chroma,
+        seeds.hue,
     ] as ColourTriple;
 
     return defs;
@@ -209,9 +194,9 @@ function fgCol(
     name: string,
 ): ColourDefinitions {
     defs[name] = [
-        seeds.fgH,
-        seeds.fgS,
         seeds.fgL + seeds.fgLDelta * factor,
+        seeds.fgC,
+        seeds.fgH,
     ] as ColourTriple;
 
     return defs;

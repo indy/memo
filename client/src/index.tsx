@@ -2,7 +2,7 @@ import { render } from "preact";
 
 import { ColourScheme } from "./enums";
 
-import type { Category, UiConfig, UserWithUiConfig, WasmInterface } from "./types";
+import type { Category, UiConfig, UserWithUiConfig } from "./types";
 
 import "./index.css";
 import Net from "./Net";
@@ -15,60 +15,9 @@ import { AppStateChange, initialState } from "./AppState";
 
 import { getCssString, basicUiConfig } from "./Utils";
 
-/*
-wasm_bindgen("/wasm_colour_bg.wasm")
-    .then((wasm_colour_bg: InitOutput) => {
-        const wasmInterface: WasmInterface = {
-            RgbFromHsl: buildColourConversionFn(wasm_colour_bg),
-        };
-
-        let state = initialState;
-        state.wasmInterface = wasmInterface;
-        state.settings.value = augmentSettingsWithCssModifierParameters(
-            state.settings.value
-        );
-
-        Net.get<UserWithUiConfig>("/api/users").then(async (user) => {
-            if (user) {
-                // update initial state with user
-                //
-                let categories = await Net.get<Array<Category>>(
-                    "/api/categories"
-                );
-
-                AppStateChange.userLogin(user, categories);
-            }
-            declareCssVariables(state.settings.value, wasmInterface);
-            let root = document.getElementById("root");
-            if (root) {
-                render(<App state={state} />, root);
-            }
-        });
-    })
-    .catch(console.error);
-*/
-
 document.addEventListener("DOMContentLoaded", async function () {
-    // note: wasm_bindgen is loaded from a civil_wasm.js script tag in index.html
-
-    // initialise the wasm_bindgen
-    //
-    await wasm_bindgen();
-
-    // grab the exports
-    //
-    const {
-        rgb_from_hsluv,
-    } = wasm_bindgen;
-
-
-    const wasmInterface: WasmInterface = {
-        rgbFromHsl: rgb_from_hsluv,
-    };
 
     let state = initialState;
-
-    state.wasmInterface = wasmInterface;
 
     let root = document.getElementById("root");
     if (root) {
@@ -88,7 +37,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             AppStateChange.userLogin(user, categories);
 
-            // declareCssVariables(state.settings.value, wasmInterface);
             render(<App state={state} />, rootElement);
 
         } else {

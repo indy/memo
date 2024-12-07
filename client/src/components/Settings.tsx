@@ -25,20 +25,20 @@ export default function Settings({ path }: { path?: string }) {
 
             switch(id) {
                 case "hue": seeds.hue = val; break;
-                case "sat": seeds.sat = val; break;
+                case "chroma": seeds.chroma = val; break;
                 case "bgL": seeds.bgL = val; break;
                 case "bgLDelta": seeds.bgLDelta = val; break;
-                case "fgH": seeds.fgH = val; break;
-                case "fgS": seeds.fgS = val; break;
                 case "fgL": seeds.fgL = val; break;
                 case "fgLDelta": seeds.fgLDelta = val; break;
+                case "fgC": seeds.fgC = val; break;
+                case "fgH": seeds.fgH = val; break;
                 case "clockHDelta": seeds.clockHDelta = val; break;
-                case "clockFgS": seeds.clockFgS = val; break;
                 case "clockFgL": seeds.clockFgL = val; break;
-                case "clockBgS": seeds.clockBgS = val; break;
+                case "clockFgC": seeds.clockFgC = val; break;
                 case "clockBgL": seeds.clockBgL = val; break;
-                case "clockHiS": seeds.clockHiS = val; break;
+                case "clockBgC": seeds.clockBgC = val; break;
                 case "clockHiL": seeds.clockHiL = val; break;
+                case "clockHiC": seeds.clockHiC = val; break;
             }
             generateColoursFromSeeds(appState, appState.colourSeeds.value);
         }
@@ -61,16 +61,18 @@ export default function Settings({ path }: { path?: string }) {
                 onInput={(e) => updateColourScalar(e, "hue")}
             />
 
-            <label for="sat">Sat:</label>
+            <label for="chroma">Chroma:</label>
             <input
                 type="number"
-                value={appState.colourSeeds.value.sat}
-                id="sat"
-                name="sat"
+                value={appState.colourSeeds.value.chroma}
+                id="chroma"
+                name="chroma"
                 min="0"
                 max="100"
-                onInput={(e) => updateColourScalar(e, "sat")}
+                onInput={(e) => updateColourScalar(e, "chroma")}
             />
+
+            <br/>
 
             <label for="bgL">BgL:</label>
             <input
@@ -94,30 +96,7 @@ export default function Settings({ path }: { path?: string }) {
                 onInput={(e) => updateColourScalar(e, "bgLDelta")}
             />
 
-
-            <label for="fgH">FgH:</label>
-            <input
-                type="number"
-                value={appState.colourSeeds.value.fgH}
-                id="fgH"
-                name="fgH"
-                min="0"
-                max="100"
-                onInput={(e) => updateColourScalar(e, "fgH")}
-            />
-
-
-            <label for="fgS">FgS:</label>
-            <input
-                type="number"
-                value={appState.colourSeeds.value.fgS}
-                id="fgS"
-                name="fgS"
-                min="0"
-                max="100"
-                onInput={(e) => updateColourScalar(e, "fgS")}
-            />
-
+            <br/>
 
             <label for="fgL">FgL:</label>
             <input
@@ -142,7 +121,31 @@ export default function Settings({ path }: { path?: string }) {
                 onInput={(e) => updateColourScalar(e, "fgLDelta")}
             />
 
+            <br/>
 
+            <label for="fgC">FgC:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.fgC}
+                id="fgC"
+                name="fgC"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "fgC")}
+            />
+
+            <label for="fgH">FgH:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.fgH}
+                id="fgH"
+                name="fgH"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "fgH")}
+            />
+
+            <br/>
 
             <label for="clockHDelta">ClockforDelta:</label>
             <input
@@ -154,17 +157,9 @@ export default function Settings({ path }: { path?: string }) {
                 max="100"
                 onInput={(e) => updateColourScalar(e, "clockHDelta")}
             />
-<br/>
-            <label for="clockFgS">ClockFgS:</label>
-            <input
-                type="number"
-                value={appState.colourSeeds.value.clockFgS}
-                id="clockFgS"
-                name="clockFgS"
-                min="0"
-                max="100"
-                onInput={(e) => updateColourScalar(e, "clockFgS")}
-            />
+
+            <br/>
+
             <label for="clockFgL">ClockFgL:</label>
             <input
                 type="number"
@@ -175,17 +170,20 @@ export default function Settings({ path }: { path?: string }) {
                 max="100"
                 onInput={(e) => updateColourScalar(e, "clockFgL")}
             />
-<br/>
-            <label for="clockBgS">ClockBgS:</label>
+
+            <label for="clockFgC">ClockFgC:</label>
             <input
                 type="number"
-                value={appState.colourSeeds.value.clockBgS}
-                id="clockBgS"
-                name="clockBgS"
+                value={appState.colourSeeds.value.clockFgC}
+                id="clockFgC"
+                name="clockFgC"
                 min="0"
                 max="100"
-                onInput={(e) => updateColourScalar(e, "clockBgS")}
+                onInput={(e) => updateColourScalar(e, "clockFgC")}
             />
+
+            <br/>
+
             <label for="clockBgL">ClockBgL:</label>
             <input
                 type="number"
@@ -196,17 +194,20 @@ export default function Settings({ path }: { path?: string }) {
                 max="100"
                 onInput={(e) => updateColourScalar(e, "clockBgL")}
             />
-<br/>
-            <label for="clockHiS">ClockHiS:</label>
+
+            <label for="clockBgC">ClockBgC:</label>
             <input
                 type="number"
-                value={appState.colourSeeds.value.clockHiS}
-                id="clockHiS"
-                name="clockHiS"
+                value={appState.colourSeeds.value.clockBgC}
+                id="clockBgC"
+                name="clockBgC"
                 min="0"
                 max="100"
-                onInput={(e) => updateColourScalar(e, "clockHiS")}
+                onInput={(e) => updateColourScalar(e, "clockBgC")}
             />
+
+            <br/>
+
             <label for="clockHiL">ClockHiL:</label>
             <input
                 type="number"
@@ -217,7 +218,20 @@ export default function Settings({ path }: { path?: string }) {
                 max="100"
                 onInput={(e) => updateColourScalar(e, "clockHiL")}
             />
+
+            <label for="clockHiC">ClockHiC:</label>
+            <input
+                type="number"
+                value={appState.colourSeeds.value.clockHiC}
+                id="clockHiC"
+                name="clockHiC"
+                min="0"
+                max="100"
+                onInput={(e) => updateColourScalar(e, "clockHiC")}
+            />
+
             <hr />
+
             <div class="card-holder">
                 <SampleCard pigment="12" />
                 <SampleCard pigment="01" />

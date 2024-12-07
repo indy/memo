@@ -29,7 +29,6 @@ const emptyUser: User = {
 
 const state: State = {
     user: signal(emptyUser),
-    wasmInterface: undefined,
 
     uiConfig: signal(basicUiConfig()),
     colourSeeds: signal(declareSeeds(ColourScheme.Light)),

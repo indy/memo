@@ -520,40 +520,40 @@ a:visited.pigment-inherit {
 }
 
 .pigment-clock-12-alt:hover {
-  background: var(--bg-clock-122);
+  background: var(--bg-clock-12);
 }
 .pigment-clock-01-alt:hover {
-  background: var(--bg-clock-012);
+  background: var(--bg-clock-01);
 }
 .pigment-clock-02-alt:hover {
-  background: var(--bg-clock-022);
+  background: var(--bg-clock-02);
 }
 .pigment-clock-03-alt:hover {
-  background: var(--bg-clock-032);
+  background: var(--bg-clock-03);
 }
 .pigment-clock-04-alt:hover {
-  background: var(--bg-clock-042);
+  background: var(--bg-clock-04);
 }
 .pigment-clock-05-alt:hover {
-  background: var(--bg-clock-052);
+  background: var(--bg-clock-05);
 }
 .pigment-clock-06-alt:hover {
-  background: var(--bg-clock-062);
+  background: var(--bg-clock-06);
 }
 .pigment-clock-07-alt:hover {
-  background: var(--bg-clock-072);
+  background: var(--bg-clock-07);
 }
 .pigment-clock-08-alt:hover {
-  background: var(--bg-clock-082);
+  background: var(--bg-clock-08);
 }
 .pigment-clock-09-alt:hover {
-  background: var(--bg-clock-092);
+  background: var(--bg-clock-09);
 }
 .pigment-clock-10-alt:hover {
-  background: var(--bg-clock-102);
+  background: var(--bg-clock-10);
 }
 .pigment-clock-11-alt:hover {
-  background: var(--bg-clock-112);
+  background: var(--bg-clock-11);
 }
 
 .darken-border {
