@@ -33,12 +33,12 @@ export default function CryptoAssets({ }) {
         pepePrice: 0,
         bitcoinQuantity: 0.95652791,
         ethereumQuantity: lidoEth + trezorEth + inderjitEth,
-        solanaQuantity: 15.721570471411,
+        solanaQuantity: 18.574,
         degenQuantity: 1143019.89262,
         flokiQuantity: 8313048.56841304,
         pepeQuantity: 93757832.6482039,
         keycatQuantity: 298821.09245,
-        dollarsSpent: 94494.26 - 401.68
+        dollarsSpent: 95130.05 - 401.68
     };
     let [localState, setLocalState] = useState(initialState);
 
