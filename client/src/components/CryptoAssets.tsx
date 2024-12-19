@@ -6,14 +6,12 @@ export default function CryptoAssets({ }) {
         ethereumPrice: number;
         solanaPrice: number;
         degenPrice: number;
-        keycatPrice: number;
         flokiPrice: number;
         pepePrice: number;
         bitcoinQuantity: number;
         ethereumQuantity: number;
         solanaQuantity: number;
         degenQuantity: number;
-        keycatQuantity: number;
         flokiQuantity: number;
         pepeQuantity: number;
         dollarsSpent: number;
@@ -23,28 +21,28 @@ export default function CryptoAssets({ }) {
     const trezorEth = 0.090052062259163808;
     const inderjitEth = 0.1602;
 
+    const dollarsOnChain = 4607;
+
     const initialState: Crypto = {
         bitcoinPrice: 0,
         ethereumPrice: 0,
         solanaPrice: 0,
         degenPrice: 0,
-        keycatPrice: 0,
         flokiPrice: 0,
         pepePrice: 0,
         bitcoinQuantity: 0.95652791,
         ethereumQuantity: lidoEth + trezorEth + inderjitEth,
         solanaQuantity: 18.574,
-        degenQuantity: 1143019.89262,
+        degenQuantity: 894508.066767304,
         flokiQuantity: 8313048.56841304,
         pepeQuantity: 93757832.6482039,
-        keycatQuantity: 298821.09245,
-        dollarsSpent: 95130.05 - 401.68
+        dollarsSpent: 95130.05 - dollarsOnChain
     };
     let [localState, setLocalState] = useState(initialState);
 
     useEffect(() => {
         try {
-            const url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,degen-base,keyboard-cat-base,pepe,floki&vs_currencies=usd';
+            const url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,degen-base,pepe,floki&vs_currencies=usd';
             fetch(url).then((response) => {
                 if (!response.ok) {
                     throw new Error(`Unable to fetch price`);
@@ -56,7 +54,6 @@ export default function CryptoAssets({ }) {
                         ethereumPrice: data.ethereum.usd,
                         solanaPrice: data.solana.usd,
                         degenPrice: data["degen-base"].usd,
-                        keycatPrice: data["keyboard-cat-base"].usd,
                         flokiPrice: data.floki.usd,
                         pepePrice: data.pepe.usd
                     })
@@ -124,18 +121,16 @@ export default function CryptoAssets({ }) {
     const ethValue = localState.ethereumPrice * localState.ethereumQuantity;
     const solValue = localState.solanaPrice * localState.solanaQuantity;
     const dgnValue = localState.degenPrice * localState.degenQuantity;
-    const keycatValue = localState.keycatPrice * localState.keycatQuantity;
     const flokiValue = localState.flokiPrice * localState.flokiQuantity;
     const pepeValue = localState.pepePrice * localState.pepeQuantity;
 
-    const totalValue = btcValue + ethValue + solValue + dgnValue + keycatValue + flokiValue + pepeValue;
+    const totalValue = btcValue + ethValue + solValue + dgnValue + flokiValue + pepeValue;
     const profitPercentage = (100 / localState.dollarsSpent) * totalValue;
 
     const btcPct = (100 / totalValue) * btcValue;
     const ethPct = (100 / totalValue) * ethValue;
     const solPct = (100 / totalValue) * solValue;
     const dgnPct = (100 / totalValue) * dgnValue;
-    const keycatPct = (100 / totalValue) * keycatValue;
     const flokiPct = (100 / totalValue) * flokiValue;
     const pepePct = (100 / totalValue) * pepeValue;
 
@@ -153,14 +148,12 @@ export default function CryptoAssets({ }) {
             {info("DGN", localState.degenPrice, localState.degenQuantity)}
             {info("FLOKI", localState.flokiPrice, localState.flokiQuantity)}
             {info("PEPE", localState.pepePrice, localState.pepeQuantity)}
-            {info("KEYCAT", localState.keycatPrice, localState.keycatQuantity)}
 
             <div class="crypto-assets-v-spacer"></div>
 
             <div>{percent("BTC", btcPct)} {percent("ETH", ethPct)}</div>
             <div>{percent("SOL", solPct)} {percent("DGN", dgnPct)}</div>
             <div>{percent("FLOKI", flokiPct)} {percent("PEPE", pepePct)}</div>
-            <div>{percent("KEYCAT", keycatPct)}</div>
 
             <div class="crypto-assets-v-spacer"></div>
 
