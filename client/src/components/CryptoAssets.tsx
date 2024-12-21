@@ -5,6 +5,8 @@ export default function CryptoAssets({ }) {
         bitcoinPrice: number;
         ethereumPrice: number;
         solanaPrice: number;
+        uniswapPrice: number;
+        aavePrice: number;
         degenPrice: number;
         flokiPrice: number;
         pepePrice: number;
@@ -12,6 +14,8 @@ export default function CryptoAssets({ }) {
         bitcoinQuantity: number;
         ethereumQuantity: number;
         solanaQuantity: number;
+        uniswapQuantity: number;
+        aaveQuantity: number;
         degenQuantity: number;
         flokiQuantity: number;
         pepeQuantity: number;
@@ -23,12 +27,14 @@ export default function CryptoAssets({ }) {
     const trezorEth = 0.090052062259163808;
     const inderjitEth = 0.1602;
 
-    const dollarsOnChain = 401.37;
+    const dollarsOnChain = 84.0;
 
     const initialState: Crypto = {
         bitcoinPrice: 0,
         ethereumPrice: 0,
         solanaPrice: 0,
+        uniswapPrice: 0,
+        aavePrice: 0,
         degenPrice: 0,
         flokiPrice: 0,
         pepePrice: 0,
@@ -36,7 +42,9 @@ export default function CryptoAssets({ }) {
         bitcoinQuantity: 0.95652791,
         ethereumQuantity: lidoEth + trezorEth + inderjitEth,
         solanaQuantity: 18.574,
-        degenQuantity: 894508.066767304,
+        uniswapQuantity: 290.6725,
+        aaveQuantity: 9.0632,
+        degenQuantity: 299216.4799,
         flokiQuantity: 8313048.56841304,
         pepeQuantity: 93757832.6482039,
         virtualsQuantity: 1820.307110530838810757,
@@ -49,7 +57,7 @@ export default function CryptoAssets({ }) {
         const virtualsContractAddress = "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b";
         const virtualsUrl = `https://api.coingecko.com/api/v3/simple/token_price/${platformId}?contract_addresses=${virtualsContractAddress}&vs_currencies=usd`;
 
-        const normalUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,virtuals-base,degen-base,pepe,floki&vs_currencies=usd';
+        const normalUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,virtuals-base,degen-base,aave,uniswap,pepe,floki&vs_currencies=usd';
 
         try {
             Promise.all([fetch(normalUrl), fetch(virtualsUrl)])
@@ -62,6 +70,8 @@ export default function CryptoAssets({ }) {
                         bitcoinPrice: data.bitcoin.usd,
                         ethereumPrice: data.ethereum.usd,
                         solanaPrice: data.solana.usd,
+                        uniswapPrice: data.uniswap.usd,
+                        aavePrice: data.aave.usd,
                         degenPrice: data["degen-base"].usd,
                         flokiPrice: data.floki.usd,
                         pepePrice: data.pepe.usd,
@@ -107,8 +117,13 @@ export default function CryptoAssets({ }) {
             let p = price > 1 ? asUSD(price) : asCents(price);
             let v = asUSD(value);
 
+            let qpad = 5;
+            if (coin.length > 3) {
+                qpad = 5 - (coin.length - 3);
+            }
+
             return (
-                <div>{pad(q, 5)} {coin} @{pad(p, 11)} = {pad(v, 11)}</div>
+                <div>{pad(q, qpad)} {coin} @{pad(p, 11)} = {pad(v, 11)}</div>
             )
         } else {
             let p = price > 1 ? asUSD(price) : asCents(price);
@@ -128,17 +143,21 @@ export default function CryptoAssets({ }) {
     const btcValue = localState.bitcoinPrice * localState.bitcoinQuantity;
     const ethValue = localState.ethereumPrice * localState.ethereumQuantity;
     const solValue = localState.solanaPrice * localState.solanaQuantity;
+    const uniswapValue = localState.uniswapPrice * localState.uniswapQuantity;
+    const aaveValue = localState.aavePrice * localState.aaveQuantity;
     const dgnValue = localState.degenPrice * localState.degenQuantity;
     const flokiValue = localState.flokiPrice * localState.flokiQuantity;
     const pepeValue = localState.pepePrice * localState.pepeQuantity;
     const virtualsValue = localState.virtualsPrice * localState.virtualsQuantity;
 
-    const totalValue = btcValue + ethValue + solValue + dgnValue + flokiValue + pepeValue + virtualsValue;
+    const totalValue = btcValue + ethValue + solValue + uniswapValue + aaveValue + dgnValue + flokiValue + pepeValue + virtualsValue;
     const profitPercentage = (100 / localState.dollarsSpent) * totalValue;
 
     const btcPct = (100 / totalValue) * btcValue;
     const ethPct = (100 / totalValue) * ethValue;
     const solPct = (100 / totalValue) * solValue;
+    const uniswapPct = (100 / totalValue) * uniswapValue;
+    const aavePct = (100 / totalValue) * aaveValue;
     const dgnPct = (100 / totalValue) * dgnValue;
     const flokiPct = (100 / totalValue) * flokiValue;
     const pepePct = (100 / totalValue) * pepeValue;
@@ -155,17 +174,20 @@ export default function CryptoAssets({ }) {
             {info("BTC", localState.bitcoinPrice, localState.bitcoinQuantity)}
             {info("ETH", localState.ethereumPrice, localState.ethereumQuantity)}
             {info("SOL", localState.solanaPrice, localState.solanaQuantity)}
+            {info("VIRTS", localState.virtualsPrice, localState.virtualsQuantity)}
+            {info("UNI", localState.uniswapPrice, localState.uniswapQuantity)}
+            {info("AAVE", localState.aavePrice, localState.aaveQuantity)}
             {info("DGN", localState.degenPrice, localState.degenQuantity)}
             {info("FLOKI", localState.flokiPrice, localState.flokiQuantity)}
             {info("PEPE", localState.pepePrice, localState.pepeQuantity)}
-            {info("VIRTS", localState.virtualsPrice, localState.virtualsQuantity)}
 
             <div class="crypto-assets-v-spacer"></div>
 
             <div>{percent("BTC", btcPct)} {percent("ETH", ethPct)}</div>
-            <div>{percent("SOL", solPct)} {percent("DGN", dgnPct)}</div>
+            <div>{percent("SOL", solPct)} {percent("VIRTS", virtualsPct)}</div>
+            <div>{percent("UNI", uniswapPct)} {percent("AAVE", aavePct)}</div>
             <div>{percent("FLOKI", flokiPct)} {percent("PEPE", pepePct)}</div>
-            <div>{percent("VIRTS", virtualsPct)} </div>
+            <div>{percent("DGN", dgnPct)} </div>
 
             <div class="crypto-assets-v-spacer"></div>
 
