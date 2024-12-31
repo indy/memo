@@ -7,8 +7,6 @@ export default function CryptoAssets({ }) {
         solanaPrice: number;
         uniswapPrice: number;
         aavePrice: number;
-        degenPrice: number;
-        beamPrice: number;
         pepePrice: number;
         virtualsPrice: number;
         bitcoinQuantity: number;
@@ -16,8 +14,6 @@ export default function CryptoAssets({ }) {
         solanaQuantity: number;
         uniswapQuantity: number;
         aaveQuantity: number;
-        degenQuantity: number;
-        beamQuantity: number;
         pepeQuantity: number;
         virtualsQuantity: number;
         dollarsSpent: number;
@@ -27,7 +23,7 @@ export default function CryptoAssets({ }) {
     const trezorEth = 0.090052062259163808;
     const inderjitEth = 0.1602;
 
-    const dollarsOnChain = 0;
+    const dollarsOnChain = 1371.3369;
 
     const initialState: Crypto = {
         bitcoinPrice: 0,
@@ -35,8 +31,6 @@ export default function CryptoAssets({ }) {
         solanaPrice: 0,
         uniswapPrice: 0,
         aavePrice: 0,
-        degenPrice: 0,
-        beamPrice: 0,
         pepePrice: 0,
         virtualsPrice: 0,
         bitcoinQuantity: 0.95652791,
@@ -44,10 +38,8 @@ export default function CryptoAssets({ }) {
         solanaQuantity: 18.574,
         uniswapQuantity: 290.6725,
         aaveQuantity: 9.0632,
-        degenQuantity: 299216.4799,
-        beamQuantity: 51058.344198431156110652,
         pepeQuantity: 93757832.6482039,
-        virtualsQuantity: 1820.307110530838810757,
+        virtualsQuantity: 2521.7137,
         dollarsSpent: 95130.05 - dollarsOnChain
     };
     let [localState, setLocalState] = useState(initialState);
@@ -59,21 +51,16 @@ export default function CryptoAssets({ }) {
 
     useEffect(() => {
         const baseId = "base";
-        const ethId = "ethereum";
-
         const virtualsContractAddress = "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b";
-        const beamContractAddress = "0x62d0a8458ed7719fdaf978fe5929c6d342b0bfce";
-
-        const normalUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,virtuals-base,degen-base,aave,uniswap,pepe&vs_currencies=usd';
+        const normalUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,aave,uniswap,pepe&vs_currencies=usd';
 
         try {
             Promise.all([fetch(normalUrl),
-                         fetch(tokenPriceUrl(baseId, virtualsContractAddress)),
-                         fetch(tokenPriceUrl(ethId, beamContractAddress))])
-                .then(([response1, response2, response3]) => {
-                    return Promise.all([response1.json(), response2.json(), response3.json()]);
+                         fetch(tokenPriceUrl(baseId, virtualsContractAddress))])
+                .then(([response1, response2]) => {
+                    return Promise.all([response1.json(), response2.json()]);
                 })
-                .then(([data, virtualsData, beamData]) => {
+                .then(([data, virtualsData]) => {
                     setLocalState({
                         ...localState,
                         bitcoinPrice: data.bitcoin.usd,
@@ -81,8 +68,6 @@ export default function CryptoAssets({ }) {
                         solanaPrice: data.solana.usd,
                         uniswapPrice: data.uniswap.usd,
                         aavePrice: data.aave.usd,
-                        degenPrice: data["degen-base"].usd,
-                        beamPrice: beamData[beamContractAddress].usd,
                         pepePrice: data.pepe.usd,
                         virtualsPrice: virtualsData[virtualsContractAddress].usd
                     })
@@ -154,12 +139,10 @@ export default function CryptoAssets({ }) {
     const solValue = localState.solanaPrice * localState.solanaQuantity;
     const uniswapValue = localState.uniswapPrice * localState.uniswapQuantity;
     const aaveValue = localState.aavePrice * localState.aaveQuantity;
-    const dgnValue = localState.degenPrice * localState.degenQuantity;
-    const beamValue = localState.beamPrice * localState.beamQuantity;
     const pepeValue = localState.pepePrice * localState.pepeQuantity;
     const virtualsValue = localState.virtualsPrice * localState.virtualsQuantity;
 
-    const totalValue = btcValue + ethValue + solValue + uniswapValue + aaveValue + dgnValue + beamValue + pepeValue + virtualsValue;
+    const totalValue = btcValue + ethValue + solValue + uniswapValue + aaveValue + pepeValue + virtualsValue;
     const profitPercentage = (100 / localState.dollarsSpent) * totalValue;
 
     const btcPct = (100 / totalValue) * btcValue;
@@ -167,8 +150,6 @@ export default function CryptoAssets({ }) {
     const solPct = (100 / totalValue) * solValue;
     const uniswapPct = (100 / totalValue) * uniswapValue;
     const aavePct = (100 / totalValue) * aaveValue;
-    const dgnPct = (100 / totalValue) * dgnValue;
-    const beamPct = (100 / totalValue) * beamValue;
     const pepePct = (100 / totalValue) * pepeValue;
     const virtualsPct = (100 / totalValue) * virtualsValue;
 
@@ -186,8 +167,6 @@ export default function CryptoAssets({ }) {
             {info("VIRTS", localState.virtualsPrice, localState.virtualsQuantity)}
             {info("UNI", localState.uniswapPrice, localState.uniswapQuantity)}
             {info("AAVE", localState.aavePrice, localState.aaveQuantity)}
-            {info("DGN", localState.degenPrice, localState.degenQuantity)}
-            {info("BEAM", localState.beamPrice, localState.beamQuantity)}
             {info("PEPE", localState.pepePrice, localState.pepeQuantity)}
 
             <div class="crypto-assets-v-spacer"></div>
@@ -195,8 +174,7 @@ export default function CryptoAssets({ }) {
             <div>{percent("BTC", btcPct)} {percent("ETH", ethPct)}</div>
             <div>{percent("SOL", solPct)} {percent("VIRTS", virtualsPct)}</div>
             <div>{percent("UNI", uniswapPct)} {percent("AAVE", aavePct)}</div>
-            <div>{percent("BEAM", beamPct)} {percent("PEPE", pepePct)}</div>
-            <div>{percent("DGN", dgnPct)} </div>
+            <div>{percent("PEPE", pepePct)}</div>
 
             <div class="crypto-assets-v-spacer"></div>
 
