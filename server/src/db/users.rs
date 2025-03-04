@@ -21,33 +21,51 @@ use crate::interop::Key;
 use rusqlite::{params, Row};
 use tracing::info;
 
+// for login fn
+impl FromRow for (Key, String, interop::User) {
+    fn from_row(row: &Row) -> crate::Result<(Key, String, interop::User)> {
+        let id: Key = row.get(0)?;
+        let password: String = row.get(3)?;
+
+        Ok((
+            id,
+            password,
+            interop::User {
+                username: row.get(2)?,
+                email: row.get(1)?,
+                admin: None,
+                ui_config_json: row.get(4)?,
+            },
+        ))
+    }
+}
+
 pub(crate) fn login(
     db_pool: &SqlitePool,
     login_credentials: &interop::LoginCredentials,
 ) -> crate::Result<(Key, String, interop::User)> {
-    impl FromRow for (Key, String, interop::User) {
-        fn from_row(row: &Row) -> crate::Result<(Key, String, interop::User)> {
-            let id: Key = row.get(0)?;
-            let password: String = row.get(3)?;
-
-            Ok((
-                id,
-                password,
-                interop::User {
-                    username: row.get(2)?,
-                    email: row.get(1)?,
-                    admin: None,
-                    ui_config_json: row.get(4)?,
-                },
-            ))
-        }
-    }
-
     let conn = db_pool.get()?;
     let stmt = "SELECT id, email, username, password, ui_config_json
                 FROM users
                 WHERE email = ?1";
     one(&conn, stmt, params![login_credentials.email])
+}
+
+// for create fn
+impl FromRow for (Key, interop::User) {
+    fn from_row(row: &Row) -> crate::Result<(Key, interop::User)> {
+        let id: Key = row.get(0)?;
+
+        Ok((
+            id,
+            interop::User {
+                username: row.get(2)?,
+                email: row.get(1)?,
+                admin: None,
+                ui_config_json: row.get(3)?,
+            },
+        ))
+    }
 }
 
 pub(crate) fn create(
@@ -56,22 +74,6 @@ pub(crate) fn create(
     hash: &str,
 ) -> crate::Result<(Key, interop::User)> {
     info!("create");
-
-    impl FromRow for (Key, interop::User) {
-        fn from_row(row: &Row) -> crate::Result<(Key, interop::User)> {
-            let id: Key = row.get(0)?;
-
-            Ok((
-                id,
-                interop::User {
-                    username: row.get(2)?,
-                    email: row.get(1)?,
-                    admin: None,
-                    ui_config_json: row.get(3)?,
-                },
-            ))
-        }
-    }
 
     let conn = db_pool.get()?;
     let stmt = "INSERT INTO users (email, username, password, ui_config_json)
@@ -89,18 +91,19 @@ pub(crate) fn create(
     )
 }
 
-pub(crate) fn get(db_pool: &SqlitePool, user_id: Key) -> crate::Result<interop::User> {
-    impl FromRow for interop::User {
-        fn from_row(row: &Row) -> crate::Result<interop::User> {
-            Ok(interop::User {
-                username: row.get(1)?,
-                email: row.get(0)?,
-                admin: None,
-                ui_config_json: row.get(2)?,
-            })
-        }
+// for get fn
+impl FromRow for interop::User {
+    fn from_row(row: &Row) -> crate::Result<interop::User> {
+        Ok(interop::User {
+            username: row.get(1)?,
+            email: row.get(0)?,
+            admin: None,
+            ui_config_json: row.get(2)?,
+        })
     }
+}
 
+pub(crate) fn get(db_pool: &SqlitePool, user_id: Key) -> crate::Result<interop::User> {
     let conn = db_pool.get()?;
     let stmt = "SELECT email, username, ui_config_json
                 FROM users
