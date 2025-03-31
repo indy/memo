@@ -13,7 +13,7 @@ export default function CryptoAssets({ }) {
         dollarsSpent: number;
     };
 
-    const dollarsOnChain = 8770.78582;
+    const dollarsOnChain = 5958.58582;
 
     const initialState: Crypto = {
         bitcoinPrice: 0,
@@ -23,7 +23,7 @@ export default function CryptoAssets({ }) {
         bitcoinQuantity: 0.95652791,
         ethereumQuantity: 13.8582051275113,
         solanaQuantity: 18.574,
-        curveQuantity: 4362.01,
+        curveQuantity: 9946.99,
         dollarsSpent: 95130.05 - dollarsOnChain
     };
     let [localState, setLocalState] = useState(initialState);
