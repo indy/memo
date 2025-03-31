@@ -5,31 +5,33 @@ export default function CryptoAssets({ }) {
         bitcoinPrice: number;
         ethereumPrice: number;
         solanaPrice: number;
+        curvePrice: number;
         bitcoinQuantity: number;
         ethereumQuantity: number;
         solanaQuantity: number;
+        curveQuantity: number;
         dollarsSpent: number;
     };
 
-    const lidoEth = 16.88722044;
-    const trezorEth = 0.090052062259163808;
-    const inderjitEth = 0.1602;
-
-    const dollarsOnChain = 7011.03;
+    const dollarsOnChain = 8770.78582;
 
     const initialState: Crypto = {
         bitcoinPrice: 0,
         ethereumPrice: 0,
         solanaPrice: 0,
+        curvePrice: 0,
         bitcoinQuantity: 0.95652791,
-        ethereumQuantity: lidoEth + trezorEth + inderjitEth,
+        ethereumQuantity: 13.8582051275113,
         solanaQuantity: 18.574,
+        curveQuantity: 4362.01,
         dollarsSpent: 95130.05 - dollarsOnChain
     };
     let [localState, setLocalState] = useState(initialState);
 
     useEffect(() => {
-        const normalUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd';
+        const normalUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,curve-dao-token&vs_currencies=usd';
+
+        // const normalUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd';
 
         try {
             Promise.all([fetch(normalUrl)])
@@ -37,11 +39,13 @@ export default function CryptoAssets({ }) {
                     return Promise.all([response1.json()]);
                 })
                 .then(([data]) => {
+                    console.log(data);
                     setLocalState({
                         ...localState,
                         bitcoinPrice: data.bitcoin.usd,
                         ethereumPrice: data.ethereum.usd,
                         solanaPrice: data.solana.usd,
+                        curvePrice: data['curve-dao-token'].usd
                     })
                 })
         } catch (error: any) {
@@ -109,13 +113,15 @@ export default function CryptoAssets({ }) {
     const btcValue = localState.bitcoinPrice * localState.bitcoinQuantity;
     const ethValue = localState.ethereumPrice * localState.ethereumQuantity;
     const solValue = localState.solanaPrice * localState.solanaQuantity;
+    const crvValue = localState.curvePrice * localState.curveQuantity;
 
-    const totalValue = btcValue + ethValue + solValue;
+    const totalValue = btcValue + ethValue + solValue + crvValue;
     const profitPercentage = (100 / localState.dollarsSpent) * totalValue;
 
     const btcPct = (100 / totalValue) * btcValue;
     const ethPct = (100 / totalValue) * ethValue;
     const solPct = (100 / totalValue) * solValue;
+    const crvPct = (100 / totalValue) * crvValue;
 
     return (
         <div class="c-crypto-assets">
@@ -128,16 +134,16 @@ export default function CryptoAssets({ }) {
             {info("BTC", localState.bitcoinPrice, localState.bitcoinQuantity)}
             {info("ETH", localState.ethereumPrice, localState.ethereumQuantity)}
             {info("SOL", localState.solanaPrice, localState.solanaQuantity)}
+            {info("CRV", localState.curvePrice, localState.curveQuantity)}
 
             <div class="crypto-assets-v-spacer"></div>
 
             <div>{percent("BTC", btcPct)} {percent("ETH", ethPct)}</div>
-            <div>{percent("SOL", solPct)}</div>
+            <div>{percent("SOL", solPct)} {percent("CRV", crvPct)}</div>
 
             <div class="crypto-assets-v-spacer"></div>
 
             {allIn("BTC", localState.bitcoinPrice, totalValue)}
-            {allIn("ETH", localState.ethereumPrice, totalValue)}
         </div>
     )
 }
