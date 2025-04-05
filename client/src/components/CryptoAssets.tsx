@@ -13,7 +13,23 @@ export default function CryptoAssets({ }) {
         dollarsSpent: number;
     };
 
-    const dollarsOnChain = 5958.58582;
+    /*
+trezor:
+9146.68 USDC
+10.92821 ETH
+0.95652791 BTC
+
+inderjit.eth:
+2200.99 USDC
+0.15168 ETH
+9947.00097CRV
+
+coinbase:
+1854.143791 USDC
+18.576184405 SOL
+    */
+
+    const dollarsOnChain = 9146.68 + 2200.99 + 1854.143791;
 
     const initialState: Crypto = {
         bitcoinPrice: 0,
@@ -21,7 +37,7 @@ export default function CryptoAssets({ }) {
         solanaPrice: 0,
         curvePrice: 0,
         bitcoinQuantity: 0.95652791,
-        ethereumQuantity: 13.8582051275113,
+        ethereumQuantity: 10.92821 + 0.15168,
         solanaQuantity: 18.574,
         curveQuantity: 9946.99,
         dollarsSpent: 95130.05 - dollarsOnChain
