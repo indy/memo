@@ -14,22 +14,18 @@ export default function CryptoAssets({ }) {
     };
 
     /*
-trezor:
-9146.68 USDC
-10.92821 ETH
-0.95652791 BTC
+      As of 2025-04-10:
 
-inderjit.eth:
-2200.99 USDC
-0.15168 ETH
-9947.00097CRV
+| Name                 |      ETH |        BTC |        CRV |       SOL |        USDC |
+|----------------------+----------+------------+------------+-----------+-------------|
+| Coinbase             | 0.011419 |            |            | 18.576223 | 13854.14379 |
+| inderjit.eth mainnet |  0.15168 |            | 9947.00097 |           |        5995 |
+| inderjit.eth base    |  0.00071 |            |            |           |     2202.15 |
+| trezor               |   2.9267 | 0.95652791 |            |           |     3897.94 |
 
-coinbase:
-1854.143791 USDC
-18.576184405 SOL
     */
 
-    const dollarsOnChain = 9146.68 + 2200.99 + 1854.143791;
+    const dollarsOnChain = 13854.14379 + 5995 + 2202.15 + 3897.94;
 
     const initialState: Crypto = {
         bitcoinPrice: 0,
@@ -37,9 +33,9 @@ coinbase:
         solanaPrice: 0,
         curvePrice: 0,
         bitcoinQuantity: 0.95652791,
-        ethereumQuantity: 10.92821 + 0.15168,
-        solanaQuantity: 18.574,
-        curveQuantity: 9946.99,
+        ethereumQuantity: 0.011419 + 0.15168 + 0.00071 + 2.9267,
+        solanaQuantity: 18.576223,
+        curveQuantity: 9947.00097,
         dollarsSpent: 95130.05 - dollarsOnChain
     };
     let [localState, setLocalState] = useState(initialState);
@@ -131,13 +127,14 @@ coinbase:
     const solValue = localState.solanaPrice * localState.solanaQuantity;
     const crvValue = localState.curvePrice * localState.curveQuantity;
 
-    const totalValue = btcValue + ethValue + solValue + crvValue;
+    const totalValue = btcValue + ethValue + solValue + crvValue + dollarsOnChain;
     const profitPercentage = (100 / localState.dollarsSpent) * totalValue;
 
     const btcPct = (100 / totalValue) * btcValue;
     const ethPct = (100 / totalValue) * ethValue;
     const solPct = (100 / totalValue) * solValue;
     const crvPct = (100 / totalValue) * crvValue;
+    const usdPct = (100 / totalValue) * dollarsOnChain;
 
     return (
         <div class="c-crypto-assets">
@@ -147,6 +144,7 @@ coinbase:
 
             <div class="crypto-assets-v-spacer"></div>
 
+            <div>{pad("USD", 9)} {pad("=", 14)} {pad(asUSD(dollarsOnChain), 11)}</div>
             {info("BTC", localState.bitcoinPrice, localState.bitcoinQuantity)}
             {info("ETH", localState.ethereumPrice, localState.ethereumQuantity)}
             {info("SOL", localState.solanaPrice, localState.solanaQuantity)}
@@ -154,8 +152,9 @@ coinbase:
 
             <div class="crypto-assets-v-spacer"></div>
 
-            <div>{percent("BTC", btcPct)} {percent("ETH", ethPct)}</div>
-            <div>{percent("SOL", solPct)} {percent("CRV", crvPct)}</div>
+            <div>{percent("USD", usdPct)} {percent("BTC", btcPct)} </div>
+            <div>{percent("ETH", ethPct)} {percent("SOL", solPct)} </div>
+            <div>{percent("CRV", crvPct)}</div>
 
             <div class="crypto-assets-v-spacer"></div>
 
