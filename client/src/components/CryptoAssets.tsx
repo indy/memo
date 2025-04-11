@@ -19,13 +19,12 @@ export default function CryptoAssets({ }) {
 | Name                 |      ETH |        BTC |        CRV |       SOL |        USDC |
 |----------------------+----------+------------+------------+-----------+-------------|
 | Coinbase             | 0.011419 |            |            | 18.576223 | 13854.14379 |
-| inderjit.eth mainnet |  0.15168 |            | 9947.00097 |           |        5995 |
+| inderjit.eth mainnet |  0.15168 |            | 29506.8374 |           |      238.44 |
 | inderjit.eth base    |  0.00071 |            |            |           |     2202.15 |
-| trezor               |   2.9267 | 0.95652791 |            |           |     3897.94 |
-
+| trezor               |   0.8024 | 0.95652791 |            |           |     1213.21 |
     */
 
-    const dollarsOnChain = 13854.14379 + 5995 + 2202.15 + 3897.94 - 6000;
+    const dollarsOnChain = 13854.14379 + 1213.21 + 2202.15 + 238.44
 
     const initialState: Crypto = {
         bitcoinPrice: 0,
@@ -33,9 +32,9 @@ export default function CryptoAssets({ }) {
         solanaPrice: 0,
         curvePrice: 0,
         bitcoinQuantity: 0.95652791,
-        ethereumQuantity: 0.011419 + 0.15168 + 0.00071 + 2.9267,
+        ethereumQuantity: 0.011419 + 0.15168 + 0.00071 + 0.8024,
         solanaQuantity: 18.576223,
-        curveQuantity: 19900.324,
+        curveQuantity: 29506.8374,
         dollarsSpent: 95130.05 - dollarsOnChain
     };
     let [localState, setLocalState] = useState(initialState);
