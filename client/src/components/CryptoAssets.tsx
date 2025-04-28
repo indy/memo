@@ -13,28 +13,25 @@ export default function CryptoAssets({ }) {
         dollarsSpent: number;
     };
 
-    /*
-      As of 2025-04-10:
+    const dollarsOnInderjitEthMain = 10219.10;
+    const dollarsOnInderjitEthBase = 2210.11;
+    const dollarsOnCoinbase = 8083.63;
+    const dollarsOnTrezor = 1213.21;
 
-| Name                 |      ETH |        BTC |        CRV |       SOL |        USDC |
-|----------------------+----------+------------+------------+-----------+-------------|
-| Coinbase             | 0.011419 |            |            | 18.576223 | 13854.14379 |
-| inderjit.eth mainnet |  0.15168 |            | 29506.8374 |           |      238.44 |
-| inderjit.eth base    |  0.00071 |            |            |           |     2202.15 |
-| trezor               |   0.8024 | 0.95652791 |            |           |     1213.21 |
-    */
+    const bitcoinOnTrezor = 0.95652791;
+    const bitcoinOnCoinbase = 0.036113;
 
-    const dollarsOnChain = 13854.14379 + 1213.21 + 2202.15 + 238.44
+    const dollarsOnChain = dollarsOnInderjitEthMain + dollarsOnInderjitEthBase + dollarsOnCoinbase + dollarsOnTrezor;
 
     const initialState: Crypto = {
         bitcoinPrice: 0,
         ethereumPrice: 0,
         solanaPrice: 0,
         curvePrice: 0,
-        bitcoinQuantity: 0.95652791,
+        bitcoinQuantity: bitcoinOnTrezor + bitcoinOnCoinbase,
         ethereumQuantity: 0.011419 + 0.15168 + 0.00071 + 0.8024,
         solanaQuantity: 18.576223,
-        curveQuantity: 29506.8374,
+        curveQuantity: 13305.63221,
         dollarsSpent: 95130.05 - dollarsOnChain
     };
     let [localState, setLocalState] = useState(initialState);
