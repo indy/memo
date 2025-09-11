@@ -6,7 +6,7 @@
     "author": "Inderjit Gill",
     "license": "AGPL-3.0-or-later",
     "devDependencies": {
-        "esbuild": "^0.19.4",
+        "esbuild": "^0.25.0",
         "prettier": "3.0.3",
 		"typescript": "^5.2.2"
     },
